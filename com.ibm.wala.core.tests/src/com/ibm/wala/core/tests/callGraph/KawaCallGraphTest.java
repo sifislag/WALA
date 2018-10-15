@@ -52,8 +52,13 @@ public class KawaCallGraphTest extends DynamicCallGraphTestBase {
     
     Set<CGNode> color = getNodes(CG, "Lchess", "startingColor", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
     assert ! color.isEmpty();
-    
-  }
+
+    Set<CGNode> loadImage = getNodes(CG, "Limg", "loadImage", "(Ljava/lang/CharSequence;)Ljava/awt/image/BufferedImage;");
+    assert ! loadImage.isEmpty();
+
+    Set<CGNode> append$v = getNodes(CG, "Lkawa/lang/Quote", "append$V", "([Ljava/lang/Object;)Ljava/lang/Object;");
+    assert ! append$v.isEmpty();
+}
 
   @Test
   public void testKawaTest() throws ClassHierarchyException, IllegalArgumentException, CancelException, IOException, SecurityException {   
@@ -78,7 +83,7 @@ public class KawaCallGraphTest extends DynamicCallGraphTestBase {
     AnalysisOptions options = CallGraphTestUtil.makeAnalysisOptions(scope, entrypoints);
     IAnalysisCacheView cache = new AnalysisCacheImpl();
     
-    options.setReflectionOptions(ReflectionOptions.NONE);
+    options.setReflectionOptions(ReflectionOptions.STRING_ONLY);
     options.setTraceStringConstants(true);
     options.setUseConstantSpecificKeys(true);
     

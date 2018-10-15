@@ -46,6 +46,8 @@ public abstract class AstMethod implements IMethod {
 
     Position getCodeBodyPosition();
 
+    Position getCodeNamePosition();
+
     Position getInstructionPosition(int instructionOffset);
 
     String[][] getSourceNamesForValues();
@@ -265,6 +267,11 @@ public abstract class AstMethod implements IMethod {
   @Override
   public boolean isNative() {
     return qualifiers.contains(CAstQualifier.NATIVE);
+  }
+
+  @Override
+  public boolean isWalaSynthetic() {
+    return false;
   }
 
   @Override
