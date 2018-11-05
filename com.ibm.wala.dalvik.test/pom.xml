@@ -40,7 +40,9 @@
               <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
               <argLine>-Xmx800M -ea</argLine>
               <redirectTestOutputToFile>true</redirectTestOutputToFile>
-            </configuration>
+  	      <forkCount>2</forkCount>
+	      <reuseForks>false</reuseForks>
+          </configuration>
             <goals>
               <goal>test</goal>
             </goals>
@@ -57,6 +59,21 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.smali</groupId>
+      <artifactId>dexlib2</artifactId>
+      <version>2.2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.smali</groupId>
+      <artifactId>util</artifactId>
+      <version>2.2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>22.0</version>
+    </dependency>
   </dependencies>
-
+  
 </project>

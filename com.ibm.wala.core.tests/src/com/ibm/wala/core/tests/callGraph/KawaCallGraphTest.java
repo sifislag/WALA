@@ -11,6 +11,9 @@
 
 package com.ibm.wala.core.tests.callGraph;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assume.assumeThat;
+
 import java.io.IOException;
 import java.util.Set;
 
@@ -39,12 +42,15 @@ import com.ibm.wala.types.Descriptor;
 import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.CancelException;
+import com.ibm.wala.util.MonitorUtil.IProgressMonitor;
 import com.ibm.wala.util.strings.Atom;
 
 public class KawaCallGraphTest extends DynamicCallGraphTestBase {
 
   @Test
   public void testKawaChess() throws ClassHierarchyException, IllegalArgumentException, CancelException, IOException, SecurityException {   
+    assumeThat("not running on Travis CI", System.getenv("TRAVIS"), nullValue());
+    
     CallGraph CG = testKawa(new ResourceJarFileModule(getClass().getClassLoader().getResource("kawachess.jar")), "main");
     
     Set<CGNode> status = getNodes(CG, "Lchess", "startingStatus", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
@@ -58,10 +64,15 @@ public class KawaCallGraphTest extends DynamicCallGraphTestBase {
 
     Set<CGNode> append$v = getNodes(CG, "Lkawa/lang/Quote", "append$V", "([Ljava/lang/Object;)Ljava/lang/Object;");
     assert ! append$v.isEmpty();
-}
+
+    Set<CGNode> clinit = getNodes(CG, "Lkawa/lib/kawa/base", "<clinit>", "()V");
+    assert ! clinit.isEmpty();
+  }
 
   @Test
   public void testKawaTest() throws ClassHierarchyException, IllegalArgumentException, CancelException, IOException, SecurityException {   
+    assumeThat("not running on Travis CI", System.getenv("TRAVIS"), nullValue());
+
     CallGraph CG = testKawa(new ResourceJarFileModule(getClass().getClassLoader().getResource("kawatest.jar")), "test");
     
     Set<CGNode> nodes = getNodes(CG, "Ltest", "plusish$V", "(Lgnu/lists/LList;)Ljava/lang/Object;");
@@ -91,7 +102,57 @@ public class KawaCallGraphTest extends DynamicCallGraphTestBase {
 
     MethodHandles.analyzeMethodHandles(options, builder);
 
-    return builder.makeCallGraph(options, null); 
+    CallGraph cg = builder.makeCallGraph(options, new IProgressMonitor() {
+      private long time = System.currentTimeMillis();
+      
+      @Override
+      public void beginTask(String task, int totalWork) {
+        noteElapsedTime(); 
+      }
+
+      private void noteElapsedTime() {
+        long now = System.currentTimeMillis();
+        if (now - time >= 10000) {
+          System.out.println("worked " + (now - time));
+          System.out.flush();
+          time = now;
+        }
+      }
+
+      @Override
+      public void subTask(String subTask) {
+        noteElapsedTime(); 
+      }
+
+      @Override
+      public void cancel() {
+        assert false;
+      }
+
+      @Override
+      public boolean isCanceled() {
+         return false;
+      }
+
+      @Override
+      public void done() {
+        noteElapsedTime(); 
+      }
+
+      @Override
+      public void worked(int units) {
+        noteElapsedTime(); 
+      }
+
+      @Override
+      public String getCancelMessage() {
+        assert false : "should not cancel";
+        return null;
+      }
+      
+    });
+    
+    return cg; 
    }
 
 }
