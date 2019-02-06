@@ -47,13 +47,11 @@ public interface IFlowGraph extends LabeledGraph<Object, IFlowLabel> {
   public abstract boolean hasSubgraphForNode(CGNode node);
 
   /**
-   * @param pk
-   * @return <code>true</code> iff <code>pk</code> is a formal parameter
+   * @return {@code true} iff {@code pk} is a formal parameter
    */
   public abstract boolean isParam(LocalPointerKey pk);
 
   /**
-   * @param pk
    * @return the {@link SSAInvokeInstruction}s passing some pointer as a parameter
    */
   public abstract Iterator<SSAAbstractInvokeInstruction> getInstrsPassingParam(LocalPointerKey pk);
@@ -61,7 +59,7 @@ public interface IFlowGraph extends LabeledGraph<Object, IFlowLabel> {
   /**
    * get the {@link SSAInvokeInstruction} whose return value is assigned to a pointer key.
    * 
-   * @return the instruction, or <code>null</code> if no return value is assigned to pk
+   * @return the instruction, or {@code null} if no return value is assigned to pk
    */
   public abstract SSAAbstractInvokeInstruction getInstrReturningTo(LocalPointerKey pk);
 
@@ -86,7 +84,7 @@ public interface IFlowGraph extends LabeledGraph<Object, IFlowLabel> {
   /**
    * 
    * @param formalPk a {@link PointerKey} representing either a formal parameter or return value
-   * @return the {@link CallerSiteContext}s representing pointer callers of <code>formalPk</code>'s method
+   * @return the {@link CallerSiteContext}s representing pointer callers of {@code formalPk}'s method
    */
   public abstract Set<CallerSiteContext> getPotentialCallers(PointerKey formalPk);
 

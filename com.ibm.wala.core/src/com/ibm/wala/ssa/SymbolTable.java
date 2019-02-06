@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.ibm.wala.ssa;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.ibm.wala.util.collections.HashMapFactory;
@@ -118,9 +119,7 @@ public class SymbolTable implements Cloneable {
       }
       
       if (defaultValues.length <= vn) {
-        Object temp[] = defaultValues;
-        defaultValues = new Object[ vn*2 + 1];
-        System.arraycopy(temp, 0, defaultValues, 0, temp.length);
+        defaultValues = Arrays.copyOf(defaultValues, vn*2 + 1);
       }
       
       defaultValues[vn] = defaultValue;
@@ -173,9 +172,7 @@ public class SymbolTable implements Cloneable {
 
   private void expandForNewValueNumber(int vn) {
     if (vn >= values.length) {
-      Value[] temp = values;
-      values = new Value[2 * vn];
-      System.arraycopy(temp, 0, values, 0, temp.length);
+      values = Arrays.copyOf(values, 2 * vn);
     }
   }
 
@@ -214,7 +211,7 @@ public class SymbolTable implements Cloneable {
         || values[valueNumber] instanceof PhiValue) {
       return "v" + valueNumber;
     } else {
-      return "v" + valueNumber + ":" + values[valueNumber].toString();
+      return "v" + valueNumber + ':' + values[valueNumber].toString();
     }
   }
 
@@ -434,7 +431,6 @@ public class SymbolTable implements Cloneable {
   }
 
   /**
-   * @param valueNumber
    * @return true iff this valueNumber is a parameter
    */
   public boolean isParameter(int valueNumber) {

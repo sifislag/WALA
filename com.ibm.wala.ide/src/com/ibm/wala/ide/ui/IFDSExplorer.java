@@ -81,8 +81,8 @@ public class IFDSExplorer {
     String outputFile = scratchDirectory + File.separatorChar + irFileName;
     String dotFile = scratchDirectory + File.separatorChar + "ir.dt";
 
-    final SWTTreeViewer v = new SWTTreeViewer();
-    Graph<? extends P> g = r.getProblem().getSupergraph().getProcedureGraph();
+    final SWTTreeViewer<P> v = new SWTTreeViewer<>();
+    Graph<P> g = r.getProblem().getSupergraph().getProcedureGraph();
     v.setGraphInput(g);
     v.setBlockInput(true);
     v.setRootsInput(roots);
@@ -94,7 +94,7 @@ public class IFDSExplorer {
   }
 
   /**
-   * Calls {@link #viewIFDS(TabulationResult)} with roots computed by {@link InferGraphRoots}.
+   * Calls {@link #viewIFDS(TabulationResult, Collection)} with roots computed by {@link InferGraphRoots}.
    */
   public static <T, P, F> void viewIFDS(TabulationResult<T, P, F> r) throws WalaException {
     if (r == null) {

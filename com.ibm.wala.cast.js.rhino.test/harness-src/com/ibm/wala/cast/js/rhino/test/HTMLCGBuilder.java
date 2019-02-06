@@ -33,7 +33,6 @@ import com.ibm.wala.ipa.callgraph.CallGraph;
 import com.ibm.wala.ipa.callgraph.CallGraphBuilderCancelException;
 import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
 import com.ibm.wala.ipa.callgraph.propagation.PointerAnalysis;
-import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.util.NullProgressMonitor;
 import com.ibm.wala.util.ProgressMaster;
 import com.ibm.wala.util.io.CommandLine;
@@ -76,12 +75,8 @@ public class HTMLCGBuilder {
 	 *          the HTML page to analyse, can either be a path to a local file or a URL
 	 * @param timeout
 	 *          analysis timeout in seconds, -1 means no timeout
-	 * @param fExtractor 
-	 * @throws IOException 
-	 * @throws ClassHierarchyException 
 	 */
-	public static CGBuilderResult buildHTMLCG(String src, int timeout, CGBuilderType builderType, Supplier<JSSourceExtractor> fExtractor) 
-			throws ClassHierarchyException, IOException {
+	public static CGBuilderResult buildHTMLCG(String src, int timeout, CGBuilderType builderType, Supplier<JSSourceExtractor> fExtractor) {
 		CGBuilderResult res = new CGBuilderResult();
 		URL url = null;
 		try {
@@ -139,11 +134,8 @@ public class HTMLCGBuilder {
 	 * timeout argument is optional and defaults to {@link #DEFAULT_TIMEOUT}.
 	 * reachable argument is optional.  if provided, and some reachable function name contains function_name,
 	 * will print "REACHABLE"
-	 * @throws IOException 
-	 * @throws ClassHierarchyException 
-	 * 
 	 */
-	public static void main(String[] args) throws ClassHierarchyException, IOException {
+	public static void main(String[] args) throws IOException {
 		Properties parsedArgs = CommandLine.parse(args);
 		
 		String src = parsedArgs.getProperty("src");

@@ -578,9 +578,6 @@ public class DexIMethod implements IBytecodeMethod<Instruction> {
 		return getReference().toString();
 	}
 
-	/**
-	 * @see java.lang.Object#equals(Object)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		// instanceof is OK because this class is final.
@@ -593,9 +590,6 @@ public class DexIMethod implements IBytecodeMethod<Instruction> {
 		}
 	}
 
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
 		return 9661 * getReference().hashCode();
@@ -696,7 +690,7 @@ public class DexIMethod implements IBytecodeMethod<Instruction> {
 
 
 		for (int i = 0; i < instructions().size(); i++) {
-			handlers[i] = temp_array.get(i).toArray(new ExceptionHandler[temp_array.get(i).size()]);
+			handlers[i] = temp_array.get(i).toArray(new ExceptionHandler[0]);
 		
 			/*
 			System.out.println("i: " + i);
@@ -718,7 +712,7 @@ public class DexIMethod implements IBytecodeMethod<Instruction> {
 		if (instructions == null)
 			parseBytecode();
 
-		return instructions.toArray(new Instruction[ instructions.size() ]);
+		return instructions.toArray(new Instruction[0]);
 	}
 
 	private boolean odexMethod() {
@@ -736,7 +730,7 @@ public class DexIMethod implements IBytecodeMethod<Instruction> {
 			DexFileModule m = myClass.getContainer();
 
 			ClassPathResolver path = 
-					new ClassPathResolver(Collections.singletonList(m.getFile().getParent() + "/"),
+					new ClassPathResolver(Collections.singletonList(m.getFile().getParent() + '/'),
 							Collections.<String>emptyList(),
 							m.getDexFile());
 
@@ -2322,7 +2316,7 @@ public class DexIMethod implements IBytecodeMethod<Instruction> {
 			}
 			default:
 				throw new RuntimeException("not implemented instruction: 0x"
-						+ inst.getOpcode().toString() + " in " + eMethod.getDefiningClass() + ":" + eMethod.getName());
+						+ inst.getOpcode().toString() + " in " + eMethod.getDefiningClass() + ':' + eMethod.getName());
 
 			}
 			currentCodeAddress += inst.getCodeUnits();
@@ -3194,12 +3188,11 @@ public class DexIMethod implements IBytecodeMethod<Instruction> {
 					return newArray.newSiteRef.getDeclaredType().getArrayElementType();
 				}
 			} else if (curInst.getOpcode() == Opcode.MOVE_OBJECT || curInst.getOpcode() == Opcode.MOVE_OBJECT_16 || curInst.getOpcode() == Opcode.MOVE_OBJECT_FROM16) {
-				TwoRegisterInstruction tri = (TwoRegisterInstruction) curInst;
-				int regA = tri.getRegisterA();
-				int regB = tri.getRegisterB();
-				if (regA == interestingRegister) {
-					interestingRegister = regB;
-				}
+                UnaryOperation uo = (UnaryOperation) curInst;
+
+                if (uo.destination == interestingRegister) {
+                    interestingRegister = uo.source;
+                }
 			}
 			// all other instructions are ignored
 			curCounter--;
@@ -3213,7 +3206,7 @@ public class DexIMethod implements IBytecodeMethod<Instruction> {
 	}
 
 	public Instruction[] getDexInstructions() {
-		return instructions().toArray(new Instruction[instructions().size()]);
+		return instructions().toArray(new Instruction[0]);
 	}
 
 
@@ -3287,9 +3280,8 @@ public class DexIMethod implements IBytecodeMethod<Instruction> {
      */
 	@Override
 	public Collection<CallSiteReference> getCallSites() {
-        Collection<CallSiteReference> empty = Collections.emptySet();
         if (isNative()) {
-            return empty;
+            return Collections.emptySet();
         }
 
         // assert(false) : "Please review getCallSites-Implementation before use!";        // TODO

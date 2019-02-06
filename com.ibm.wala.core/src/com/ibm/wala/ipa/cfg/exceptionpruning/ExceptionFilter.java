@@ -8,20 +8,14 @@ import java.util.Collection;
  * package-info.
  *
  * @author Stephan Gocht {@code <stephan@gobro.de>}
- *
- * @param <Instruction>
  */
 public interface ExceptionFilter<Instruction> {
 	/**
-	 *
-	 * @param instruction
 	 * @return if the instruction does always throw an exception
 	 */
 	public boolean alwaysThrowsException(Instruction instruction);
 
 	/**
-	 *
-	 * @param instruction
 	 * @return a list of exceptions, which have to be filtered for the given
 	 *         instruction
 	 */

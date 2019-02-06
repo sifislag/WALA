@@ -288,7 +288,6 @@ public class CGAnalysisContext<E extends ISSABasicBlock> {
 	}
 
 	/**
-	 * @param rootIK
 	 * @return a set of all code elements that might refer to this object or one
 	 *         of its fields (recursively)
 	 */
@@ -318,24 +317,21 @@ public class CGAnalysisContext<E extends ISSABasicBlock> {
 						for (IClass implementor : analysisContext.concreteClassesForInterface(contentsClass)) {
 							final InstanceKey contentsIK = new ConcreteTypeKey(implementor);
 							final InstanceKeyElement elt = new InstanceKeyElement(contentsIK);
-							if (!elts.contains(elt)) {
-								elts.add(elt);
+							if (elts.add(elt)) {
 								iks.push(contentsIK);
 							}
 						}
 					} else {
 						InstanceKey contentsIK = new ConcreteTypeKey(contentsClass);
 						final InstanceKeyElement elt = new InstanceKeyElement(contentsIK);
-						if (!elts.contains(elt)) {
-							elts.add(elt);
+						if (elts.add(elt)) {
 							iks.push(contentsIK);
 						}
 					}
 				} else {
 					for (InstanceKey contentsIK : pointsToSet) {
 						final InstanceKeyElement elt = new InstanceKeyElement(contentsIK);
-						if (!elts.contains(elt)) {
-							elts.add(elt);
+						if (elts.add(elt)) {
 							iks.push(contentsIK);
 						}
 					}
@@ -356,15 +352,13 @@ public class CGAnalysisContext<E extends ISSABasicBlock> {
 						
 						InstanceKey fieldIK = new ConcreteTypeKey(pa.getClassHierarchy().lookupClass(fieldTypeRef));
 						final InstanceKeyElement elt = new InstanceKeyElement(fieldIK);
-						if (!elts.contains(elt)) {
-							elts.add(elt);
+						if (elts.add(elt)) {
 							iks.push(fieldIK);
 						}
 					} else {
 						for (InstanceKey fieldIK : pointsToSet) {
 							final InstanceKeyElement elt = new InstanceKeyElement(fieldIK);
-							if (!elts.contains(elt)) {
-								elts.add(elt);
+							if (elts.add(elt)) {
 								iks.push(fieldIK);
 							}
 						}
@@ -376,15 +370,13 @@ public class CGAnalysisContext<E extends ISSABasicBlock> {
 						
 						InstanceKey fieldIK = new ConcreteTypeKey(fieldClass);
 						final InstanceKeyElement elt = new InstanceKeyElement(fieldIK);
-						if (!elts.contains(elt)) {
-							elts.add(elt);
+						if (elts.add(elt)) {
 							iks.push(fieldIK);
 						}
 					} else {
 						for (InstanceKey fieldIK : pointsToSet) {
 							final InstanceKeyElement elt = new InstanceKeyElement(fieldIK);
-							if (!elts.contains(elt)) {
-								elts.add(elt);
+							if (elts.add(elt)) {
 								iks.push(fieldIK);
 							}
 						}

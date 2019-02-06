@@ -81,10 +81,6 @@ class ClassFactoryContextSelector implements ContextSelector {
   /**
    * If the {@link CallSiteReference} invokes Class.forName(s) and s is a string constant, return a {@link JavaTypeContext}
    * representing the type named by s, if we can resolve it in the {@link IClassHierarchy}.
-   * 
-   * @see com.ibm.wala.ipa.callgraph.ContextSelector#getCalleeTarget(com.ibm.wala.ipa.callgraph.CGNode,
-   *      com.ibm.wala.classLoader.CallSiteReference, com.ibm.wala.classLoader.IMethod,
-   *      InstanceKey[])
    */
   @Override
   public Context getCalleeTarget(CGNode caller, CallSiteReference site, IMethod callee, InstanceKey[] receiver) {
@@ -108,7 +104,7 @@ class ClassFactoryContextSelector implements ContextSelector {
       int nameVn = callee.isStatic()? 0: 1;
       if (receiver != null && receiver.length > nameVn) {
         if (receiver[nameVn] instanceof ConstantKey) {
-          ConstantKey ik = (ConstantKey) receiver[nameVn];
+          ConstantKey<?> ik = (ConstantKey<?>) receiver[nameVn];
           if (ik.getConcreteType().getReference().equals(TypeReference.JavaLangString)) {
             String className = StringStuff.deployment2CanonicalTypeString(ik.getValue().toString());
             for(IClassLoader cl : caller.getClassHierarchy().getLoaders()) {

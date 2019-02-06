@@ -45,14 +45,13 @@ import com.ibm.wala.ipa.callgraph.propagation.cfa.CallerSiteContext;
 public interface CallGraphRefinePolicy {
 
   /**
-   * @param callSiteAndCGNode
-   * @return <code>true</code> if the analysis should attempt to determine targets for the virtual call on-the-fly, and
-   *         <code>false</code> otherwise
+   * @return {@code true} if the analysis should attempt to determine targets for the virtual call on-the-fly, and
+   *         {@code false} otherwise
    */
   public boolean shouldRefine(CallerSiteContext callSiteAndCGNode);
 
   /**
-   * @return <code>true</code> if more refinement can be done, and hence another pass can be attempted; <code>false</code> otherwise
+   * @return {@code true} if more refinement can be done, and hence another pass can be attempted; {@code false} otherwise
    */
   public boolean nextPass();
 

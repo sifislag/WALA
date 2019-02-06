@@ -26,8 +26,6 @@ public class ShortestPath<T> {
    *
    * This is using a variation of Bellman-Ford for hyper graphs.
    *
-   * @param graph
-   * @param source
    * @param comparator
    *          defines order on weights.
    */
@@ -79,8 +77,6 @@ public class ShortestPath<T> {
   }
 
   /**
-   * @param weight
-   * @param otherWeight
    * @return weight &gt; otherWeight
    */
   private boolean greaterThen(Weight weight, Weight otherWeight) {
@@ -88,8 +84,6 @@ public class ShortestPath<T> {
   }
 
   /**
-   * @param weight
-   * @param otherWeight
    * @return weight &lt; otherWeight
    */
   private boolean lessThen(Weight weight, Weight otherWeight) {
@@ -103,7 +97,6 @@ public class ShortestPath<T> {
    * the source of the shortest path computation. Otherwise (source,
    * other)->(sink) would not have a path from source to sink.
    *
-   * @param edge
    * @return max{edgeValue.newValue(sourceWeight) | sourceWeight \in
    *         edge.getSources()}
    */
@@ -133,7 +126,7 @@ public class ShortestPath<T> {
    * weight. For correct updating of the destination weight, we need to consider
    * all incoming edges. (The minimum of in edges is computed per round, not
    * global - see
-   * {@link ShortestPath#updateDestinationsWithMin(HashSet, DirectedHyperEdge, Weight)}
+   * {@link ShortestPath#updateDestinationsWithMin(DirectedHyperEdge, Weight)}
    * )
    *
    * @return A set of edges, that may lead to changes of weights.
@@ -184,9 +177,6 @@ public class ShortestPath<T> {
    * connected to the source of the shortest path computation. Otherwise
    * (source)->(sink), (other)->(sink), would not have a path from source to
    * sink.
-   *
-   * @param edge
-   * @param newWeight
    */
   private void updateDestinationsWithMin(final DirectedHyperEdge<T> edge, Weight newWeight) {
     if (!newWeight.equals(Weight.NOT_SET)) {

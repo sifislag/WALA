@@ -301,32 +301,32 @@ public final class TypeName implements Serializable {
 
     @Override
     public String toString() {
-      StringBuffer result = new StringBuffer();
+      StringBuilder result = new StringBuilder();
       toStringPrefix(result);
       
       if (packageName != null) {
         result.append(packageName.toString());
-        result.append("/");
+        result.append('/');
       }
       result.append(className.toString());
 
       return result.toString();
     }
 
-    private void toStringPrefix(StringBuffer result) {
+    private void toStringPrefix(StringBuilder result) {
       boolean isPrimitive = (dim==-1) || (dim&ElementMask)==PrimitiveMask;
       if (dim != -1) {
         for (int d = (dim&ElementMask) == PrimitiveMask? dim>>ElementBits: dim; d != 0; d>>=ElementBits) {
           final int masked = d&ElementMask;
           switch (masked) {
           case ArrayMask:
-            result.append("[");
+            result.append('[');
             break;
           case PointerMask:
-            result.append("*");
+            result.append('*');
             break;
           case ReferenceMask:
-            result.append("&");
+            result.append('&');
             break;
           default:
             throw new UnsupportedOperationException("unexpected masked type-name component " + masked);
@@ -334,20 +334,20 @@ public final class TypeName implements Serializable {
         }
       }
       if (!isPrimitive) {
-        result.append("L");
+        result.append('L');
       } else if (packageName != null && isPrimitive) {
-        result.append("P");        
+        result.append('P');
       }
     }
 
     public String toUnicodeString() {
       try {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         toStringPrefix(result);
         
         if (packageName != null) {
           result.append(packageName.toUnicodeString());
-          result.append("/");
+          result.append('/');
         }
         result.append(className.toUnicodeString());
 

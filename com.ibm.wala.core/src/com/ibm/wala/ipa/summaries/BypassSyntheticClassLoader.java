@@ -168,9 +168,6 @@ public class BypassSyntheticClassLoader implements IClassLoader {
     return null;
   }
 
-  /**
-   * @see com.ibm.wala.classLoader.IClassLoader#getParent()
-   */
   @Override
   public IClassLoader getParent() {
     return parent;
@@ -188,9 +185,7 @@ public class BypassSyntheticClassLoader implements IClassLoader {
     if (toRemove == null) {
       throw new IllegalArgumentException("toRemove is null");
     }
-    for (IClass klass : toRemove) {
-      syntheticClasses.remove(klass.getName());
-    }
+    toRemove.stream().map(IClass::getName).forEach(syntheticClasses::remove);
   }
 
   @Override

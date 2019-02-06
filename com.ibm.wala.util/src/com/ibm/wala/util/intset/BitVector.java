@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.ibm.wala.util.intset;
 
+import java.util.Arrays;
+
 /**
  */
 public class BitVector extends BitVectorBase<BitVector> {
@@ -38,11 +40,7 @@ public class BitVector extends BitVectorBase<BitVector> {
    * Expand this bit vector to size newCapacity.
    */
   void expand(int newCapacity) {
-    int[] oldbits = bits;
-    bits = new int[subscript(newCapacity) + 1];
-    for (int i = 0; i < oldbits.length; i++) {
-      bits[i] = oldbits[i];
-    }
+    bits = Arrays.copyOf(bits, subscript(newCapacity) + 1);
   }
 
   /**
@@ -194,7 +192,6 @@ public class BitVector extends BitVectorBase<BitVector> {
    * Logically ORs this bit set with the specified set of bits. This is performance-critical, and so, a little ugly in an attempt to
    * help out the compiler.
    * 
-   * @param set
    * @return the number of bits added to this.
    * @throws IllegalArgumentException if set is null
    */

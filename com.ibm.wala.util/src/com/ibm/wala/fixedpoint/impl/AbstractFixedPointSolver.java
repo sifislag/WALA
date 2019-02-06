@@ -161,7 +161,7 @@ public abstract class AbstractFixedPointSolver<T extends IVariable<T>> implement
 
       }
       if (DEBUG) {
-        System.err.println(("After evaluation  " + s + " " + isChanged(code)));
+        System.err.println(("After evaluation  " + s + ' ' + isChanged(code)));
       }
       if (isChanged(code)) {
         globalChange = true;
@@ -181,7 +181,7 @@ public abstract class AbstractFixedPointSolver<T extends IVariable<T>> implement
     System.err.println("Worklist  " + workList.size());
     if (MORE_VERBOSE) {
       if (!workList.isEmpty()) {
-        AbstractStatement s = workList.takeStatement();
+        AbstractStatement<?, ?> s = workList.takeStatement();
         System.err.println("Peek      " + lineBreak(s.toString(), 132));
         if (s instanceof VerboseAction) {
           ((VerboseAction) s).performVerboseAction();
@@ -196,11 +196,11 @@ public abstract class AbstractFixedPointSolver<T extends IVariable<T>> implement
       throw new IllegalArgumentException("string is null");
     }
     if (string.length() > wrap) {
-      StringBuffer result = new StringBuffer();
+      StringBuilder result = new StringBuilder();
       int start = 0;
       while (start < string.length()) {
         int end = Math.min(start + wrap, string.length());
-        result.append(string.substring(start, end));
+        result.append(string, start, end);
         result.append("\n  ");
         start = end;
       }
@@ -216,9 +216,9 @@ public abstract class AbstractFixedPointSolver<T extends IVariable<T>> implement
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("Fixed Point System:\n");
+    StringBuilder result = new StringBuilder("Fixed Point System:\n");
     for (INodeWithNumber nwn : Iterator2Iterable.make(getStatements())) {
-      result.append(nwn).append("\n");
+      result.append(nwn).append('\n');
     }
     return result.toString();
   }
@@ -471,13 +471,13 @@ public abstract class AbstractFixedPointSolver<T extends IVariable<T>> implement
   private void orderStatementsInternal() {
     if (verbose) {
       if (nEvaluated > 0) {
-        System.err.println("Reorder " + nEvaluated + " " + nCreated);
+        System.err.println("Reorder " + nEvaluated + ' ' + nCreated);
       }
     }
     reorder();
     if (verbose) {
       if (nEvaluated > 0) {
-        System.err.println("Reorder finished " + nEvaluated + " " + nCreated);
+        System.err.println("Reorder finished " + nEvaluated + ' ' + nCreated);
       }
     }
     topologicalCounter = 0;
@@ -539,9 +539,6 @@ public abstract class AbstractFixedPointSolver<T extends IVariable<T>> implement
     return minSizeForTopSort;
   }
 
-  /**
-   * @param i
-   */
   public void setMinEquationsForTopSort(int i) {
     minSizeForTopSort = i;
   }
@@ -554,16 +551,10 @@ public abstract class AbstractFixedPointSolver<T extends IVariable<T>> implement
     return topologicalGrowthFactor;
   }
 
-  /**
-   * @param i
-   */
   public void setMaxEvalBetweenTopo(int i) {
     maxEvalBetweenTopo = i;
   }
 
-  /**
-   * @param d
-   */
   public void setTopologicalGrowthFactor(double d) {
     topologicalGrowthFactor = d;
   }

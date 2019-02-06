@@ -90,15 +90,15 @@ public abstract class Invoke extends Instruction {
         public String toString()
         {
             StringBuilder argString = new StringBuilder();
-            argString.append("(");
+            argString.append('(');
             String sep = "";
             for(int r:args)
             {
-                argString.append(sep+r);
+                argString.append(sep).append(r);
                 sep=",";
             }
-            argString.append(")");
-            return "InvokeVirtual "+clazzName+" "+methodName+" "+descriptor+" "+argString.toString()+" "+pc;
+            argString.append(')');
+            return "InvokeVirtual "+clazzName+ ' ' +methodName+ ' ' +descriptor+ ' ' + argString + ' ' +pc;
         }
 
     }
@@ -121,15 +121,15 @@ public abstract class Invoke extends Instruction {
         public String toString()
         {
             StringBuilder argString = new StringBuilder();
-            argString.append("(");
+            argString.append('(');
             String sep = "";
             for(int r:args)
             {
-                argString.append(sep+r);
+                argString.append(sep).append(r);
                 sep=",";
             }
-            argString.append(")");
-            return "InvokeSuper "+clazzName+" "+methodName+" "+descriptor+" "+argString.toString()+" "+pc;
+            argString.append(')');
+            return "InvokeSuper "+clazzName+ ' ' +methodName+ ' ' +descriptor+ ' ' + argString + ' ' +pc;
         }
 
     }
@@ -151,15 +151,15 @@ public abstract class Invoke extends Instruction {
         public String toString()
         {
             StringBuilder argString = new StringBuilder();
-            argString.append("(");
+            argString.append('(');
             String sep = "";
             for(int r:args)
             {
-                argString.append(sep+r);
+                argString.append(sep).append(r);
                 sep=",";
             }
-            argString.append(")");
-            return "InvokeDirect "+clazzName+" "+methodName+" "+descriptor+" "+argString.toString()+" "+pc;
+            argString.append(')');
+            return "InvokeDirect "+clazzName+ ' ' +methodName+ ' ' +descriptor+ ' ' + argString + ' ' +pc;
         }
 
 
@@ -182,15 +182,15 @@ public abstract class Invoke extends Instruction {
         public String toString()
         {
             StringBuilder argString = new StringBuilder();
-            argString.append("(");
+            argString.append('(');
             String sep = "";
             for(int r:args)
             {
-                argString.append(sep+r);
+                argString.append(sep).append(r);
                 sep=",";
             }
-            argString.append(")");
-            return "InvokeStatic "+clazzName+" "+methodName+" "+descriptor+" "+argString.toString()+" "+pc;
+            argString.append(')');
+            return "InvokeStatic "+clazzName+ ' ' +methodName+ ' ' +descriptor+ ' ' + argString + ' ' +pc;
         }
 
     }
@@ -211,15 +211,15 @@ public abstract class Invoke extends Instruction {
         public String toString()
         {
             StringBuilder argString = new StringBuilder();
-            argString.append("(");
+            argString.append('(');
             String sep = "";
             for(int r:args)
             {
-                argString.append(sep+r);
+                argString.append(sep).append(r);
                 sep=",";
             }
-            argString.append(")");
-            return "InvokeInterface "+clazzName+" "+methodName+" "+descriptor+" "+argString.toString()+" "+pc;
+            argString.append(')');
+            return "InvokeInterface "+clazzName+ ' ' +methodName+ ' ' +descriptor+ ' ' + argString + ' ' +pc;
         }
 
     }

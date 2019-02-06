@@ -152,7 +152,7 @@ public class TabulationSolver<T, P, F> {
   protected final IProgressMonitor progressMonitor;
 
   /**
-   * the path edge currently being processed in the main loop of {@link #forwardTabulateSLRPs()}; <code>null</code> if
+   * the path edge currently being processed in the main loop of {@link #forwardTabulateSLRPs()}; {@code null} if
    * {@link #forwardTabulateSLRPs()} is not currently running. Note that if we are applying a summary edge in
    * {@link #processExit(PathEdge)}, curPathEdge is modified to be the path edge terminating at the call node in the caller, to
    * match the behavior in {@link #processCall(PathEdge)}.
@@ -161,7 +161,7 @@ public class TabulationSolver<T, P, F> {
 
   /**
    * the summary edge currently being applied in {@link #processCall(PathEdge)} or {@link #processExit(PathEdge)}, or
-   * <code>null</code> if summary edges are not currently being processed.
+   * {@code null} if summary edges are not currently being processed.
    */
   private PathEdge<T> curSummaryEdge;
 
@@ -238,8 +238,6 @@ public class TabulationSolver<T, P, F> {
 
   /**
    * See POPL 95 paper for this algorithm, Figure 3
-   *
-   * @throws CancelException
    */
   @SuppressWarnings("unused")
   private void forwardTabulateSLRPs() throws CancelException {
@@ -324,8 +322,6 @@ public class TabulationSolver<T, P, F> {
 
   /**
    * Handle lines [33-37] of the algorithm
-   *
-   * @param edge
    */
   @SuppressWarnings("unused")
   private void processNormal(final PathEdge<T> edge) {
@@ -394,7 +390,6 @@ public class TabulationSolver<T, P, F> {
    * [23] for each d5 s.t. {@literal <s_p,d2> -> <returnSite(c),d5>} ..
    *
    * @param edge the edge being processed
-   * @param succ numbers of the nodes that are successors of edge.n (the return block in the callee) in the call graph.
    * @param c a call site of edge.s_p
    * @param D4 set of d1 s.t. {@literal <c, d1> -> <edge.s_p, edge.d2>} was recorded as call flow
    */
@@ -410,7 +405,7 @@ public class TabulationSolver<T, P, F> {
     // exit block to each return site.
     for (T retSite : Iterator2Iterable.make(supergraph.getReturnSites(c, supergraph.getProcOf(edge.target)))) {
       if (DEBUG_LEVEL > 1) {
-        System.err.println("candidate return site: " + retSite + " " + supergraph.getNumber(retSite));
+        System.err.println("candidate return site: " + retSite + ' ' + supergraph.getNumber(retSite));
       }
       // note: since we might have multiple exit nodes for the callee, (to handle exceptional returns)
       // not every return site might be valid for this exit node (edge.n).
@@ -507,8 +502,6 @@ public class TabulationSolver<T, P, F> {
   }
 
   /**
-   * @param s_p
-   * @param n
    * @param d2 note that s_p must be an entry for procof(n)
    * @return set of d1 s.t. {@literal <s_p, d1> -> <n, d2>} is a path edge, or null if none found
    */
@@ -694,11 +687,10 @@ public class TabulationSolver<T, P, F> {
   /**
    * invoked when a callee is processed with a particular entry fact
    *
-   * @param callNode
-   * @param callee
    * @param d1 the entry fact
    * @param gotReuse whether existing summary edges were applied
    */
+  @SuppressWarnings("unused")
   protected void recordCall(T callNode, T callee, int d1, boolean gotReuse) {
   }
 
@@ -777,7 +769,7 @@ public class TabulationSolver<T, P, F> {
 
     if (!pLocal.contains(i, number, j)) {
       if (DEBUG_LEVEL > 0) {
-        System.err.println("propagate " + s_p + "  " + i + " " + number + " " + j);
+        System.err.println("propagate " + s_p + "  " + i + ' ' + number + ' ' + j);
       }
       pLocal.addPathEdge(i, number, j);
       addToWorkList(s_p, i, n, j);
@@ -906,15 +898,15 @@ public class TabulationSolver<T, P, F> {
     @Override
     public String toString() {
 
-      StringBuffer result = new StringBuffer();
+      StringBuilder result = new StringBuilder();
       TreeMap<Object, TreeSet<T>> map = new TreeMap<>(ToStringComparator.instance());
 
       Comparator<Object> c = (o1, o2) -> {
         if (!(o1 instanceof IBasicBlock)) {
           return -1;
         }
-        IBasicBlock bb1 = (IBasicBlock) o1;
-        IBasicBlock bb2 = (IBasicBlock) o2;
+        IBasicBlock<?> bb1 = (IBasicBlock<?>) o1;
+        IBasicBlock<?> bb2 = (IBasicBlock<?>) o2;
         return bb1.getNumber() - bb2.getNumber();
       };
       for (T n : supergraph) {
@@ -930,7 +922,7 @@ public class TabulationSolver<T, P, F> {
       for (Entry<Object, TreeSet<T>> e : map.entrySet()) {
         Set<T> s = e.getValue();
         for (T o : s) {
-          result.append(o + " : " + getResult(o) + "\n");
+          result.append(o).append(" : ").append(getResult(o)).append('\n');
         }
       }
       return result.toString();
@@ -963,9 +955,6 @@ public class TabulationSolver<T, P, F> {
     }
 
     /**
-     * @param n1
-     * @param d1
-     * @param n2
      * @return set of d2 s.t. (n1,d1) -&gt; (n2,d2) is recorded as a summary edge, or null if none found
      */
     @Override

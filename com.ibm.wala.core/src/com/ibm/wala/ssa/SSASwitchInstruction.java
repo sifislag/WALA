@@ -41,7 +41,7 @@ public class SSASwitchInstruction extends SSAInstruction {
 
   @Override
   public String toString(SymbolTable symbolTable) {
-    StringBuffer result = new StringBuffer("switch ");
+    StringBuilder result = new StringBuilder("switch ");
     result.append(getValueString(symbolTable, val));
     result.append(" [");
     for (int i = 0; i < casesAndLabels.length - 1; i++) {
@@ -50,17 +50,13 @@ public class SSASwitchInstruction extends SSAInstruction {
       result.append("->");
       result.append(casesAndLabels[i]);
       if (i < casesAndLabels.length - 2) {
-        result.append(",");
+        result.append(',');
       }
     }
-    result.append("]");
+    result.append(']');
     return result.toString();
   }
 
-  /**
-   * @see com.ibm.wala.ssa.SSAInstruction#visit(IVisitor)
-   * @throws IllegalArgumentException if v is null
-   */
   @Override
   public void visit(IVisitor v) {
     if (v == null) {
@@ -69,17 +65,11 @@ public class SSASwitchInstruction extends SSAInstruction {
     v.visitSwitch(this);
   }
 
-  /**
-   * @see com.ibm.wala.ssa.SSAInstruction#getNumberOfUses()
-   */
   @Override
   public int getNumberOfUses() {
     return 1;
   }
 
-  /**
-   * @see com.ibm.wala.ssa.SSAInstruction#getUse(int)
-   */
   @Override
   public int getUse(int j) {
     assert j <= 1;

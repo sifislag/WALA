@@ -99,9 +99,6 @@ public class CAstAnalysisScope extends AnalysisScope {
 
   /**
    * Add a class file to the scope for a loader
-   * 
-   * @param loader
-   * @param file
    */
   @Override
   public void addClassFileToScope(ClassLoaderReference loader, File file) {
@@ -109,7 +106,7 @@ public class CAstAnalysisScope extends AnalysisScope {
   }
 
   /**
-   * @return the ClassLoaderReference specified by <code>name</code>.
+   * @return the ClassLoaderReference specified by {@code name}.
    */
   @Override
   public ClassLoaderReference getLoader(Atom name) {
@@ -134,6 +131,6 @@ public class CAstAnalysisScope extends AnalysisScope {
 
   @Override
   public String toString() {
-    return super.toString() + "\n" + theLoader + ": " + getModules(theLoader);
+    return super.toString() + '\n' + theLoader + ": " + getModules(theLoader);
   }
 }

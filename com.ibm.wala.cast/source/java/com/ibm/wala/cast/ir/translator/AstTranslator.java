@@ -11,6 +11,7 @@
 package com.ibm.wala.cast.ir.translator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -330,8 +331,6 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
    * 
    * @param node
    *          the AST node representing the read
-   * @param context
-   * @param name
    */
   protected int doLexicallyScopedRead(CAstNode node, WalkContext context, final String name, TypeReference type) {
     return doLexReadHelper(context, name, type);
@@ -348,7 +347,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
   /**
    * we only have this method to avoid having to pass a node parameter at other
    * call sites, as would be required for
-   * {@link #doLexicallyScopedRead(CAstNode, WalkContext, String)}
+   * {@link #doLexicallyScopedRead(CAstNode, WalkContext, String, TypeReference)}
    */
   private static int doLexReadHelper(WalkContext context, final String name, TypeReference type) {
     Symbol S = context.currentScope().lookup(name);
@@ -369,13 +368,6 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
    * entities up to that of the defining scope, since if the name is updated via
    * a call to a nested function, SSA for these entities may need to be updated
    * with the new definition
-   * 
-   * @param context
-   * @param name
-   * @param definingScope
-   * @param E
-   * @param entityName
-   * @param isWrite
    */
   private static void markExposedInEnclosingEntities(WalkContext context, final String name, Scope definingScope, TypeReference type, CAstEntity E,
       final String entityName, boolean isWrite) {
@@ -664,7 +656,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
 
     @Override
     public String toString() {
-      return "PreBB" + number + ":" + firstIndex + ".." + lastIndex;
+      return "PreBB" + number + ':' + firstIndex + ".." + lastIndex;
     }
 
     private List<SSAInstruction> instructions() {
@@ -1115,12 +1107,8 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
 
     private void ensurePositionSpace(int instruction) {
       if (linePositions.length < (instruction + 1)) {
-        Position[] newData = new Position[instruction * 2 + 1];
-        Position[][] newOperands = new Position[instruction * 2 + 1][];
-        System.arraycopy(linePositions, 0, newData, 0, linePositions.length);
-        linePositions = newData;
-        System.arraycopy(operandPositions, 0, newOperands, 0, operandPositions.length);
-        operandPositions = newOperands;
+        linePositions = Arrays.copyOf(linePositions, instruction * 2 + 1);
+        operandPositions = Arrays.copyOf(operandPositions, instruction * 2 + 1);
       }
     }
 
@@ -1160,12 +1148,12 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
     
     @Override
     public String toString() { 
-      StringBuffer sb = new StringBuffer(super.toString());
+      StringBuilder sb = new StringBuilder(super.toString());
       for(PreBasicBlock b : blocks) {
         if (b.firstIndex > 0) {
-          sb.append("\n" + b);
+          sb.append('\n').append(b);
           for(int i = 0; i < b.instructions.size(); i++) {
-            sb.append("\n" + b.instructions.get(i));
+            sb.append('\n').append(b.instructions.get(i));
           }
         }
       }
@@ -1405,22 +1393,22 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
     @Override
     public String toString() {
       SSAInstruction[] insts = getInstructions();
-      StringBuffer s = new StringBuffer("CAst CFG of " + functionName);
+      StringBuilder s = new StringBuilder("CAst CFG of " + functionName);
       int params[] = symtab.getParameterValueNumbers();
       for (int param : params)
-        s.append(" ").append(param);
-      s.append("\n");
+        s.append(' ').append(param);
+      s.append('\n');
 
       for (int i = 0; i < getNumberOfNodes(); i++) {
         PreBasicBlock bb = getNode(i);
-        s.append(bb).append("\n");
+        s.append(bb).append('\n');
 
         for (PreBasicBlock pbb : Iterator2Iterable.make(getSuccNodes(bb)))
-          s.append("    -->" + pbb + "\n");
+          s.append("    -->").append(pbb).append('\n');
 
         for (int j = bb.getFirstInstructionIndex(); j <= bb.getLastInstructionIndex(); j++)
           if (insts[j] != null)
-            s.append("  " + insts[j].toString(symtab) + "\n");
+            s.append("  ").append(insts[j].toString(symtab)).append('\n');
       }
 
       s.append("-- END --");
@@ -1810,7 +1798,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
         return new AbstractSymbol(definer, isFinal, defaultInitValue) {
           @Override
           public String toString() {
-            return nm + ":" + System.identityHashCode(this);
+            return nm + ':' + System.identityHashCode(this);
           }
 
           @Override 
@@ -1980,7 +1968,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
           
           @Override
           public String toString() {
-            return nm + ":" + System.identityHashCode(this);
+            return nm + ':' + System.identityHashCode(this);
           }
 
           @Override
@@ -2048,7 +2036,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
         return new AbstractSymbol(definer, isFinal, defaultInitValue) {
           @Override
           public String toString() {
-            return nm + ":" + System.identityHashCode(this);
+            return nm + ':' + System.identityHashCode(this);
           }
 
           @Override
@@ -2220,7 +2208,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
         globalSymbols.put(name, new AbstractSymbol(this, s.isFinal(), s.defaultInitValue()) {
           @Override
           public String toString() {
-            return name + ":" + System.identityHashCode(this);
+            return name + ':' + System.identityHashCode(this);
           }
 
           @Override
@@ -2350,7 +2338,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
         typeSymbols.put(name, new AbstractSymbol(this, s.isFinal(), s.defaultInitValue()) {
           @Override
           public String toString() {
-            return name + ":" + System.identityHashCode(this);
+            return name + ':' + System.identityHashCode(this);
           }
 
           @Override
@@ -2704,8 +2692,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
           }
         }
 
-        TypeReference[] newData = new TypeReference[data.length + 1];
-        System.arraycopy(data, 0, newData, 0, data.length);
+        TypeReference[] newData = Arrays.copyOf(data, data.length + 1);
         newData[data.length] = catchType;
 
         catchTypes.put(bb, newData);
@@ -2847,27 +2834,20 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
       for (int i = 0; i < instructionLexicalUses.length; i++) {
         int[] x = original.instructionLexicalUses[i];
         if (x != null) {
-          instructionLexicalUses[i] = new int[x.length];
-          for (int j = 0; j < x.length; j++) {
-            instructionLexicalUses[i][j] = x[j];
-          }
+          instructionLexicalUses[i] = x.clone();
         }
       }
 
       if (original.exitLexicalUses != null) {
         exitLexicalUses = new int[original.exitLexicalUses.length];
-        for (int i = 0; i < exitLexicalUses.length; i++) {
-          exitLexicalUses[i] = original.exitLexicalUses[i];
-        }
+        System.arraycopy(original.exitLexicalUses, 0, exitLexicalUses, 0, exitLexicalUses.length);
       } else {
         exitLexicalUses = null;
       }
 
       if (original.scopingParents != null) {
         scopingParents = new String[original.scopingParents.length];
-        for (int i = 0; i < scopingParents.length; i++) {
-          scopingParents[i] = original.scopingParents[i];
-        }
+        System.arraycopy(original.scopingParents, 0, scopingParents, 0, scopingParents.length);
       } else {
         scopingParents = null;
       }
@@ -2920,7 +2900,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
         if (exposedNamesForWriteSet != null) {
           exposedNamesSet.addAll(exposedNamesForWriteSet);
         }
-        EN = exposedNamesSet.toArray(new Pair[exposedNamesSet.size()]);
+        EN = exposedNamesSet.toArray(new Pair[0]);
       }
 
       if (exposedNamesForReadSet != null) {
@@ -2963,7 +2943,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
             parents.add(AC.variableDefiner);
           }
         }
-        scopingParents = parents.toArray(new String[parents.size()]);
+        scopingParents = parents.toArray(new String[0]);
 
         if (DEBUG_LEXICAL) {
           System.err.println(("scoping parents of " + scope.getEntity()));
@@ -3062,12 +3042,6 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
  
   /**
    * record that in entity e, the access is performed.
-   * 
-   * If {@link #useLocalValuesForLexicalVars()} is true, the access is performed
-   * using a local variable. in
-   * {@link #patchLexicalAccesses(SSAInstruction[], Set)}, this information is
-   * used to update an instruction that performs all the accesses at the
-   * beginning of the method and defines the locals.
    */
   private static void addAccess(WalkContext context, CAstEntity e, Access access) {
     context.getAccesses(e).add(access);
@@ -3084,9 +3058,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
    *          an entity in whose scope name is assigned a value number
    * @param declaration
    *          the declaring entity for name (possibly an enclosing scope of
-   *          entity, in the case where entity
-   *          {@link #useLocalValuesForLexicalVars() accesses the name via a
-   *          local})
+   *          entity)
    * @param name
    *          the accessed name
    * @param valueNumber
@@ -3912,7 +3884,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
       context.cfg().addInstruction(insts.GotoInstruction(context.cfg().currentInstruction, -1));            
       if (controlFlowMap.getTarget(n, null) == null) {
         assert controlFlowMap.getTarget(n, null) != null : controlFlowMap + " does not map " + n + " ("
-            + context.getSourceMap().getPosition(n) + ")";
+            + context.getSourceMap().getPosition(n) + ')';
       }
       context.cfg().newBlock(false);
     }
@@ -4911,7 +4883,7 @@ public abstract class AstTranslator extends CAstVisitor<AstTranslator.WalkContex
         return null;
       } else {
         assert entityNames.containsKey(e);
-        return "L" + entityNames.get(e);
+        return 'L' + entityNames.get(e);
       }
     }
 

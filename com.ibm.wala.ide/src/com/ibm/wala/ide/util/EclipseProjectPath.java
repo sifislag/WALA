@@ -124,7 +124,7 @@ public abstract class EclipseProjectPath<E, P> {
     }
   }
     
-  public EclipseProjectPath create(IProject project) throws CoreException, IOException {
+  public EclipseProjectPath<E, P> create(IProject project) throws CoreException, IOException {
     if (project == null) {
       throw new IllegalArgumentException("null project");
     }
@@ -241,7 +241,9 @@ public abstract class EclipseProjectPath<E, P> {
     // handle the classpath entries for bd
     ArrayList<IClasspathEntry> l = new ArrayList<>();
     ClasspathUtilCore.addLibraries(findModel(bd), l);
-    resolveClasspathEntries(project, l, loader, includeSource, false);
+    @SuppressWarnings("unchecked")
+    List<E> entries = (List<E>) l;
+    resolveClasspathEntries(project, entries, loader, includeSource, false);
 
     // recurse to handle dependencies. put these in the Extension loader
     for (ImportPackageSpecification b : bd.getImportPackages()) {
@@ -284,10 +286,9 @@ public abstract class EclipseProjectPath<E, P> {
     return true;
   }
 
-  @SuppressWarnings("unchecked")
-  protected void resolveClasspathEntries(P project, List l, ILoader loader, boolean includeSource, boolean entriesFromTopLevelProject) {
-    for (int i = 0; i < l.size(); i++) {
-      resolveClasspathEntry(project, resolve((E)l.get(i)), loader, includeSource, entriesFromTopLevelProject);
+  protected void resolveClasspathEntries(P project, List<E> l, ILoader loader, boolean includeSource, boolean entriesFromTopLevelProject) {
+    for (final E entry : l) {
+      resolveClasspathEntry(project, resolve(entry), loader, includeSource, entriesFromTopLevelProject);
     }
   }
 
@@ -306,8 +307,6 @@ public abstract class EclipseProjectPath<E, P> {
   
   /**
    * Convert this path to a WALA analysis scope
-   * 
-   * @throws IOException
    */
   public AnalysisScope toAnalysisScope(ClassLoader classLoader, File exclusionsFile) throws IOException {
     AnalysisScope scope = AnalysisScopeReader.readJavaScope(AbstractAnalysisEngine.SYNTHETIC_J2SE_MODEL, exclusionsFile,
@@ -317,9 +316,9 @@ public abstract class EclipseProjectPath<E, P> {
 
   public AnalysisScope toAnalysisScope(AnalysisScope scope) {
 
-    for (ILoader loader : modules.keySet()) {
-      for (Module m : modules.get(loader)) {
-        scope.addToScope(loader.ref(), m);
+    for (Map.Entry<ILoader, List<Module>> entry : modules.entrySet()) {
+      for (Module m : entry.getValue()) {
+        scope.addToScope(entry.getKey().ref(), m);
       }
     }
     return scope;

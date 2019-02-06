@@ -36,14 +36,9 @@ public class SSAGotoInstruction extends SSAInstruction {
 
   @Override
   public String toString(SymbolTable symbolTable) {
-    return "goto (from iindex= " + this.iindex + " to iindex = " + this.target  + ")";
+    return "goto (from iindex= " + this.iindex + " to iindex = " + this.target  + ')';
   }
 
-  /**
-   * @see com.ibm.wala.ssa.SSAInstruction#visit(IVisitor)
-   * @throws IllegalArgumentException
-   *           if v is null
-   */
   @Override
   public void visit(IVisitor v) {
     if (v == null) {

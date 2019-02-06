@@ -223,6 +223,7 @@ public abstract class BasicCallGraph<T> extends AbstractNumberedGraph<CGNode> im
       return context;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public abstract boolean addTarget(CallSiteReference reference, CGNode target);
 
@@ -234,23 +235,23 @@ public abstract class BasicCallGraph<T> extends AbstractNumberedGraph<CGNode> im
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("");
+    StringBuilder result = new StringBuilder();
     for (CGNode n : Iterator2Iterable.make(DFS.iterateDiscoverTime(this, new NonNullSingletonIterator<>(getFakeRootNode())))) {
-      result.append(nodeToString(this, n) + "\n");
+      result.append(nodeToString(this, n)).append('\n');
     }
     return result.toString();
   }
 
   public static String nodeToString(CallGraph CG, CGNode n) {
-    StringBuffer result = new StringBuffer(n.toString() +  "\n");
+    StringBuilder result = new StringBuilder(n.toString() + '\n');
      if (n.getMethod() != null) {
       for (CallSiteReference site : Iterator2Iterable.make(n.iterateCallSites())) {
         Iterator<CGNode> targets = CG.getPossibleTargets(n, site).iterator();
         if (targets.hasNext()) {
-          result.append(" - " + site + "\n");
+          result.append(" - ").append(site).append('\n');
         }
         for (CGNode target : Iterator2Iterable.make(targets)) {
-          result.append("     -> " + target + "\n");
+          result.append("     -> ").append(target).append('\n');
         }
       }
     }
@@ -297,7 +298,7 @@ public abstract class BasicCallGraph<T> extends AbstractNumberedGraph<CGNode> im
 
     @Override
     public String toString() {
-      return "{" + m + "," + C + "}";
+      return "{" + m + ',' + C + '}';
     }
 
   }
@@ -309,8 +310,7 @@ public abstract class BasicCallGraph<T> extends AbstractNumberedGraph<CGNode> im
       m = im.getReference();
     }
     Set<CGNode> result = mr2Nodes.get(m);
-    Set<CGNode> empty = Collections.emptySet();
-    return (result == null) ? empty : result;
+    return (result == null) ? Collections.emptySet() : result;
   }
 
   /**
@@ -369,15 +369,17 @@ public abstract class BasicCallGraph<T> extends AbstractNumberedGraph<CGNode> im
   
   public void summarizeByPackage() {
    Map<String, Integer> packages = HashMapFactory.make();
-   for(CGNode n : this) { 
-     String nm = n.getMethod().getDeclaringClass().getName().toString() + "/" + n.getMethod().getName() + "/" + n.getContext().getClass().toString();
-  
+   for(CGNode n : this) {
+     final StringBuilder nmBuilder = new StringBuilder(n.getMethod().getDeclaringClass().getName().toString())
+             .append('/').append(n.getMethod().getName()).append('/').append(n.getContext().getClass().toString());
+
      if (n.getContext().isA(ReceiverInstanceContext.class)) {
-       nm = nm + "/" + ((InstanceKey)n.getContext().get(ContextKey.RECEIVER)).getConcreteType().getName();
+       nmBuilder.append('/').append(((InstanceKey)n.getContext().get(ContextKey.RECEIVER)).getConcreteType().getName());
      } else if (n.getContext() instanceof JavaTypeContext) {
-       nm = nm + "/" + ((TypeAbstraction)n.getContext().get(ContextKey.RECEIVER)).getTypeReference().getName();
+       nmBuilder.append('/').append(((TypeAbstraction) n.getContext().get(ContextKey.RECEIVER)).getTypeReference().getName());
      }
-     
+     String nm = nmBuilder.toString();
+
      do {
        if (packages.containsKey(nm)) {
          packages.put(nm, 1 + packages.get(nm));

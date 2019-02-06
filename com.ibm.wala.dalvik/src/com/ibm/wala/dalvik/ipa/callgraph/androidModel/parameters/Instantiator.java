@@ -287,8 +287,7 @@ public class Instantiator implements IInstantiator {
                     selectAndCallCtor(subInstance, seen);
                     assert (subInstance.getNumber() == newInst.getDef()) : "Unexpected: number and def differ: " + subInstance.getNumber() + ", " +
                                     newInst.getDef();
-                    final Set<SSAValue> newSeen = new HashSet<>();  // Narf
-                    newSeen.addAll(seen);
+                    final Set<SSAValue> newSeen = new HashSet<>(seen);  // Narf
                     newSeen.add(subInstance);
                     seen = newSeen;
                     subInstances.add(subInstance);
@@ -681,7 +680,7 @@ public class Instantiator implements IInstantiator {
                 final Object o = seen.iterator().next();
                 if (! (o instanceof SSAValue)) {
                     throw new IllegalArgumentException("Argument 2 to createInstance has to be null or an instance of Set<? extends SSAValue>, " +
-                            "got Set<" + o.getClass() + ">");
+                            "got Set<" + o.getClass() + '>');
                 }
             }
         }

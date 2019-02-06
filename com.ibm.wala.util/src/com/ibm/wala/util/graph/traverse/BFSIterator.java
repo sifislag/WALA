@@ -81,7 +81,6 @@ public class BFSIterator<T> implements Iterator<T> {
   /**
    * Constructor DFSFinishTimeIterator.
    * 
-   * @param G
    * @throws NullPointerException if G is null
    */
   public BFSIterator(Graph<T> G) throws NullPointerException {
@@ -93,9 +92,8 @@ public class BFSIterator<T> implements Iterator<T> {
 
     while (nodes.hasNext()) {
       T o = nodes.next();
-      if (!visited.contains(o)) {
+      if (visited.add(o)) {
         Q.add(o);
-        visited.add(o);
       }
     }
     index = 0;
@@ -107,9 +105,8 @@ public class BFSIterator<T> implements Iterator<T> {
 
   private void visitChildren(T N) {
     for (T child : Iterator2Iterable.make(getConnected(N))) {
-      if (!visited.contains(child)) {
+      if (visited.add(child)) {
         Q.add(child);
-        visited.add(child);
       }
     }
   }
@@ -154,9 +151,6 @@ public class BFSIterator<T> implements Iterator<T> {
     return G.getSuccNodes(n);
   }
 
-  /**
-   * @see java.util.Iterator#remove()
-   */
   @Override
   public void remove() throws UnimplementedError {
     throw new UnimplementedError();

@@ -45,9 +45,6 @@ public abstract class FixedParametersInvokeInstruction
 
   /**
    * Constructor InvokeInstruction. This case for void return values
-   * @param params
-   * @param exception
-   * @param site
    */
   public FixedParametersInvokeInstruction(int iindex, int[] params, int exception, CallSiteReference site) {
     this(iindex, null, params, exception, site);
@@ -69,8 +66,7 @@ public abstract class FixedParametersInvokeInstruction
 
     int newLvals[] = null;
     if (getNumberOfReturnValues() > 0) {
-      newLvals = new int[results.length];
-      System.arraycopy(results, 0, newLvals, 0, results.length);
+      newLvals = results.clone();
     }
     int newExp = exception;
 

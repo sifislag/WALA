@@ -362,7 +362,7 @@ public abstract class Compiler implements Constants {
         int t = element;
         if (t < 0 || t >= visited.length) {
           throw new IllegalArgumentException("Branch target at offset " + i + " is out of bounds: " + t + " (max " + visited.length
-              + ")");
+              + ')');
         }
         if (!visited[t]) {
           computeStackWordsAt(element, stackLen, stackWords.clone(), visited);
@@ -712,18 +712,25 @@ public abstract class Compiler implements Constants {
             cpIndex = ci.getCPIndex();
           } else {
             String t = instr.getPushedType(null);
-            if (t.equals(TYPE_int)) {
-              cpIndex = allocateConstantPoolInteger(((ConstantInstruction.ConstInt) instr).getIntValue());
-            } else if (t.equals(TYPE_String)) {
-              cpIndex = allocateConstantPoolString((String) ((ConstantInstruction.ConstString) instr).getValue());
-            } else if (t.equals(TYPE_Class)) {
-              cpIndex = allocateConstantPoolClassType(((ClassToken) ((ConstantInstruction.ConstClass) instr).getValue()).getTypeName());
-            } else if (t.equals(TYPE_MethodType)) {
-              cpIndex = allocateConstantPoolMethodType(((String) ((ConstantInstruction.ConstMethodType) instr).getValue()));
-            } else if (t.equals(TYPE_MethodHandle)) {
-              cpIndex = allocateConstantPoolMethodHandle(((ReferenceToken) ((ConstantInstruction.ConstMethodHandle) instr).getValue()));
-            } else {
-              cpIndex = allocateConstantPoolFloat(((ConstantInstruction.ConstFloat) instr).getFloatValue());
+            switch (t) {
+              case TYPE_int:
+                cpIndex = allocateConstantPoolInteger(((ConstantInstruction.ConstInt) instr).getIntValue());
+                break;
+              case TYPE_String:
+                cpIndex = allocateConstantPoolString((String) ((ConstantInstruction.ConstString) instr).getValue());
+                break;
+              case TYPE_Class:
+                cpIndex = allocateConstantPoolClassType(((ClassToken) ((ConstantInstruction.ConstClass) instr).getValue()).getTypeName());
+                break;
+              case TYPE_MethodType:
+                cpIndex = allocateConstantPoolMethodType(((String) ((ConstantInstruction.ConstMethodType) instr).getValue()));
+                break;
+              case TYPE_MethodHandle:
+                cpIndex = allocateConstantPoolMethodHandle(((ReferenceToken) ((ConstantInstruction.ConstMethodHandle) instr).getValue()));
+                break;
+              default:
+                cpIndex = allocateConstantPoolFloat(((ConstantInstruction.ConstFloat) instr).getFloatValue());
+                break;
             }
           }
 
@@ -1217,8 +1224,7 @@ public abstract class Compiler implements Constants {
       }
       oldEdges[left] = to;
     } else {
-      int[] newEdges = new int[oldEdges.length * 2];
-      System.arraycopy(oldEdges, 0, newEdges, 0, oldEdges.length);
+      int[] newEdges = Arrays.copyOf(oldEdges, oldEdges.length * 2);
       newEdges[oldEdges.length] = to;
       for (int i = oldEdges.length + 1; i < newEdges.length; i++) {
         newEdges[i] = -1;
@@ -1316,8 +1322,8 @@ public abstract class Compiler implements Constants {
     ArrayList<Instruction> callWrapper = new ArrayList<>();
     int curStackLen = stackTypes[start].length;
 
-    StringBuffer sigBuf = new StringBuffer();
-    sigBuf.append("(");
+    StringBuilder sigBuf = new StringBuilder();
+    sigBuf.append('(');
     // spill needed stack variables to allocated locals;
     allocateLocals(curStackLen - unreadStack);
     for (int i = curStackLen - 1; i >= unreadStack; i--) {
@@ -1338,7 +1344,7 @@ public abstract class Compiler implements Constants {
         }
       } else {
         // dummy
-        sigBuf.append("I");
+        sigBuf.append('I');
         callWrapper.add(ConstantInstruction.make(0));
       }
     }
@@ -1347,11 +1353,11 @@ public abstract class Compiler implements Constants {
       callWrapper.add(LoadInstruction.make(stackTypes[start][i], allocatedLocals + 2 * (i - unreadStack)));
       sigBuf.append(stackTypes[start][i]);
       if (Util.getWordSize(stackTypes[start][i]) == 2) {
-        sigBuf.append("I");
+        sigBuf.append('I');
         callWrapper.add(ConstantInstruction.make(0));
       }
     }
-    sigBuf.append(")");
+    sigBuf.append(')');
     sigBuf.append(retType);
     String sig = sigBuf.toString();
 

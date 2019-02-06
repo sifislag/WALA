@@ -46,6 +46,7 @@ import com.ibm.wala.ipa.callgraph.IAnalysisCacheView;
 import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
 import com.ibm.wala.ssa.DefUse;
 import com.ibm.wala.ssa.IR;
+import com.ibm.wala.ssa.ISSABasicBlock;
 import com.ibm.wala.ssa.SSAAbstractInvokeInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.ssa.SSAOptions;
@@ -118,7 +119,7 @@ public class ArgumentSpecialization {
 
     @Override
     public String toString() {
-      return base.toString() + "(nargs:" + argumentCount + ")";
+      return base.toString() + "(nargs:" + argumentCount + ')';
     }
   }
 
@@ -237,7 +238,7 @@ public class ArgumentSpecialization {
                    for (CAstNode c : s.getMultiple("args")) {
                      x.add(copyNodes(c, cfg, context, nodeMap));
                    }
-                   result = Ast.makeNode(CAstNode.CALL, x.toArray(new CAstNode[ x.size() ]));
+                   result = Ast.makeNode(CAstNode.CALL, x.toArray(new CAstNode[0]));
                  }
                 }
                
@@ -249,15 +250,7 @@ public class ArgumentSpecialization {
               } 
               
               if (result == null) {
-                CAstNode children[] = new CAstNode[root.getChildCount()];
-                for (int i = 0; i < children.length; i++) {
-                  children[i] = copyNodes(root.getChild(i), cfg, context, nodeMap);
-                }
-                for(Object label: cfg.getTargetLabels(root)) {
-                  if (label instanceof CAstNode) {
-                    copyNodes((CAstNode)label, cfg, context, nodeMap);
-                  }
-                }
+                CAstNode[] children = copyChildrenArrayAndTargets(root, cfg, context, nodeMap);
                 CAstNode copy = Ast.makeNode(root.getKind(), children);
                 result = copy;
               }
@@ -304,7 +297,7 @@ public class ArgumentSpecialization {
             @Override
             protected String composeEntityName(WalkContext parent, CAstEntity f) {
               if (f == codeBodyEntity) {
-                return super.composeEntityName(parent, f) + "_" + v.getValue().intValue();                
+                return super.composeEntityName(parent, f) + '_' + v.getValue().intValue();
               } else {
                 return super.composeEntityName(parent, f);
               }
@@ -342,7 +335,7 @@ public class ArgumentSpecialization {
     }
 
     @Override
-    public ControlFlowGraph makeCFG(IMethod method, Context context) {
+    public ControlFlowGraph<SSAInstruction, ISSABasicBlock> makeCFG(IMethod method, Context context) {
       return makeIR(method, context, defaultOptions).getControlFlowGraph();
     }
   }

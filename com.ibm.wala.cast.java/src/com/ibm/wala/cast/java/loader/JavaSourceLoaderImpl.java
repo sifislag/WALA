@@ -188,14 +188,14 @@ public abstract class JavaSourceLoaderImpl extends ClassLoaderImpl {
 
     @Override
     public String toString() {
-      StringBuffer sb = new StringBuffer("<src-class: " );
+      StringBuilder sb = new StringBuilder("<src-class: " );
       sb.append(getName().toString());
       if (enclosingClass != null) {
-        sb.append(" (within " + enclosingClass.getName() + ")");
+        sb.append(" (within ").append(enclosingClass.getName()).append(')');
       }
       if (annotations != null && !annotations.isEmpty()) {
         for(Annotation a : annotations) {
-          sb.append("[" + a.getType().getName().getClassName() + "]");
+          sb.append('[').append(a.getType().getName().getClassName()).append(']');
         }
       }
       return sb.toString();
@@ -322,7 +322,7 @@ public abstract class JavaSourceLoaderImpl extends ClassLoaderImpl {
 
     @Override
     public String toString() {
-      return "<src-method: " + this.getReference() + ">";
+      return "<src-method: " + this.getReference() + '>';
     }
   }
 
@@ -555,7 +555,7 @@ public abstract class JavaSourceLoaderImpl extends ClassLoaderImpl {
 
   @Override
   public String toString() {
-    return "Java Source Loader (classes " + loadedClasses.values() + ")";
+    return "Java Source Loader (classes " + loadedClasses.values() + ')';
   }
 
   public static class InstructionFactory extends JavaInstructionFactory implements AstJavaInstructionFactory {

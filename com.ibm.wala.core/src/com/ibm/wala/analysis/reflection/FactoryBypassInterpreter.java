@@ -201,10 +201,9 @@ public class FactoryBypassInterpreter extends AbstractReflectionInterpreter {
       types = HashSetFactory.make(2);
       map.put(context, types);
     }
-    if (types.contains(type)) {
+    if (!types.add(type)) {
       return false;
     } else {
-      types.add(type);
       // update any extant synthetic method
       SpecializedFactoryMethod m = syntheticMethodCache.get(context);
       if (m != null) {
@@ -271,7 +270,7 @@ public class FactoryBypassInterpreter extends AbstractReflectionInterpreter {
     return m;
   }
 
-  public Set getCaughtExceptions(CGNode node) {
+  public Set<TypeReference> getCaughtExceptions(CGNode node) {
     if (node == null) {
       throw new IllegalArgumentException("node is null");
     }
@@ -428,7 +427,7 @@ public class FactoryBypassInterpreter extends AbstractReflectionInterpreter {
           if (((ConeType) T).isInterface()) {
             Set<IClass> implementors = T.getType().getClassHierarchy().getImplementors(ref);
             if (DEBUG) {
-              System.err.println(("Implementors for " + T + " " + implementors));
+              System.err.println(("Implementors for " + T + ' ' + implementors));
             }
             if (implementors.isEmpty()) {
               if (DEBUG) {
@@ -444,7 +443,7 @@ public class FactoryBypassInterpreter extends AbstractReflectionInterpreter {
           } else {
             Collection<IClass> subclasses = T.getType().getClassHierarchy().computeSubClasses(ref);
             if (DEBUG) {
-              System.err.println(("Subclasses for " + T + " " + subclasses));
+              System.err.println(("Subclasses for " + T + ' ' + subclasses));
             }
             if (subclasses.isEmpty()) {
               if (DEBUG) {
@@ -482,8 +481,6 @@ public class FactoryBypassInterpreter extends AbstractReflectionInterpreter {
 
     /**
      * Set up a method summary which allocates and returns an instance of concrete type T.
-     * 
-     * @param T
      */
     private void addStatementsForConcreteType(final TypeReference T) {
       int alloc = addStatementsForConcreteSimpleType(T);

@@ -125,7 +125,7 @@ class DebuggingMutableIntSet implements MutableIntSet {
       boolean ssr = secondaryImpl.containsAny(db.secondaryImpl);
 
       if (ppr != ssr) {
-        assert ppr == ssr : "containsAny " + this + " " + set + " " + ppr + " " + ssr;
+        assert ppr == ssr : "containsAny " + this + ' ' + set + ' ' + ppr + ' ' + ssr;
       }
       return ppr;
     } else {
@@ -168,7 +168,7 @@ class DebuggingMutableIntSet implements MutableIntSet {
   }
 
   /**
-   * @return true iff <code>this</code> has the same value as <code>that</code>.
+   * @return true iff {@code this} has the same value as {@code that}.
    */
   @Override
   public boolean sameValue(IntSet that) {
@@ -187,7 +187,7 @@ class DebuggingMutableIntSet implements MutableIntSet {
   }
 
   /**
-   * @return true iff <code>this</code> is a subset of <code>that</code>.
+   * @return true iff {@code this} is a subset of {@code that}.
    */
   @Override
   public boolean isSubset(IntSet that) {
@@ -237,7 +237,7 @@ class DebuggingMutableIntSet implements MutableIntSet {
 
       if (ppr != ssr) {
         System.err.println("ppr was " + ppr + " (should be " + (ps != primaryImpl.size()) + ") but ssr was " + ssr + " (should be "
-            + (ss != secondaryImpl.size()) + ")");
+            + (ss != secondaryImpl.size()) + ')');
         System.err.println("adding " + set + " to " + this + " failed");
         Assertions.UNREACHABLE();
       }

@@ -92,7 +92,7 @@ public class SSAConversion extends AbstractSSAConversion {
 
     @Override
     public String toString() {
-      return "[use " + useNumber + " of " + instructionIndex + "]";
+      return "[use " + useNumber + " of " + instructionIndex + ']';
     }
     
     @Override
@@ -134,7 +134,7 @@ public class SSAConversion extends AbstractSSAConversion {
 
     @Override
     public String toString() {
-      return "[use " + useNumber + " of " + phiNumber + " of block " + BBnumber + "]";
+      return "[use " + useNumber + " of " + phiNumber + " of block " + BBnumber + ']';
     }
     
     @Override
@@ -176,11 +176,11 @@ public class SSAConversion extends AbstractSSAConversion {
 
     @Override
     public String toString() {
-      StringBuffer sb = new StringBuffer("<vn " + rhs + " at " + instructionIndex);
+      StringBuilder sb = new StringBuilder("<vn " + rhs + " at " + instructionIndex);
       for (CopyPropagationRecord c : childRecords) {
-        sb.append("\n " + c.toString());
+        sb.append("\n ").append(c.toString());
       }
-      sb.append(">");
+      sb.append('>');
       return sb.toString();
     }
     
@@ -203,13 +203,13 @@ public class SSAConversion extends AbstractSSAConversion {
 
     private void addChild(CopyPropagationRecord rec) {
       if (DEBUG_UNDO)
-        System.err.println(("(" + rec.instructionIndex + "," + rec.rhs + ") is a child of (" + instructionIndex + "," + rhs + ")"));
+        System.err.println(("(" + rec.instructionIndex + ',' + rec.rhs + ") is a child of (" + instructionIndex + ',' + rhs + ')'));
       childRecords.add(rec);
     }
 
     private void addUse(int instructionIndex, int use) {
       if (DEBUG_UNDO)
-        System.err.println(("propagated use of (" + this.instructionIndex + "," + this.rhs + ") at use #" + use + " of instruction #"
+        System.err.println(("propagated use of (" + this.instructionIndex + ',' + this.rhs + ") at use #" + use + " of instruction #"
         + instructionIndex));
       UseRecord rec = new UseRecord(instructionIndex, use);
       copyPropagationMap.put(rec, this);
@@ -316,7 +316,7 @@ public class SSAConversion extends AbstractSSAConversion {
         x.addAll(Arrays.asList(vNames));        
       }
 
-      return computedNames[vn] = x.toArray(new String[x.size()]);
+      return computedNames[vn] = x.toArray(new String[0]);
     }
 
     private void undoCopyPropagation(int instructionIndex, int useNumber) {
@@ -343,10 +343,10 @@ public class SSAConversion extends AbstractSSAConversion {
     
     @Override
     public String toString() {
-      StringBuffer sb = new StringBuffer( super.toString() );
+      StringBuilder sb = new StringBuilder( super.toString() );
       
       for(Map.Entry<Object, CopyPropagationRecord> x : copyPropagationMap.entrySet()) {
-        sb.append(x.getKey().toString() + " --> " + x.getValue().toString() + "\n");
+        sb.append(x.getKey().toString()).append(" --> ").append(x.getValue().toString()).append('\n');
       }
       
       return sb.toString();
@@ -546,10 +546,6 @@ public class SSAConversion extends AbstractSSAConversion {
     return true;
   }
 
-  /**
-   * @param ir
-   * @param options
-   */
   @SuppressWarnings("unchecked")
   private SSAConversion(AstMethod M, AstIRFactory.AstIR ir, SSAOptions options) {
     super(ir, options);
@@ -653,9 +649,9 @@ public class SSAConversion extends AbstractSSAConversion {
           if (lexicalUses != null) {
             System.err.print(("extra uses for " + instructions[i] + ": "));
             for (int lexicalUse : lexicalUses) {
-              System.err.print((Integer.valueOf(lexicalUse).toString() + " "));
+              System.err.print((Integer.valueOf(lexicalUse).toString() + ' '));
             }
-            System.err.println("");
+            System.err.println();
           }
         }
       }

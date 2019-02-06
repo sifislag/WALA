@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.ibm.wala.util.graph.traverse;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.ibm.wala.util.collections.NonNullSingletonIterator;
@@ -61,35 +62,27 @@ public class NumberedDFSFinishTimeIterator<T> extends DFSFinishTimeIterator<T> {
 
   /**
    * Constructor DFSFinishTimeIterator.
-   * 
-   * @param G
    */
   NumberedDFSFinishTimeIterator(NumberedGraph<T> G) {
     this(G, G.iterator());
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   Iterator<T> getPendingChildren(T n) {
     int number = G.getNumber(n);
     if (number >= pendingChildren.length) {
       // the graph is probably growing as we travserse
-      Iterator<T>[] old = pendingChildren;
-      pendingChildren = new Iterator[number * 2];
-      System.arraycopy(old, 0, pendingChildren, 0, old.length);
+      pendingChildren = Arrays.copyOf(pendingChildren, number * 2);
       return null;
     }
     if (number < 0) {
-      assert false : "negative number for " + n + " " + n.getClass();
+      assert false : "negative number for " + n + ' ' + n.getClass();
     }
     return pendingChildren[number];
   }
 
   /**
    * Method setPendingChildren.
-   * 
-   * @param v
-   * @param iterator
    */
   @Override
   void setPendingChildren(T v, Iterator<T> iterator) {

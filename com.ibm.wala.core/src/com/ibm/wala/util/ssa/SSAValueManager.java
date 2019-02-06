@@ -168,7 +168,7 @@ public class SSAValueManager {
                 }
             }
             { // DEBUG
-                System.out.println("Keys for " + value + ":");
+                System.out.println("Keys for " + value + ':');
                 for (Managed<? extends SSAValue> param : seenTypes.get(value.key)) {
                     System.out.println("\tKey " + param.key + "\t=>" + param.status);
                 }
@@ -639,7 +639,7 @@ public class SSAValueManager {
 
     @Override
     public String toString() {
-        return "<AndroidModelParameterManager " + this.description + ">";
+        return "<AndroidModelParameterManager " + this.description + '>';
     }
 
     /**
@@ -671,12 +671,13 @@ public class SSAValueManager {
                     final Atom nameAtom = Atom.findOrCreateAsciiAtom(name);
                     names.put(val.getNumber(), nameAtom);
                 } else if (AUTOMAKE_NAMES) {
+                    @SuppressWarnings("NonConstantStringShouldBeStringBuffer")
                     String autoName = val.getType().getName().toString();
                     if (autoName.contains("/")) {
-                        autoName = autoName.substring(autoName.lastIndexOf("/") + 1);
+                        autoName = autoName.substring(autoName.lastIndexOf('/') + 1);
                     }
                     if (autoName.contains("$")) {
-                        autoName = autoName.substring(autoName.lastIndexOf("$") + 1);
+                        autoName = autoName.substring(autoName.lastIndexOf('$') + 1);
                     }
                     autoName = autoName.replace("[", "Ar");
                     final int mySuffix;
@@ -686,7 +687,7 @@ public class SSAValueManager {
                         mySuffix = currentSuffix++;
                         suffix.put(val.key, mySuffix);
                     }
-                    autoName = "m" + autoName + "_" + mySuffix;
+                    autoName = 'm' + autoName + '_' + mySuffix;
                     final Atom nameAtom = Atom.findOrCreateAsciiAtom(autoName);
                     names.put(val.getNumber(), nameAtom);
                 }
@@ -699,12 +700,13 @@ public class SSAValueManager {
                 final Atom nameAtom = Atom.findOrCreateAsciiAtom(name);
                 names.put(val.getNumber(), nameAtom);
             } else if (AUTOMAKE_NAMES) {
+                @SuppressWarnings("NonConstantStringShouldBeStringBuffer")
                 String autoName = val.getType().getName().toString();
                 if (autoName.contains("/")) {
-                    autoName = autoName.substring(autoName.lastIndexOf("/") + 1);
+                    autoName = autoName.substring(autoName.lastIndexOf('/') + 1);
                 }
                 if (autoName.contains("$")) {
-                    autoName = autoName.substring(autoName.lastIndexOf("$") + 1);
+                    autoName = autoName.substring(autoName.lastIndexOf('$') + 1);
                 }
                 autoName = autoName.replace("[", "Ar");
                 final int mySuffix;
@@ -714,7 +716,7 @@ public class SSAValueManager {
                     mySuffix = currentSuffix++;
                     suffix.put(val.key, mySuffix);
                 }
-                autoName = "m" + autoName + "_" + mySuffix;
+                autoName = 'm' + autoName + '_' + mySuffix;
                 final Atom nameAtom = Atom.findOrCreateAsciiAtom(autoName);
                 names.put(val.getNumber(), nameAtom);
             }

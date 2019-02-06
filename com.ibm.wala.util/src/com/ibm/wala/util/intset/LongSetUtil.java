@@ -48,7 +48,6 @@ public class LongSetUtil {
   /**
    * This method constructs an appropriate mutable copy of set.
    * 
-   * @param set
    * @return a new MutableLongSet object with the same value as set
    * @throws UnimplementedError if (not ( set instanceof com.ibm.wala.util.intset.SparseLongSet ) ) and (not ( set instanceof
    *           com.ibm.wala.util.intset.BitVectorLongSet ) ) and (not ( set instanceof
@@ -87,7 +86,7 @@ public class LongSetUtil {
     // TODO: this is slow ... optimize please.
     MutableLongSet result = factory.makeCopy(A);
     if (DEBUG) {
-      System.err.println(("initial result " + result + " " + result.getClass()));
+      System.err.println(("initial result " + result + ' ' + result.getClass()));
     }
     for (LongIterator it = B.longIterator(); it.hasNext();) {
       long I = it.next();

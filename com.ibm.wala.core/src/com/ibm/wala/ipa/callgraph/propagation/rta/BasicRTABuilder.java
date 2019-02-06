@@ -15,7 +15,6 @@ import com.ibm.wala.classLoader.CallSiteReference;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.NewSiteReference;
-import com.ibm.wala.fixpoint.IntSetVariable;
 import com.ibm.wala.fixpoint.UnaryOperator;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.CGNode;
@@ -68,7 +67,7 @@ public class BasicRTABuilder extends AbstractRTABuilder {
    */
   private void registerImplementedMethods(IClass declarer, InstanceKey iKey) {
     if (DEBUG) {
-      System.err.println(("registerImplementedMethods: " + declarer + " " + iKey));
+      System.err.println(("registerImplementedMethods: " + declarer + ' ' + iKey));
     }
     for (IMethod M : declarer.getDeclaredMethods()) {
       Selector selector = M.getReference().getSelector();
@@ -115,7 +114,7 @@ public class BasicRTABuilder extends AbstractRTABuilder {
     @SuppressWarnings("unused")
     @Override
     public byte evaluate(PointsToSetVariable lhs, PointsToSetVariable rhs) {
-      IntSetVariable receivers = rhs;
+      PointsToSetVariable receivers = rhs;
 
       // compute the set of pointers that were not previously handled
       IntSet value = receivers.getValue();
@@ -130,7 +129,7 @@ public class BasicRTABuilder extends AbstractRTABuilder {
         return NOT_CHANGED;
       }
       if (DEBUG) {
-        String S = "EVAL dispatch to " + caller + ":" + site;
+        String S = "EVAL dispatch to " + caller + ':' + site;
         System.err.println(S);
         if (DEBUG_LEVEL >= 2) {
           System.err.println(("receivers: " + value));
@@ -156,7 +155,7 @@ public class BasicRTABuilder extends AbstractRTABuilder {
           // This indicates an error; I sure hope getTargetForCall
           // raised a warning about this!
           if (DEBUG) {
-            System.err.println(("Warning: null target for call " + site + " " + iKey));
+            System.err.println(("Warning: null target for call " + site + ' ' + iKey));
           }
           return;
         }

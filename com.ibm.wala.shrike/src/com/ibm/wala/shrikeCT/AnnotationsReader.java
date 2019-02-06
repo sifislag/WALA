@@ -36,7 +36,6 @@ public class AnnotationsReader extends AttributeReader {
 
   /**
    * @return number of annotations in this attribute
-   * @throws InvalidClassFileException
    */
   public int getAnnotationCount() throws InvalidClassFileException {
     int offset = beginOffset + 6;
@@ -47,7 +46,6 @@ public class AnnotationsReader extends AttributeReader {
   /**
    * @return total length of this attribute in bytes, <b>including</b> the
    *         first 6 bytes
-   * @throws InvalidClassFileException
    */
   public int getAttributeSize() throws InvalidClassFileException {
     int offset = beginOffset + 2;
@@ -73,15 +71,13 @@ public class AnnotationsReader extends AttributeReader {
    * Marker interface for possible element values in an annotation attribute.
    * 
    * @see AnnotationsReader#readElementValueAndSize(int)
-   * 
    */
-  @SuppressWarnings("javadoc")
   public static interface ElementValue {
   }
 
   /**
    * Represents a constant argument to an annotation. Class arguments (e.g.,
-   * <code>Foo.class</code>) are also represented with this type, with the value
+   * {@code Foo.class}) are also represented with this type, with the value
    * being the String class name.
    */
   public static class ConstantElementValue implements ElementValue {
@@ -149,7 +145,7 @@ public class AnnotationsReader extends AttributeReader {
 
     @Override
     public String toString() {
-      return "EnumElementValue [type=" + enumType + ", val=" + enumVal + "]";
+      return "EnumElementValue [type=" + enumType + ", val=" + enumVal + ']';
     }
 
   }
@@ -171,7 +167,7 @@ public class AnnotationsReader extends AttributeReader {
 
     @Override
     public String toString() {
-      return "ArrayElementValue [vals=" + Arrays.toString(vals) + "]";
+      return "ArrayElementValue [vals=" + Arrays.toString(vals) + ']';
     }
 
   }
@@ -187,7 +183,6 @@ public class AnnotationsReader extends AttributeReader {
    * }
    * </pre>
    * 
-   * @throws InvalidClassFileException
    * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.16"> JLS (SE8), 4.7.16</a>
    */
   public AnnotationAttribute[] getAllAnnotations() throws InvalidClassFileException {
@@ -245,8 +240,6 @@ public class AnnotationsReader extends AttributeReader {
    *     element_value value; 
    *   } element_value_pairs[num_element_value_pairs]
    * </pre>
-   * 
-   * @throws InvalidClassFileException
    */
   protected Pair<AnnotationAttribute, Integer> getAttributeAndSize(int begin) throws InvalidClassFileException {
     String type = getUtf8ConstantPoolValue(begin);
@@ -302,7 +295,7 @@ public class AnnotationsReader extends AttributeReader {
 
     @Override
     public String toString() {
-      return "AnnotationElementValue [type=" + type + ", elementValues=" + elementValues + "]";
+      return "AnnotationElementValue [type=" + type + ", elementValues=" + elementValues + ']';
     }
 
   }
@@ -329,9 +322,6 @@ public class AnnotationsReader extends AttributeReader {
    * {@link EnumElementValue}. An array value is represented by an
    * {@link ArrayElementValue}. Finally, a nested annotation is represented by
    * an {@link AnnotationAttribute}.
-   * 
-   * @throws InvalidClassFileException
-   * @throws IllegalArgumentException
    */
   protected Pair<ElementValue, Integer> readElementValueAndSize(int offset) throws IllegalArgumentException,
       InvalidClassFileException {

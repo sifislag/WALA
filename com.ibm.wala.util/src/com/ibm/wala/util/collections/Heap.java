@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.ibm.wala.util.collections;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
@@ -78,20 +79,15 @@ public abstract class Heap<T> {
   }
 
 
-  @SuppressWarnings("unchecked")
   final private void ensureCapacity(int min) {
     if (backingStore.length < min) {
-      T newStore[] = (T[])new Object[2 * min];
-      System.arraycopy(backingStore, 0, newStore, 0, backingStore.length);
-      backingStore = newStore;
+      backingStore = Arrays.copyOf(backingStore, 2 * min);
     }
   }
 
   /**
    * SJF: I know this is horribly uglified ... I've attempted to make things as
    * easy as possible on the JIT, since this is performance critical.
-   * 
-   * @param index
    */
   final private void removeElement(int index) {
     int ne = numberOfElements;
@@ -129,9 +125,6 @@ public abstract class Heap<T> {
   /**
    * SJF: I know this is uglified ... I've attempted to make things as easy as
    * possible on the JIT, since this is performance critical.
-   * 
-   * @param elt
-   * @param index
    */
   final private void bubbleUp(T elt, int index) {
     T[] bs = backingStore;
@@ -155,16 +148,16 @@ public abstract class Heap<T> {
   
   @Override
   public String toString() {
-    StringBuffer s = new StringBuffer();
-    s.append("[");
+    StringBuilder s = new StringBuilder();
+    s.append('[');
     for (int i = 0; i < size(); i++) {
       if (backingStore[i] != null) {
         if (i > 0)
-          s.append(",");
+          s.append(',');
         s.append(backingStore[i].toString());
       }
     }
-    s.append("]");
+    s.append(']');
     return s.toString();
   }
 }

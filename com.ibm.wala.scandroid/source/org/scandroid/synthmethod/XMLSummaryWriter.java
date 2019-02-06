@@ -173,11 +173,6 @@ public class XMLSummaryWriter {
      * Throws various exceptions if a problem occurred serializing this method.
      * 
      * No guarantees as to the state of the Document if an exception is thrown.
-     * 
-     * @param summary
-     * @throws DOMException
-     * @throws UTFDataFormatException
-     * @throws SSASerializationException
      */
 	public void add(MethodSummary summary) throws UTFDataFormatException {
 		// create a method element, and populate it's attributes:
@@ -265,8 +260,6 @@ public class XMLSummaryWriter {
     /**
      * Generate a method descriptor, such as
      * (I[Ljava/lang/String;)[Ljava/lang/String;
-     * 
-     * @param summary
      */
     private static String getMethodDescriptor(MethodSummary summary) {
         StringBuilder typeSigs = new StringBuilder("(");
@@ -281,23 +274,23 @@ public class XMLSummaryWriter {
 
             // unwrap array types
             while (tr.isArrayType()) {
-            	typeSigs.append("[");
+            	typeSigs.append('[');
             	tr = tr.getArrayElementType();
             }
             
             if (tr.isPrimitiveType()) {
             	typeSigs.append(tr.getName().toUnicodeString());
             } else {
-            	typeSigs.append(tr.getName().toUnicodeString()+ ";");
+            	typeSigs.append(tr.getName().toUnicodeString()).append(';');
             }
         }
-        typeSigs.append(")");
+        typeSigs.append(')');
         
         TypeReference returnType = summary.getReturnType();
         if (returnType.isPrimitiveType()) {
         	typeSigs.append(returnType.getName().toUnicodeString());
         } else {
-        	typeSigs.append(returnType.getName().toUnicodeString() + ";");
+        	typeSigs.append(returnType.getName().toUnicodeString()).append(';');
         }
         String descriptor = typeSigs.toString();
         return descriptor;

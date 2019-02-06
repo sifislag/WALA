@@ -177,12 +177,12 @@ public class DomLessSourceExtractor extends JSSourceExtractor {
       String attName = a.getKey();
       String attValue = a.getValue().fst;
       if (attName.toLowerCase().startsWith("on") || (attValue != null && attValue.toLowerCase().startsWith("javascript:"))) {
-        String fName = tag.getName().toLowerCase() + "_" + attName + "_" + funcName;
+        String fName = tag.getName().toLowerCase() + '_' + attName + '_' + funcName;
         String signatureLine = "function " + fName + "(event) {";
         // Defines the function  
-        domRegion.println(signatureLine + "\n" + extructJS(attValue) + "\n}", pos, url, true);
+        domRegion.println(signatureLine + '\n' + extructJS(attValue) + "\n}", pos, url, true);
         // Run it
-        writeEntrypoint("\t" + fName + "(null);", pos, url, true);
+        writeEntrypoint('\t' + fName + "(null);", pos, url, true);
       }
     }
 
@@ -194,7 +194,7 @@ public class DomLessSourceExtractor extends JSSourceExtractor {
       char quote;
       if (value.indexOf('"') < 0) {
         quote= '"';
-      } else if (value.indexOf("'") < 0) {
+      } else if (value.indexOf('\'') < 0) {
         quote= '"';
       } else {
         quote= '"';
@@ -265,9 +265,9 @@ public class DomLessSourceExtractor extends JSSourceExtractor {
         final BufferedReader scriptReader = new BufferedReader(scriptInputStream);
         ) {
         String line;
-        StringBuffer x = new StringBuffer();
+        StringBuilder x = new StringBuilder();
         while ((line = scriptReader.readLine()) != null) {
-          x.append(line).append("\n");
+          x.append(line).append('\n');
         }
 
         scriptRegion.println(x.toString(), scriptTag.getElementPosition(), scriptSrc, false);

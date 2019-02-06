@@ -25,6 +25,7 @@ import com.ibm.wala.ipa.callgraph.AnalysisCacheImpl;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions.ReflectionOptions;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
+import com.ibm.wala.ipa.callgraph.CGNode;
 import com.ibm.wala.ipa.callgraph.CallGraph;
 import com.ibm.wala.ipa.callgraph.CallGraphStats;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
@@ -60,11 +61,8 @@ public class SWTCallGraph {
    * 
    * If it's a directory, then we'll try to find all jar files under that
    * directory.
-   * 
-   * @param args
-   * @throws WalaException
    */
-  public static void main(String[] args) throws WalaException {
+  public static void main(String[] args) {
     Properties p = CommandLine.parse(args);
     PDFCallGraph.validateCommandLine(p);
     run(p);
@@ -82,10 +80,8 @@ public class SWTCallGraph {
    *            <li> "RTA"
    *            </ul>
    *            </ul>
-   * 
-   * @throws WalaException
    */
-  public static ApplicationWindow run(Properties p) throws WalaException {
+  public static ApplicationWindow run(Properties p) {
 
     try {
       String appJar = p.getProperty("appJar");
@@ -105,7 +101,7 @@ public class SWTCallGraph {
         if (jar.getManifest() != null) {
           String mainClass = jar.getManifest().getMainAttributes().getValue("Main-Class");
           if (mainClass != null) {
-            entrypoints = com.ibm.wala.ipa.callgraph.impl.Util.makeMainEntrypoints(scope, cha, "L" + mainClass.replace('.', '/'));
+            entrypoints = com.ibm.wala.ipa.callgraph.impl.Util.makeMainEntrypoints(scope, cha, 'L' + mainClass.replace('.', '/'));
           }
         }
       }
@@ -143,10 +139,10 @@ public class SWTCallGraph {
       String gvExe = wp.getProperty(WalaExamplesProperties.PDFVIEW_EXE);
 
       // create and run the viewer
-      final SWTTreeViewer v = new SWTTreeViewer();
+      final SWTTreeViewer<CGNode> v = new SWTTreeViewer<>();
       v.setGraphInput(cg);
       v.setRootsInput(InferGraphRoots.inferRoots(cg));
-      v.getPopUpActions().add(new ViewIRAction(v, cg, psFile, dotFile, dotExe, gvExe));
+      v.getPopUpActions().add(new ViewIRAction<>(v, cg, psFile, dotFile, dotExe, gvExe));
       v.run();
       return v.getApplicationWindow();
 

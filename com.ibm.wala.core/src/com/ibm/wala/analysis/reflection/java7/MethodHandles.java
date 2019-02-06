@@ -107,7 +107,7 @@ public class MethodHandles {
         return false;
       if (getClass() != obj.getClass())
         return false;
-      HandlesItem other = (HandlesItem) obj;
+      HandlesItem<?> other = (HandlesItem<?>) obj;
       if (item == null) {
         if (other.item != null)
           return false;
@@ -248,8 +248,8 @@ public class MethodHandles {
       if ((isInvoke(callee) || isType(callee)) && callee.getReference().getDeclaringClass().getName().equals(TypeReference.JavaLangInvokeMethodHandle.getName())) {
         if (actualParameters != null && actualParameters.length > 0) {
           InstanceKey selfKey = actualParameters[0];
-          if (selfKey instanceof ConstantKey && ((ConstantKey)selfKey).getConcreteType().getReference().equals(TypeReference.JavaLangInvokeMethodHandle)) {
-            MethodReference ref = ((IMethod) ((ConstantKey)selfKey).getValue()).getReference();
+          if (selfKey instanceof ConstantKey && ((ConstantKey<?>)selfKey).getConcreteType().getReference().equals(TypeReference.JavaLangInvokeMethodHandle)) {
+            MethodReference ref = ((IMethod) ((ConstantKey<?>)selfKey).getValue()).getReference();
             return new MethodContext(baseContext, ref);
           }
         }
@@ -259,9 +259,9 @@ public class MethodHandles {
         if (actualParameters != null && actualParameters.length > 2) {
           InstanceKey classKey = actualParameters[1];
           InstanceKey nameKey = actualParameters[2];
-          if (classKey instanceof ConstantKey && ((ConstantKey)classKey).getConcreteType().getReference().equals(TypeReference.JavaLangClass) &&
-              nameKey instanceof ConstantKey && ((ConstantKey)nameKey).getConcreteType().getReference().equals(TypeReference.JavaLangString)) {
-            return new FindContext(baseContext, ((IClass)((ConstantKey)classKey).getValue()).getReference(), (String)((ConstantKey)nameKey).getValue());
+          if (classKey instanceof ConstantKey && ((ConstantKey<?>)classKey).getConcreteType().getReference().equals(TypeReference.JavaLangClass) &&
+              nameKey instanceof ConstantKey && ((ConstantKey<?>)nameKey).getConcreteType().getReference().equals(TypeReference.JavaLangString)) {
+            return new FindContext(baseContext, ((IClass)((ConstantKey<?>)classKey).getValue()).getReference(), (String)((ConstantKey<?>)nameKey).getValue());
           }
         }
       }
@@ -445,32 +445,37 @@ public class MethodHandles {
         boolean isVoid = ref.getReturnType().equals(TypeReference.Void);
         if (isInvoke(node)) {
           String name = node.getMethod().getName().toString();
-          if ("invokeWithArguments".equals(name)) {
-            int nargs = ref.getNumberOfParameters();
-            int params[] = new int[nargs];
-            for(int i = 0; i < nargs; i++) {
-              code.addConstant(i+nargs+3, new ConstantValue(i));
-              code.addStatement(insts.ArrayLoadInstruction(code.getNextProgramCounter(), i+3, 1, i+nargs+3, TypeReference.JavaLangObject));
-              params[i] = i+3;
-            }           
-            CallSiteReference site = CallSiteReference.make(nargs+1, ref, isStatic? Dispatch.STATIC: Dispatch.SPECIAL);
-            code.addStatement(insts.InvokeInstruction(code.getNextProgramCounter(), 2*nargs+3, params, 2*nargs+4, site, null));
-            code.addStatement(insts.ReturnInstruction(code.getNextProgramCounter(), 2*nargs+3, false));
-          } else if ("invokeExact".equals(name)) {
-            int nargs = node.getMethod().getReference().getNumberOfParameters();
-            int params[] = new int[nargs];
-            if (nargs == ref.getNumberOfParameters() + (isStatic? 0: 1)) {
-              for(int i = 0; i < nargs; i++) {
-                params[i] = i+2;
+          switch (name) {
+            case "invokeWithArguments": {
+              int nargs = ref.getNumberOfParameters();
+              int params[] = new int[nargs];
+              for (int i = 0; i < nargs; i++) {
+                code.addConstant(i + nargs + 3, new ConstantValue(i));
+                code.addStatement(insts.ArrayLoadInstruction(code.getNextProgramCounter(), i + 3, 1, i + nargs + 3, TypeReference.JavaLangObject));
+                params[i] = i + 3;
               }
-              CallSiteReference site = CallSiteReference.make(0, ref, isStatic? Dispatch.STATIC: Dispatch.SPECIAL);
-              if (isVoid) {
-                code.addStatement(insts.InvokeInstruction(code.getNextProgramCounter(), params, nargs+2, site, null));              
-              } else {
-                code.addStatement(insts.InvokeInstruction(code.getNextProgramCounter(), nargs+2, params, nargs+3, site, null));
-                code.addStatement(insts.ReturnInstruction(code.getNextProgramCounter(), nargs+2, false));
+              CallSiteReference site = CallSiteReference.make(nargs + 1, ref, isStatic ? Dispatch.STATIC : Dispatch.SPECIAL);
+              code.addStatement(insts.InvokeInstruction(code.getNextProgramCounter(), 2 * nargs + 3, params, 2 * nargs + 4, site, null));
+              code.addStatement(insts.ReturnInstruction(code.getNextProgramCounter(), 2 * nargs + 3, false));
+              break;
+            }
+            case "invokeExact": {
+              int nargs = node.getMethod().getReference().getNumberOfParameters();
+              int params[] = new int[nargs];
+              if (nargs == ref.getNumberOfParameters() + (isStatic ? 0 : 1)) {
+                for (int i = 0; i < nargs; i++) {
+                  params[i] = i + 2;
+                }
+                CallSiteReference site = CallSiteReference.make(0, ref, isStatic ? Dispatch.STATIC : Dispatch.SPECIAL);
+                if (isVoid) {
+                  code.addStatement(insts.InvokeInstruction(code.getNextProgramCounter(), params, nargs + 2, site, null));
+                } else {
+                  code.addStatement(insts.InvokeInstruction(code.getNextProgramCounter(), nargs + 2, params, nargs + 3, site, null));
+                  code.addStatement(insts.ReturnInstruction(code.getNextProgramCounter(), nargs + 2, false));
+                }
               }
-            } 
+              break;
+            }
           }
         } else {
           assert isType(node);

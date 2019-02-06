@@ -121,10 +121,6 @@ public class JavaScriptFunctionDotCallTargetSelector implements MethodTargetSele
   /**
    * generate a synthetic method modeling the invocation of Function.call() at
    * the site
-   * 
-   * @param caller
-   * @param site
-   * @param receiver
    */
   private IMethod getFunctionCallTarget(CGNode caller, CallSiteReference site, IClass receiver) {
     int nargs = getNumberOfArgsPassed(caller, site);
@@ -184,9 +180,9 @@ public class JavaScriptFunctionDotCallTargetSelector implements MethodTargetSele
 
   private static String getKey(int nargs, CGNode caller, CallSiteReference site) {
     if (SEPARATE_SYNTHETIC_METHOD_PER_SITE) {
-      return CAstCallGraphUtil.getShortName(caller) + "_" + caller.getGraphNodeId() + "_" + site.getProgramCounter();
+      return CAstCallGraphUtil.getShortName(caller) + '_' + caller.getGraphNodeId() + '_' + site.getProgramCounter();
     } else {
-      return ""+nargs;
+      return String.valueOf(nargs);
     }
   }
 

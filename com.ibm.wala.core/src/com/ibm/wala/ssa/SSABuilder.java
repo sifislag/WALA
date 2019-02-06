@@ -59,6 +59,8 @@ import com.ibm.wala.util.graph.dominators.Dominators;
 import com.ibm.wala.util.intset.IntPair;
 import com.ibm.wala.util.shrike.ShrikeUtil;
 
+import java.util.Arrays;
+
 /**
  * This class constructs an SSA {@link IR} from a backing ShrikeBT instruction stream.
  * 
@@ -68,7 +70,7 @@ import com.ibm.wala.util.shrike.ShrikeUtil;
  */
 public class SSABuilder extends AbstractIntStackMachine {
 
-  public static SSABuilder make(IBytecodeMethod method, SSACFG cfg, ShrikeCFG scfg, SSAInstruction[] instructions,
+  public static SSABuilder make(IBytecodeMethod<?> method, SSACFG cfg, ShrikeCFG scfg, SSAInstruction[] instructions,
       SymbolTable symbolTable, boolean buildLocalMap, SSAPiNodePolicy piNodePolicy) throws IllegalArgumentException {
     if (scfg == null) {
       throw new IllegalArgumentException("scfg == null");
@@ -79,7 +81,7 @@ public class SSABuilder extends AbstractIntStackMachine {
   /**
    * A wrapper around the method being analyzed.
    */
-  final private IBytecodeMethod method;
+  final private IBytecodeMethod<?> method;
 
   /**
    * Governing symbol table
@@ -103,7 +105,7 @@ public class SSABuilder extends AbstractIntStackMachine {
   
   private final ShrikeIndirectionData ssaIndirections;
   
-  private SSABuilder(IBytecodeMethod method, SSACFG cfg, ShrikeCFG scfg, SSAInstruction[] instructions, SymbolTable symbolTable,
+  private SSABuilder(IBytecodeMethod<?> method, SSACFG cfg, ShrikeCFG scfg, SSAInstruction[] instructions, SymbolTable symbolTable,
       boolean buildLocalMap, SSAPiNodePolicy piNodePolicy) {
     super(scfg);
     localMap = buildLocalMap ? new SSA2LocalMap(scfg, instructions.length, cfg.getNumberOfNodes()) : null;
@@ -170,9 +172,6 @@ public class SSABuilder extends AbstractIntStackMachine {
       }
     }
 
-    /**
-     * @see com.ibm.wala.analysis.stackMachine.AbstractIntStackMachine.Meeter#meetLocal(int, int[], BasicBlock)
-     */
     @Override
     public int meetLocal(int n, int[] rhs, BasicBlock bb) {
       if (allTheSame(rhs)) {
@@ -210,8 +209,7 @@ public class SSABuilder extends AbstractIntStackMachine {
 
     /**
      * Are all rhs values all the same? Note, we consider TOP (-1) to be same as everything else.
-     * 
-     * @param rhs
+     *
      * @return boolean
      */
     private boolean allTheSame(int[] rhs) {
@@ -232,9 +230,6 @@ public class SSABuilder extends AbstractIntStackMachine {
       return true;
     }
 
-    /**
-     * @see com.ibm.wala.analysis.stackMachine.AbstractIntStackMachine.Meeter#meetStackAtCatchBlock(BasicBlock)
-     */
     @Override
     public int meetStackAtCatchBlock(BasicBlock bb) {
       int bbNumber = shrikeCFG.getNumber(bb);
@@ -329,9 +324,7 @@ public class SSABuilder extends AbstractIntStackMachine {
         instructions[getCurrentInstructionIndex()] = s;
         for (int i = 0; i < s.getNumberOfDefs(); i++) {
           if (creators.length < (s.getDef(i) + 1)) {
-            SSAInstruction[] arr = new SSAInstruction[2 * s.getDef(i)];
-            System.arraycopy(creators, 0, arr, 0, creators.length);
-            creators = arr;
+            creators = Arrays.copyOf(creators, 2 * s.getDef(i));
           }
 
           assert s.getDef(i) != -1 : "invalid def " + i + " for " + s;
@@ -817,10 +810,6 @@ public class SSABuilder extends AbstractIntStackMachine {
 
     }
 
-    /**
-     * @param piCause
-     * @param ref
-     */
     private void reuseOrCreatePi(SSAInstruction piCause, int ref) {
       int n = getCurrentInstructionIndex();
       SSACFG.BasicBlock bb = cfg.getBlockForInstruction(n);
@@ -984,7 +973,7 @@ public class SSABuilder extends AbstractIntStackMachine {
           if (localNumbers == null) {
             return null;
           } else {
-            IBytecodeMethod m = shrikeCFG.getMethod();
+            IBytecodeMethod<?> m = shrikeCFG.getMethod();
             String[] result = new String[localNumbers.length];
             for (int i = 0; i < localNumbers.length; i++) {
               result[i] = m.getLocalVariableName(m.getBytecodeIndex(index), localNumbers[i]);
@@ -1030,7 +1019,7 @@ public class SSABuilder extends AbstractIntStackMachine {
       if (vn < 0) {
         return null;
       }
-      IBasicBlock bb = shrikeCFG.getBlockForInstruction(pc);
+      IBasicBlock<?> bb = shrikeCFG.getBlockForInstruction(pc);
       int firstInstruction = bb.getFirstInstructionIndex();
       // walk forward from the first instruction to reconstruct the
       // state of the locals at this pc

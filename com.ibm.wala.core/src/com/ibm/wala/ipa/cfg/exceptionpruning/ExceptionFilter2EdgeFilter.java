@@ -15,8 +15,6 @@ import com.ibm.wala.types.TypeReference;
  * This class converts an exception filter to an edge filter.
  *
  * @author Stephan Gocht {@code <stephan@gobro.de>}
- *
- * @param <Block>
  */
 public class ExceptionFilter2EdgeFilter<Block extends ISSABasicBlock>
 implements EdgeFilter<Block> {
@@ -75,7 +73,6 @@ implements EdgeFilter<Block> {
 	 * instructions, even if all exceptions returned by
 	 * instruction.getExceptionTypes() are to be filtered.
 	 *
-	 * @param instruction
 	 * @return if we know all exceptions, that can occur at this address from
 	 *         getExceptionTypes()
 	 */

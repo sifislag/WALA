@@ -145,7 +145,7 @@ public abstract class IR implements IRView {
     if (getIndirectionData() != null) {
       names = getIndirectionData().getNames();
     }
-    StringBuffer result = new StringBuffer(method.toString());
+    StringBuilder result = new StringBuilder(method.toString());
     result.append("\nCFG:\n");
     result.append(cfg.toString());
     result.append("Instructions:\n");
@@ -162,22 +162,22 @@ public abstract class IR implements IRView {
           TypeReference next = catchIter.next();
           result.append(next);
           if (catchIter.hasNext()) {
-            result.append(",");
+            result.append(',');
           }
         }
-        result.append(")");
+        result.append(')');
       }
-      result.append("\n");
+      result.append('\n');
       for (SSAPhiInstruction phi : Iterator2Iterable.make(bb.iteratePhis())) {
         if (phi != null) {
-          result.append("           " + phi.toString(symbolTable)).append("\n");
+          result.append("           ").append(phi.toString(symbolTable)).append('\n');
         }
       }
       if (bb instanceof ExceptionHandlerBasicBlock) {
         ExceptionHandlerBasicBlock ebb = (ExceptionHandlerBasicBlock) bb;
         SSAGetCaughtExceptionInstruction s = ebb.getCatchInstruction();
         if (s != null) {
-          result.append("           " + s.toString(symbolTable)).append("\n");
+          result.append("           ").append(s.toString(symbolTable)).append('\n');
         } else {
           result.append("           " + " No catch instruction. Unreachable?\n");
         }
@@ -188,15 +188,15 @@ public abstract class IR implements IRView {
             boolean any = false;
             for(SSAIndirectionData.Name n : names) {
               if (getIndirectionData().getUse(j, n) != -1) {
-                result.append(" " + n + " -> " + getIndirectionData().getUse(j, n));
+                result.append(' ').append(n).append(" -> ").append(getIndirectionData().getUse(j, n));
                 any = true;
               }
             }
             if (any) {
-              result.append("\n");
+              result.append('\n');
             }
           }
-          StringBuffer x = new StringBuffer(j + "   " + instructions[j].toString(symbolTable));
+          StringBuilder x = new StringBuilder(j + "   " + instructions[j].toString(symbolTable));
           StringStuff.padWithSpaces(x, 45);
           result.append(x);
           result.append(instructionPosition(j));
@@ -213,30 +213,30 @@ public abstract class IR implements IRView {
           if (!valNames.isEmpty()) {
             result.append(" [");
             for(Map.Entry<Integer,Set<String>> e : valNames.entrySet()) {
-              result.append(e.getKey() + "=" + e.getValue());
+              result.append(e.getKey()).append('=').append(e.getValue());
             }
-            result.append("]");
+            result.append(']');
           }
  
-          result.append("\n");
+          result.append('\n');
           
           if (names != null) {
             boolean any = false;
             for(SSAIndirectionData.Name n : names) {
               if (getIndirectionData().getDef(j, n) != -1) {
-                result.append(" " + n + " <- " + getIndirectionData().getDef(j, n));
+                result.append(' ').append(n).append(" <- ").append(getIndirectionData().getDef(j, n));
                 any = true;
               }
             }
             if (any) {
-              result.append("\n");
+              result.append('\n');
             }
           }
         }
       }
       for (SSAPiInstruction pi : Iterator2Iterable.make(bb.iteratePis())) {
         if (pi != null) {
-          result.append("           " + pi.toString(symbolTable)).append("\n");
+          result.append("           ").append(pi.toString(symbolTable)).append('\n');
         }
       }
     }

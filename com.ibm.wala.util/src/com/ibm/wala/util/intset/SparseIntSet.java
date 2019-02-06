@@ -106,8 +106,7 @@ public class SparseIntSet implements IntSet {
 
   /**
    * Does this set contain value x?
-   * 
-   * @see com.ibm.wala.util.intset.IntSet#contains(int)
+   *
    */
   @Override
   public final boolean contains(int x) {
@@ -180,9 +179,9 @@ public class SparseIntSet implements IntSet {
   }
 
   /**
-   * @return true iff <code>this</code> is a subset of <code>that</code>.
+   * @return true iff {@code this} is a subset of {@code that}.
    * 
-   * Faster than: <code>this.diff(that) == EMPTY</code>.
+   * Faster than: {@code this.diff(that) == EMPTY}.
    */
   private boolean isSubsetInternal(SparseIntSet that) {
 
@@ -289,15 +288,15 @@ public class SparseIntSet implements IntSet {
 
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer(6 * size);
+    StringBuilder sb = new StringBuilder(6 * size);
     sb.append("{ ");
     if (elements != null) {
       for (int ii = 0; ii < size; ii++) {
         sb.append(elements[ii]);
-        sb.append(" ");
+        sb.append(' ');
       }
     }
-    sb.append("}");
+    sb.append('}');
     return sb.toString();
   }
 

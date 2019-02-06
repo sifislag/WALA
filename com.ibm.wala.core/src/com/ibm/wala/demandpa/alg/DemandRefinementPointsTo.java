@@ -132,6 +132,7 @@ import com.ibm.wala.util.intset.IntSet;
 import com.ibm.wala.util.intset.MutableIntSet;
 import com.ibm.wala.util.intset.MutableIntSetFactory;
 import com.ibm.wala.util.intset.MutableMapping;
+import com.ibm.wala.util.intset.MutableSparseIntSet;
 import com.ibm.wala.util.intset.MutableSparseIntSetFactory;
 import com.ibm.wala.util.intset.OrdinalSet;
 import com.ibm.wala.util.intset.OrdinalSetMapping;
@@ -244,9 +245,9 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
    * @param pk the pointer key
    * @param ikeyPred the desired predicate that each instance key in the points-to set should ideally satisfy
    * @return a pair consisting of (1) a {@link PointsToResult} indicating whether a points-to set satisfying the predicate was
-   *         computed, and (2) the last computed points-to set for the variable (possibly <code>null</code> if no points-to set
+   *         computed, and (2) the last computed points-to set for the variable (possibly {@code null} if no points-to set
    *         could be computed in the budget)
-   * @throws IllegalArgumentException if <code>pk</code> is not a {@link LocalPointerKey}; to eventually be fixed
+   * @throws IllegalArgumentException if {@code pk} is not a {@link LocalPointerKey}; to eventually be fixed
    */
   public Pair<PointsToResult, Collection<InstanceKey>> getPointsTo(PointerKey pk, Predicate<InstanceKey> ikeyPred)
       throws IllegalArgumentException {
@@ -256,10 +257,6 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
     return Pair.make(p.fst, finalP2Set);
   }
 
-  /**
-   * @param pk
-   * @param ikeyPred
-   */
   private Pair<PointsToResult, Collection<InstanceKeyAndState>> getPointsToWithStates(PointerKey pk, Predicate<InstanceKey> ikeyPred) {
     if (!(pk instanceof com.ibm.wala.ipa.callgraph.propagation.LocalPointerKey)) {
       throw new IllegalArgumentException("only locals for now");
@@ -292,8 +289,6 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
    * @param cg the underlying call graph for the analysis
    * @param model the heap model to be used for the analysis
    * @param mam indicates what code reads or writes each field
-   * @param cha
-   * @param options
    * @param stateMachineFactory factory for state machines to track additional properties like calling context
    */
   public static DemandRefinementPointsTo makeWithDefaultFlowGraph(CallGraph cg, HeapModel model, MemoryAccessMap mam,
@@ -396,7 +391,7 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
    * @param ikeyPred the desired predicate that each instance key in the points-to set should ideally satisfy
    * @param pa a pre-computed points-to analysis
    * @return a {@link PointsToResult} indicating whether a points-to set satisfying the predicate was computed
-   * @throws IllegalArgumentException if <code>pk</code> is not a {@link LocalPointerKey}; to eventually be fixed
+   * @throws IllegalArgumentException if {@code pk} is not a {@link LocalPointerKey}; to eventually be fixed
    */
   public PointsToResult pointsToPassesPred(PointerKey pk, Predicate<InstanceKey> ikeyPred, PointerAnalysis<InstanceKey> pa)
       throws IllegalArgumentException {
@@ -496,7 +491,7 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
   }
 
   /**
-   * @return the points-to set of <code>pk</code>, or <code>null</code> if the points-to set can't be computed in the allocated
+   * @return the points-to set of {@code pk}, or {@code null} if the points-to set can't be computed in the allocated
    *         budget
    */
   @Override
@@ -505,8 +500,8 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
   }
 
   /**
-   * @return the points-to set of <code>pk</code>, including the {@link State}s attached to the {@link InstanceKey}s, or
-   *         <code>null</code> if the points-to set can't be computed in the allocated budget
+   * @return the points-to set of {@code pk}, including the {@link State}s attached to the {@link InstanceKey}s, or
+   *         {@code null} if the points-to set can't be computed in the allocated budget
    */
   public Collection<InstanceKeyAndState> getPointsToWithStates(PointerKey pk) {
     return getPointsToWithStates(pk, k -> { return false; }).snd;
@@ -516,7 +511,7 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
    * get all the pointer keys that some instance key can flow to
    * 
    * @return a pair consisting of (1) a {@link PointsToResult} indicating whether a flows-to set was computed, and (2) the last
-   *         computed flows-to set for the instance key (possibly <code>null</code> if no flows-to set could be computed in the
+   *         computed flows-to set for the instance key (possibly {@code null} if no flows-to set could be computed in the
    *         budget)
    */
   public Pair<PointsToResult, Collection<PointerKey>> getFlowsTo(InstanceKey ik) {
@@ -528,7 +523,7 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
    * get all the pointer keys that some instance key with state can flow to
    * 
    * @return a pair consisting of (1) a {@link PointsToResult} indicating whether a flows-to set was computed, and (2) the last
-   *         computed flows-to set for the instance key (possibly <code>null</code> if no flows-to set could be computed in the
+   *         computed flows-to set for the instance key (possibly {@code null} if no flows-to set could be computed in the
    *         budget)
    */
   public Pair<PointsToResult, Collection<PointerKey>> getFlowsTo(InstanceKeyAndState ikAndState) {
@@ -536,9 +531,6 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
     return getFlowsToInternal(ikAndState);
   }
 
-  /**
-   * @param ik
-   */
   private Pair<PointsToResult, Collection<PointerKey>> getFlowsToInternal(InstanceKeyAndState ikAndState) {
     InstanceKey ik = ikAndState.getInstanceKey();
     if (!(ik instanceof InstanceKeyWithNode)) {
@@ -807,7 +799,7 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
      */
     protected final OrdinalSetMapping<InstanceKeyAndState> ikAndStates = MutableMapping.make();
 
-    private final MutableIntSetFactory intSetFactory = new MutableSparseIntSetFactory(); // new
+    private final MutableIntSetFactory<MutableSparseIntSet> intSetFactory = new MutableSparseIntSetFactory(); // new
 
     // BitVectorIntSetFactory();
 
@@ -879,7 +871,7 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
       boolean added = findOrCreate(p2setMap, pkAndState).addAll(vals);
       // final boolean added = p2setMap.putAll(pkAndState, vals);
       if (DEBUG && added) {
-        System.err.println("POINTS-TO ADDITION TO PK " + pkAndState + ":");
+        System.err.println("POINTS-TO ADDITION TO PK " + pkAndState + ':');
         for (InstanceKeyAndState ikAndState : makeOrdinalSet(vals)) {
           System.err.println(ikAndState);
         }
@@ -977,7 +969,7 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
     /**
      * @param label the label of the edge from curPk to predPk (must be barred)
      * @return those {@link PointerKeyAndState}s whose points-to sets have been queried, such that the {@link PointerKey} is predPk,
-     *         and transitioning from its state on <code>label.bar()</code> yields the state of <code>curPkAndState</code>
+     *         and transitioning from its state on {@code label.bar()} yields the state of {@code curPkAndState}
      */
     protected Collection<PointerKeyAndState> matchingPToQueried(PointerKeyAndState curPkAndState, PointerKey predPk,
         IFlowLabel label) {
@@ -1146,9 +1138,6 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
 
     /**
      * handle possible updated flow in both directions for a call parameter
-     * 
-     * @param src
-     * @param dst
      */
     private void repropCallArg(PointerKeyAndState src, PointerKeyAndState dst, IFlowLabel dstToSrcLabel) {
       if (DEBUG) {
@@ -1255,9 +1244,6 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
 
     /**
      * handle flow from actuals to formals, and from returned values to variables at the caller
-     * 
-     * @param curPk
-     * @param handler
      */
     private void handleForwInterproc(final PointerKeyAndState curPkAndState, final CopyHandler handler) {
       PointerKey curPk = curPkAndState.getPointerKey();
@@ -1374,9 +1360,7 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
 
     /**
      * track a field of some instance key, as we are interested in statements that read or write to the field
-     * 
-     * @param ikAndState
-     * @param field
+     *
      * @param ikToFields either {@link #forwInstKeyToFields} or {@link #backInstKeyToFields}
      */
     private void trackInstanceField(InstanceKeyAndState ikAndState, IField field, MultiMap<InstanceKeyAndState, IField> ikToFields) {
@@ -1530,9 +1514,6 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
 
     /**
      * handle flow from return value to callers, or from actual to formals
-     * 
-     * @param curPkAndState
-     * @param handler
      */
     private void handleBackInterproc(final PointerKeyAndState curPkAndState, final CopyHandler handler, final boolean addGraphs) {
       final PointerKey curPk = curPkAndState.getPointerKey();
@@ -1662,10 +1643,8 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
      * that the subgraph for the callee is missing?
      * 
      * @param addGraphs whether graphs should always be added
-     * @param callee
-     * @param pkAndState
      */
-    protected boolean calleeSubGraphMissingAndShouldNotBeAdded(boolean addGraphs, CGNode callee, PointerKeyAndState pkAndState) {
+    protected boolean calleeSubGraphMissingAndShouldNotBeAdded(boolean addGraphs, CGNode callee, @SuppressWarnings("unused") PointerKeyAndState pkAndState) {
       return !addGraphs && !g.hasSubgraphForNode(callee);
     }
 
@@ -1957,10 +1936,6 @@ public class DemandRefinementPointsTo extends AbstractDemandPointsTo {
 
   /**
    * we are looking for an instance key flowing to pk that violates pred.
-   * 
-   * @param pk
-   * @param pred
-   * @param pa
    */
   @SuppressWarnings("unused")
   private boolean doTopLevelTraversal(PointerKey pk, final Predicate<InstanceKey> pred, final PointsToComputer ptoComputer,

@@ -46,9 +46,9 @@ import com.ibm.wala.util.collections.Util;
  * "&lt;filename&gt;@&lt;lineno&gt;:&lt;beginoff&gt;-&lt;endoff&gt;"
  * </pre>
  * 
- * Here, <code>filename</code> is the name of the containing
+ * Here, {@code filename} is the name of the containing
  * JavaScript file (not including its directory), and
- * <code>lineno</code>, <code>beginoff</code> and <code>endoff</code>
+ * {@code lineno}, {@code beginoff} and {@code endoff}
  * encode the source position of the call expression (for
  * call sites) or the function declaration/expression (for
  * callees) inside the file in terms of its starting line,
@@ -110,7 +110,7 @@ public class CallGraph2JSON {
 
       if(IGNORE_HARNESS) {
         for(String bootstrapFile : JavaScriptLoader.bootstrapFileNames)
-          if(methodName.startsWith("L" + bootstrapFile + "/"))
+          if(methodName.startsWith('L' + bootstrapFile + '/'))
             return false;
       }
  
@@ -124,17 +124,17 @@ public class CallGraph2JSON {
 		file = file.substring(file.lastIndexOf('/')+1);
 		
 		int line = pos.getFirstLine(), start_offset = pos.getFirstOffset(), end_offset = pos.getLastOffset();
-		return file + "@" + line + ":" + start_offset + "-" + end_offset;
+		return file + '@' + line + ':' + start_offset + '-' + end_offset;
 	}
 	
 	public static String toJSON(Map<String, Set<String>> map) {
-		StringBuffer res = new StringBuffer();
+		StringBuilder res = new StringBuilder();
 		res.append("{\n");
 		res.append(joinWith(Util.mapToSet(map.entrySet(), e -> {
-      StringBuffer res1 = new StringBuffer();
+      StringBuilder res1 = new StringBuilder();
       if(e.getValue().size() > 0) {
-        res1.append("    \"" + e.getKey() + "\": [\n");
-        res1.append(joinWith(Util.mapToSet(e.getValue(), str -> "        \"" + str + "\""), ",\n"));
+        res1.append("    \"").append(e.getKey()).append("\": [\n");
+        res1.append(joinWith(Util.mapToSet(e.getValue(), str -> "        \"" + str + '"'), ",\n"));
         res1.append("\n    ]");
       }
       return res1.length() == 0 ? null : res1.toString();
@@ -144,7 +144,7 @@ public class CallGraph2JSON {
 	}
 	
 	private static String joinWith(Iterable<String> lst, String sep) {
-	  StringBuffer res = new StringBuffer();
+	  StringBuilder res = new StringBuilder();
 	  ArrayList<String> strings = new ArrayList<>();
 	  for(String s : lst)
 	    if(s != null)

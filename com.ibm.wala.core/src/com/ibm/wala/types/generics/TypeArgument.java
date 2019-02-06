@@ -103,7 +103,7 @@ public class TypeArgument extends Signature {
   }
 
   /**
-   * @param typeSigs TypeSignature*
+   * @param typeArgs TypeSignature*
    * @return tokenize it
    */
   static String[] parseForTypeArguments(String typeArgs) {
@@ -131,13 +131,14 @@ public class TypeArgument extends Signature {
         while (typeArgs.charAt(i) == TypeReference.ArrayTypeCode) {
           ++i;
         }
-        if (typeArgs.charAt(i++) == TypeReference.ClassTypeCode) {
+        if (typeArgs.charAt(i) == TypeReference.ClassTypeCode) {
           while (typeArgs.charAt(i++) != ';')
             ;
-          args.add(typeArgs.substring(off, i - off - 1));
-        } else {
-          args.add(typeArgs.substring(off, i - off));
+        } else if (typeArgs.charAt(i++) == (byte) 'T'){
+          while (typeArgs.charAt(i++) != ';')
+            ;
         }
+        args.add(typeArgs.substring(off, i));
         continue;
       }
       case (byte) '-':
@@ -180,9 +181,9 @@ public class TypeArgument extends Signature {
     if (w == null) {
       return sig.toString();
     } else if (w.equals(WildcardIndicator.PLUS)) {
-      return "+" + sig.toString();
+      return '+' + sig.toString();
     } else {
-      return "-" + sig.toString();
+      return '-' + sig.toString();
     }
   }
 

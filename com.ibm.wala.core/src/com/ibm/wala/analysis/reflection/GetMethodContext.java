@@ -65,14 +65,14 @@ public class GetMethodContext implements Context {
   /**
    * The method name.
    */
-  private final ConstantKey name;
+  private final ConstantKey<String> name;
   
   /**
    * Construct this GetMethodContext.
    * @param type the type
    * @param name the name of the method
    */
-  public GetMethodContext(TypeAbstraction type,ConstantKey name) {
+  public GetMethodContext(TypeAbstraction type,ConstantKey<String> name) {
     if (type == null) {
       throw new IllegalArgumentException("null == type");
     }
@@ -110,7 +110,7 @@ public class GetMethodContext implements Context {
 
   @Override
   public String toString() {
-    return "GetMethodContext<" + type + ", " + name + ">";
+    return "GetMethodContext<" + type + ", " + name + '>';
   }
 
   @Override
@@ -144,6 +144,6 @@ public class GetMethodContext implements Context {
    * @return the name
    */
   public String getName() {
-    return (String)name.getValue();
+    return name.getValue();
   }
 }

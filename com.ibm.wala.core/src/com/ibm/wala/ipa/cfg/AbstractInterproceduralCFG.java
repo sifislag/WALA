@@ -48,9 +48,10 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
   private static final boolean FAIL_ON_EAGER_CONSTRUCTION = false;
 
   /**
-   * Should the graph include call-to-return edges? When set to <code>false</code>, the graphs output by {@link IFDSExplorer} look
-   * incorrect
+   * Should the graph include call-to-return edges? When set to {@code false}, the graphs output by
+   * {@link com.ibm.wala.ide.ui.IFDSExplorer} look incorrect
    */
+  @SuppressWarnings({ "JavadocReference", "javadoc" })
   private final static boolean CALL_TO_RETURN_EDGES = true;
 
   /**
@@ -143,8 +144,6 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
 
   /**
    * If n is relevant and its cfg has not already been added, add nodes and edges for n
-   * 
-   * @param n
    */
   @SuppressWarnings("unused")
   private void addIntraproceduralNodesAndEdgesForCGNodeIfNeeded(CGNode n) {
@@ -269,7 +268,7 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
       assert g.containsNode(call) : "IPCFG does not contain " + call;
     }
     if (DEBUG_LEVEL > 1) {
-      System.err.println("addEdgeFromCallToEntry " + call + " " + entry);
+      System.err.println("addEdgeFromCallToEntry " + call + ' ' + entry);
     }
     g.addEdge(call, entry);
   }
@@ -278,7 +277,6 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
    * Add the incoming edges to the entry() block and the outgoing edges from the exit() block for a call graph node.
    * 
    * @param n a node in the call graph
-   * @param bb the entry() block for n
    */
   @SuppressWarnings("unused")
   private void addInterproceduralEdgesForEntryAndExitBlocks(CGNode n, ControlFlowGraph<SSAInstruction, ? extends T> cfg) {
@@ -372,7 +370,7 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
    * @return the original CFG from whence B came
    * @throws IllegalArgumentException if B == null
    */
-  public ControlFlowGraph<SSAInstruction, T> getCFG(BasicBlockInContext B) throws IllegalArgumentException {
+  public ControlFlowGraph<SSAInstruction, T> getCFG(BasicBlockInContext<T> B) throws IllegalArgumentException {
     if (B == null) {
       throw new IllegalArgumentException("B == null");
     }
@@ -383,7 +381,7 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
    * @return the original CGNode from whence B came
    * @throws IllegalArgumentException if B == null
    */
-  public CGNode getCGNode(BasicBlockInContext B) throws IllegalArgumentException {
+  public CGNode getCGNode(BasicBlockInContext<T> B) throws IllegalArgumentException {
     if (B == null) {
       throw new IllegalArgumentException("B == null");
     }
@@ -394,7 +392,7 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
    * @see com.ibm.wala.util.graph.Graph#removeNodeAndEdges(com.ibm.wala.util.graph.Node)
    */
   @Override
-  public void removeNodeAndEdges(BasicBlockInContext N) throws UnsupportedOperationException {
+  public void removeNodeAndEdges(BasicBlockInContext<T> N) throws UnsupportedOperationException {
     throw new UnsupportedOperationException();
   }
 
@@ -446,8 +444,6 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
 
   /**
    * add interprocedural edges to nodes in callees of n
-   * 
-   * @param n
    */
   private void addEdgesToCallees(CGNode n) {
     ControlFlowGraph<SSAInstruction, T> cfg = getCFG(n);
@@ -527,8 +523,6 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
 
   /**
    * add edges to nodes in callers of n
-   * 
-   * @param n
    */
   private void addCallerEdges(CGNode n) {
     final int num = cg.getNumber(n);
@@ -543,7 +537,7 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
    * @see com.ibm.wala.util.graph.NodeManager#addNode(com.ibm.wala.util.graph.Node)
    */
   @Override
-  public void addNode(BasicBlockInContext n) throws UnsupportedOperationException {
+  public void addNode(BasicBlockInContext<T> n) throws UnsupportedOperationException {
     throw new UnsupportedOperationException();
   }
 
@@ -551,7 +545,7 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
    * @see com.ibm.wala.util.graph.NodeManager#removeNode(com.ibm.wala.util.graph.Node)
    */
   @Override
-  public void removeNode(BasicBlockInContext n) throws UnsupportedOperationException {
+  public void removeNode(BasicBlockInContext<T> n) throws UnsupportedOperationException {
     throw new UnsupportedOperationException();
   }
 
@@ -631,12 +625,12 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
    * @see com.ibm.wala.util.graph.EdgeManager#addEdge(com.ibm.wala.util.graph.Node, com.ibm.wala.util.graph.Node)
    */
   @Override
-  public void addEdge(BasicBlockInContext src, BasicBlockInContext dst) throws UnsupportedOperationException {
+  public void addEdge(BasicBlockInContext<T> src, BasicBlockInContext<T> dst) throws UnsupportedOperationException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void removeEdge(BasicBlockInContext src, BasicBlockInContext dst) throws UnsupportedOperationException {
+  public void removeEdge(BasicBlockInContext<T> src, BasicBlockInContext<T> dst) throws UnsupportedOperationException {
     throw new UnsupportedOperationException();
   }
 
@@ -644,7 +638,7 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
    * @see com.ibm.wala.util.graph.EdgeManager#removeEdges(com.ibm.wala.util.graph.Node)
    */
   @Override
-  public void removeAllIncidentEdges(BasicBlockInContext node) throws UnsupportedOperationException {
+  public void removeAllIncidentEdges(BasicBlockInContext<T> node) throws UnsupportedOperationException {
     throw new UnsupportedOperationException();
   }
 
@@ -662,7 +656,6 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
   }
 
   /**
-   * @param B
    * @return true iff basic block B ends in a call instuction
    */
   public boolean hasCall(BasicBlockInContext<T> B) {
@@ -692,7 +685,6 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
   }
 
   /**
-   * @param B
    * @return the set of CGNodes that B may call, according to the governing call graph.
    * @throws IllegalArgumentException if B is null
    */
@@ -725,12 +717,12 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
   }
 
   @Override
-  public void removeIncomingEdges(BasicBlockInContext node) throws UnsupportedOperationException {
+  public void removeIncomingEdges(BasicBlockInContext<T> node) throws UnsupportedOperationException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void removeOutgoingEdges(BasicBlockInContext node) throws UnsupportedOperationException {
+  public void removeOutgoingEdges(BasicBlockInContext<T> node) throws UnsupportedOperationException {
     throw new UnsupportedOperationException();
   }
 
@@ -836,7 +828,7 @@ public abstract class AbstractInterproceduralCFG<T extends ISSABasicBlock> imple
 
     // a successor node is a return site if it is in the same
     // procedure, and is not the entry() node.
-    Predicate<BasicBlockInContext> isReturn = other -> !other.isEntryBlock() && node.equals(other.getNode());
+    Predicate<BasicBlockInContext<T>> isReturn = other -> !other.isEntryBlock() && node.equals(other.getNode());
     return new FilterIterator<>(getSuccNodes(callBlock), isReturn);
   }
 

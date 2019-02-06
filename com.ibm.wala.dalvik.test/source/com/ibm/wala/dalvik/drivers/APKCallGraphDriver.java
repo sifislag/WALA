@@ -1,7 +1,6 @@
 package com.ibm.wala.dalvik.drivers;
 
 import java.io.File;
-import java.net.URI;
 import java.util.Collections;
 import java.util.Set;
 
@@ -28,23 +27,6 @@ public class APKCallGraphDriver {
   
   private static int timeout = -1;
 
-  private static URI[] libs() {
-    File f = new File("libs");
-    if (f.exists() && f.isDirectory()) {
-      Set<URI> libs = HashSetFactory.make();
-      for(File l : f.listFiles()) {
-        String name = l.getName();
-        if (name.endsWith("jar") || name.endsWith("dex")) {
-          libs.add(l.toURI());
-        }
-      }
-      
-      return libs.toArray(new URI[ libs.size() ]);
-    }
-    
-    return Util.androidLibs();
-  }
-  
   public static void main(String[] args) {
 	  File apk = new File(args[0]);
 	  try {
@@ -129,7 +111,7 @@ public class APKCallGraphDriver {
 
           System.err.println("reachable methods for " + apk1);
           for(IMethod m2 : code) {
-            System.err.println("" + m2.getDeclaringClass().getName() + " " + m2.getName() + m2.getDescriptor());
+            System.err.println(m2.getDeclaringClass().getName() + " " + m2.getName() + m2.getDescriptor());
 
           }
           System.err.println("end of methods");

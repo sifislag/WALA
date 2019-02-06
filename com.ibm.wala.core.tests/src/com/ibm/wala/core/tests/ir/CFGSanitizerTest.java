@@ -46,10 +46,6 @@ public class CFGSanitizerTest extends WalaTestCase {
   /**
    * check that for all synthetic methods coming from the native specifications, the exit block is not disconnected from the rest of
    * the sanitized graph
-   * 
-   * @throws IOException
-   * @throws IllegalArgumentException
-   * @throws WalaException
    */
   @Test
   public void testSyntheticEdgeToExit() throws IOException, IllegalArgumentException, WalaException {
@@ -63,13 +59,14 @@ public class CFGSanitizerTest extends WalaTestCase {
     }
     AnalysisOptions options = new AnalysisOptions(scope, null);
     Map<MethodReference, MethodSummary> summaries = summary.getSummaries();
-    for (MethodReference mr : summaries.keySet()) {
+    for (Map.Entry<MethodReference, MethodSummary> entry : summaries.entrySet()) {
+      final MethodReference mr = entry.getKey();
       IMethod m = cha.resolveMethod(mr);
       if (m == null) {
         continue;
       }
       System.out.println(m.getSignature());
-      MethodSummary methodSummary = summaries.get(mr);
+      MethodSummary methodSummary = entry.getValue();
       SummarizedMethod summMethod = new SummarizedMethod(mr, methodSummary, m.getDeclaringClass());
       IR ir = summMethod.makeIR(Everywhere.EVERYWHERE, options.getSSAOptions());
       System.out.println(ir);

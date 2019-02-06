@@ -49,11 +49,8 @@ public class SWTPointsTo {
   /**
    * Usage: SWTPointsTo -appJar [jar file name] The "jar file name" should be
    * something like "c:/temp/testdata/java_cup.jar"
-   * 
-   * @param args
-   * @throws WalaException
    */
-  public static void main(String[] args) throws WalaException {
+  public static void main(String[] args) {
     Properties p = CommandLine.parse(args);
     PDFCallGraph.validateCommandLine(p);
     run(p.getProperty("appJar"));
@@ -69,7 +66,7 @@ public class SWTPointsTo {
       Graph<Object> g = buildPointsTo(appJar);
 
       // create and run the viewer
-      final SWTTreeViewer v = new SWTTreeViewer();
+      final SWTTreeViewer<Object> v = new SWTTreeViewer<>();
       v.setGraphInput(g);
       v.setRootsInput(InferGraphRoots.inferRoots(g));
       v.run();

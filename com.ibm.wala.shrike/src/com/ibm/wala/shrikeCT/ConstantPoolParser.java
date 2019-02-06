@@ -542,7 +542,7 @@ public final class ConstantPoolParser implements ClassConstants {
 
   private InvalidClassFileException invalidUtf8(int item, int offset) {
     return new InvalidClassFileException(offset, "Constant pool item #" + item + " starting at " + cpOffsets[item]
-        + ", is an invalid Java Utf8 string (byte is " + getByte(offset) + ")");
+        + ", is an invalid Java Utf8 string (byte is " + getByte(offset) + ')');
   }
 
   /**
@@ -560,7 +560,7 @@ public final class ConstantPoolParser implements ClassConstants {
     if (s == null) {
       int count = getUShort(offset + 1);
       int end = count + offset + 3;
-      StringBuffer buf = new StringBuffer(count);
+      StringBuilder buf = new StringBuilder(count);
       offset += 3;
       while (offset < end) {
         byte x = getByte(offset);

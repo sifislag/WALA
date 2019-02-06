@@ -17,6 +17,7 @@
 
 package com.ibm.wala.sourcepos;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -36,14 +37,14 @@ class InvalidCRTDataException extends Exception {
   private LinkedList<Object> data;
 
   /**
-   * Creates a new instance of <code>InvalidCRTDataException</code> without
+   * Creates a new instance of {@code InvalidCRTDataException} without
    * detail message.
    */
   InvalidCRTDataException() {
   }
 
   /**
-   * Constructs an instance of <code>InvalidCRTDataException</code> with the
+   * Constructs an instance of {@code InvalidCRTDataException} with the
    * specified detail message.
    * 
    * @param msg
@@ -54,7 +55,7 @@ class InvalidCRTDataException extends Exception {
   }
 
   /**
-   * Constructs an instance of <code>InvalidCRTDataException</code> with the
+   * Constructs an instance of {@code InvalidCRTDataException} with the
    * specified detail message and additional information.
    * 
    * @param msg
@@ -65,8 +66,7 @@ class InvalidCRTDataException extends Exception {
   InvalidCRTDataException(String msg, Object... data) {
     super(msg);
     this.data = new LinkedList<>();
-    for (Object o : data)
-      this.data.add(o);
+    this.data.addAll(Arrays.asList(data));
   }
 
   /**

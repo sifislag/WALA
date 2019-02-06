@@ -17,7 +17,6 @@ package com.ibm.wala.util.intset;
 public interface LongSet {
 
   /**
-   * @param i
    * @return true iff this set contains long i
    */
   public boolean contains(long i);
@@ -51,13 +50,13 @@ public interface LongSet {
   public long max();
 
   /**
-   * @return true iff <code>this</code> has the same value as
-   *         <code>that</code>.
+   * @return true iff {@code this} has the same value as
+   *         {@code that}.
    */
   public boolean sameValue(LongSet that);
 
   /**
-   * @return true iff <code>this</code> is a subset of <code>that</code>.
+   * @return true iff {@code this} is a subset of {@code that}.
    */
   public boolean isSubset(LongSet that);
 
@@ -68,15 +67,11 @@ public interface LongSet {
 
   /**
    * Invoke an action on each element of the Set
-   * 
-   * @param action
    */
   public void foreach(LongSetAction action);
 
   /**
    * Invoke an action on each element of the Set, excluding elements of Set X
-   * 
-   * @param action
    */
   public void foreachExcluding(LongSet X, LongSetAction action);
 

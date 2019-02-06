@@ -249,7 +249,6 @@ public class CorrelationFinder {
 
     Collections.sort(correlations, new Comparator<Pair<Position, String>>() {
       @Override
-      @SuppressWarnings("unchecked")
       public int compare(Pair<Position, String> o1, Pair<Position, String> o2) {
         return o1.fst.compareTo(o2.fst);
       }		
@@ -277,7 +276,7 @@ public class CorrelationFinder {
   }
 
   public Map<IMethod, CorrelationSummary> findCorrelatedAccesses(Collection<? extends SourceModule> scripts) throws ClassHierarchyException {
-    return findCorrelatedAccesses(scripts.toArray(new SourceModule[scripts.size()]));
+    return findCorrelatedAccesses(scripts.toArray(new SourceModule[0]));
   }
 
   public Map<IMethod, CorrelationSummary> findCorrelatedAccesses(SourceModule[] scripts_array) throws ClassHierarchyException {

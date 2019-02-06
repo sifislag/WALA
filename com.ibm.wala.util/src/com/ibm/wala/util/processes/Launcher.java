@@ -83,13 +83,7 @@ public abstract class Launcher {
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (workingDir: ");
-    result.append(workingDir);
-    result.append(", env: ");
-    result.append(env);
-    result.append(')');
-    return result.toString();
+    return super.toString() + " (workingDir: " + workingDir + ", env: " + env + ')';
   }
 
   /**
@@ -130,7 +124,7 @@ public abstract class Launcher {
     String[] result = new String[ev.size()];
     int i = 0;
     for (Map.Entry<String, String> e : ev.entrySet()) {
-      result[i++] = e.getKey() + "=" + e.getValue();
+      result[i++] = e.getKey() + '=' + e.getValue();
     }
     return result;
   }

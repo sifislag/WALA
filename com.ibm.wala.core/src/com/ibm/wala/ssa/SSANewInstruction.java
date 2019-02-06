@@ -61,8 +61,7 @@ public abstract class SSANewInstruction extends SSAInstruction {
         || site.getDeclaredType().getClassLoader().getLanguage() != ClassLoaderReference.Java;
     this.result = result;
     this.site = site;
-    this.params = new int[params.length];
-    System.arraycopy(params, 0, this.params, 0, params.length);
+    this.params = params.clone();
   }
 
   @Override
@@ -76,23 +75,19 @@ public abstract class SSANewInstruction extends SSAInstruction {
 
   @Override
   public String toString(SymbolTable symbolTable) {
-    return getValueString(symbolTable, result) + " = new " + site.getDeclaredType() + "@" + site.getProgramCounter()
+    return getValueString(symbolTable, result) + " = new " + site.getDeclaredType() + '@' + site.getProgramCounter()
         + (params == null ? "" : array2String(params, symbolTable));
   }
 
   private String array2String(int[] params, SymbolTable symbolTable) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     for (int param : params) {
       result.append(getValueString(symbolTable, param));
-      result.append(" ");
+      result.append(' ');
     }
     return result.toString();
   }
 
-  /**
-   * @see com.ibm.wala.ssa.SSAInstruction#visit(IVisitor)
-   * @throws IllegalArgumentException if v is null
-   */
   @Override
   public void visit(IVisitor v) {
     if (v == null) {

@@ -157,7 +157,7 @@ public class DotUtil {
     if (g == null) {
       throw new IllegalArgumentException("g is null");
     }
-    StringBuffer dotStringBuffer = dotOutput(g, labels, title);
+    StringBuilder dotStringBuffer = dotOutput(g, labels, title);
 
     // retrieve the filename parameter to this component, a String
     if (dotfile == null) {
@@ -177,20 +177,19 @@ public class DotUtil {
 
   /**
    * @return StringBuffer holding dot output representing G
-   * @throws WalaException
    */
-  public static <T> StringBuffer dotOutput(Graph<T> g, NodeDecorator<T> labels, String title) throws WalaException {
-    StringBuffer result = new StringBuffer("digraph \"DirectedGraph\" {\n");
+  public static <T> StringBuilder dotOutput(Graph<T> g, NodeDecorator<T> labels, String title) throws WalaException {
+    StringBuilder result = new StringBuilder("digraph \"DirectedGraph\" {\n");
 
     if (title != null) {
-      result.append("graph [label = \""+title+"\", labelloc=t, concentrate = true];");
+      result.append("graph [label = \"").append(title).append("\", labelloc=t, concentrate = true];");
     } else {
       result.append("graph [concentrate = true];");
     }
     
     String rankdir = getRankDir();
     if (rankdir != null) {
-      result.append("rankdir=" + rankdir + ";");
+      result.append("rankdir=").append(rankdir).append(';');
     }
     String fontsizeStr = "fontsize=" + fontSize;
     String fontcolorStr = (fontColor != null) ? ",fontcolor="+fontColor : "";
@@ -214,7 +213,7 @@ public class DotUtil {
 
     for (T n : g) {
       for (T s : Iterator2Iterable.make(g.getSuccNodes(n))) {
-        result.append(" ");
+        result.append(' ');
         result.append(getPort(n, labels));
         result.append(" -> ");
         result.append(getPort(s, labels));
@@ -226,17 +225,17 @@ public class DotUtil {
     return result;
   }
 
-  private static <T> void outputNodes(NodeDecorator<T> labels, StringBuffer result, Collection<T> dotNodes) throws WalaException {
+  private static <T> void outputNodes(NodeDecorator<T> labels, StringBuilder result, Collection<T> dotNodes) throws WalaException {
     for (T t : dotNodes) {
       outputNode(labels, result, t);
     }
   }
 
-  private static <T> void outputNode(NodeDecorator<T> labels, StringBuffer result, T n) throws WalaException {
+  private static <T> void outputNode(NodeDecorator<T> labels, StringBuilder result, T n) throws WalaException {
     result.append("   ");
-    result.append("\"");
+    result.append('\"');
     result.append(getLabel(n, labels));
-    result.append("\"");
+    result.append('\"');
     result.append(decorateNode(n, labels));
   }
 
@@ -256,11 +255,7 @@ public class DotUtil {
    * @param d decorating master
    */
   private static <T> String decorateNode(T n, NodeDecorator<T> d) throws WalaException {
-    StringBuffer result = new StringBuffer();
-    result.append(" [ label=\"");
-    result.append(getLabel(n, d));
-    result.append("\"]\n");
-    return result.toString();
+    return " [ label=\"" + getLabel(n, d) + "\"]\n";
   }
 
   private static <T> String getLabel(T n, NodeDecorator<T> d) throws WalaException {
@@ -278,7 +273,7 @@ public class DotUtil {
   }
 
   private static <T> String getPort(T n, NodeDecorator<T> d) throws WalaException {
-    return "\"" + getLabel(n, d) + "\"";
+    return '"' + getLabel(n, d) + '"';
 
   }
 

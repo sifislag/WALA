@@ -42,17 +42,7 @@ public final class PathEdge<T> {
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append("<");
-    result.append(entry.toString());
-    result.append(",");
-    result.append(d1);
-    result.append("> -> <");
-    result.append(target.toString());
-    result.append(",");
-    result.append(d2);
-    result.append(">");
-    return result.toString();
+    return '<' + entry.toString() + ',' + d1 + "> -> <" + target + ',' + d2 + '>';
   }
 
   @Override
@@ -74,7 +64,7 @@ public final class PathEdge<T> {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    final PathEdge other = (PathEdge) obj;
+    final PathEdge<?> other = (PathEdge<?>) obj;
     if (d1 != other.d1)
       return false;
     if (d2 != other.d2)

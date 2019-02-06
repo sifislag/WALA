@@ -119,7 +119,7 @@ public class DefaultInstantiationBehavior extends IInstantiationBehavior {
 
         @Override
         public String toString() {
-            return "<BehaviorKey of " + base.toString() + ">";
+            return "<BehaviorKey of " + base.toString() + '>';
         }
     }
 
@@ -210,8 +210,6 @@ public class DefaultInstantiationBehavior extends IInstantiationBehavior {
     }
 
     /**
-     *  {@inheritDoc}
-     *
      *  @param  asParameterTo   not considered
      *  @param  inCall          not considered
      *  @param  withName        not considered
@@ -277,7 +275,7 @@ public class DefaultInstantiationBehavior extends IInstantiationBehavior {
         {
             String prefix = type.toString();
             while (prefix.contains("/")) {
-                prefix = prefix.substring(0, prefix.lastIndexOf("/") - 1);
+                prefix = prefix.substring(0, prefix.lastIndexOf('/') - 1);
                 final BehaviorKey<Atom> prefixKey= BehaviorKey.mk(Atom.findOrCreateAsciiAtom(prefix));
                 if (behaviours.containsKey(prefixKey)) {
                     // cache
@@ -353,10 +351,10 @@ public class DefaultInstantiationBehavior extends IInstantiationBehavior {
             stream.writeObject(this.behaviours);
         } else {
             final Map<BehaviorKey<?>, BehviourValue> strippedBehaviours = new HashMap<>();
-            for (final BehaviorKey<?> key : this.behaviours.keySet()) {
-                final BehviourValue val = this.behaviours.get(key);
+            for (final Map.Entry<BehaviorKey<?>, BehviourValue> entry : this.behaviours.entrySet()) {
+                final BehviourValue val = entry.getValue();
                 if (! val.isCached() ) {
-                    strippedBehaviours.put(key, val);
+                    strippedBehaviours.put(entry.getKey(), val);
                 }
             }
             stream.writeObject(strippedBehaviours);

@@ -23,7 +23,6 @@ public class SeqClassHierarchyFactory {
 
   /**
    * @return a ClassHierarchy object representing the analysis scope
-   * @throws ClassHierarchyException
    */
   public static ClassHierarchy make(AnalysisScope scope) throws ClassHierarchyException {
     if (scope == null) {
@@ -50,7 +49,7 @@ public class SeqClassHierarchyFactory {
       throw new IllegalArgumentException("null factory");
     }
     return new ClassHierarchy(scope, factory, null, HashMapFactory.make(),
-        false);
+        ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
   /**
@@ -58,17 +57,17 @@ public class SeqClassHierarchyFactory {
    */
   public static ClassHierarchy make(AnalysisScope scope, ClassLoaderFactory factory, IProgressMonitor monitor)
       throws ClassHierarchyException {
-    return new ClassHierarchy(scope, factory, monitor, HashMapFactory.make(), false);
+    return new ClassHierarchy(scope, factory, monitor, HashMapFactory.make(), ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
   public static ClassHierarchy make(AnalysisScope scope, ClassLoaderFactory factory, Set<Language> languages)
       throws ClassHierarchyException {
-    return new ClassHierarchy(scope, factory, languages, null, HashMapFactory.make(), false);
+    return new ClassHierarchy(scope, factory, languages, null, HashMapFactory.make(), ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
   public static ClassHierarchy make(AnalysisScope scope, ClassLoaderFactory factory, Language language)
       throws ClassHierarchyException {
-    return new ClassHierarchy(scope, factory, language, null, HashMapFactory.make(), false);
+    return new ClassHierarchy(scope, factory, language, null, HashMapFactory.make(), ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
   /**
@@ -79,7 +78,7 @@ public class SeqClassHierarchyFactory {
     if (factory == null) {
       throw new IllegalArgumentException("null factory");
     }
-    return new ClassHierarchy(scope, factory, language, monitor, HashMapFactory.make(), false);
+    return new ClassHierarchy(scope, factory, language, monitor, HashMapFactory.make(), ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
 }

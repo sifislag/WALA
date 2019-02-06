@@ -49,8 +49,6 @@ public class NodejsRequiredSourceModule extends SourceFileModule {
 	/**
 	 * @param f
 	 *            Must be a file located below folder workingDir.
-	 * @param clonedFrom
-	 * @throws IOException
 	 */
 	protected NodejsRequiredSourceModule(String className, File f, SourceFileModule clonedFrom) throws IOException {
 		super(f, clonedFrom);
@@ -76,23 +74,25 @@ public class NodejsRequiredSourceModule extends SourceFileModule {
 		
 		String wrapperSource = null;
 		String ext = FilenameUtils.getExtension(getFile().toString()).toLowerCase();
-		if (ext.equals("js")) {
-			// JS file -> use module wrapper
-			wrapperSource = MODULE_WRAPPER_SOURCE;
-		}
-		else if (ext.equals("json")) {
-			// JSON file -> use JSON wrapper
-			wrapperSource = JSON_WRAPPER_SOURCE;
-		}
-		else {
-			// No clue -> try module wrapper
-			System.err.println("NodejsRequiredSourceModule: Unsupported file type ("+ext+"), continue anyway.");
-			wrapperSource = MODULE_WRAPPER_SOURCE;
+		switch (ext) {
+			case "js":
+				// JS file -> use module wrapper
+				wrapperSource = MODULE_WRAPPER_SOURCE;
+				break;
+			case "json":
+				// JSON file -> use JSON wrapper
+				wrapperSource = JSON_WRAPPER_SOURCE;
+				break;
+			default:
+				// No clue -> try module wrapper
+				System.err.println("NodejsRequiredSourceModule: Unsupported file type (" + ext + "), continue anyway.");
+				wrapperSource = MODULE_WRAPPER_SOURCE;
+				break;
 		}
 
 		String wrappedModuleSource = wrapperSource
 				.replace(FILENAME_PLACEHOLDER, getFile().getName())
-				.replace(DIRNAME_PLACEHOLDER, getFile().getParent().toString())
+				.replace(DIRNAME_PLACEHOLDER, getFile().getParent())
 				.replace(CODE_PLACEHOLDER, moduleSource);
 
 		return IOUtils.toInputStream(wrappedModuleSource);
@@ -122,9 +122,6 @@ public class NodejsRequiredSourceModule extends SourceFileModule {
 	/**
 	 * Generate a className based on the file name and path of the module file.
 	 * The path should be encoded in the className since the file name is not unique.
-	 * 
-	 * @param rootDir
-	 * @param file
 	 */
 	public static String convertFileToClassName(File rootDir, File file) {
 		URI normalizedWorkingDirURI = rootDir.getAbsoluteFile().toURI().normalize();

@@ -49,16 +49,17 @@ public final class ClassHierarchy {
     int r = NO;
     for (String iface2 : ifaces) {
       String iface = iface2;
-      if (!visited.contains(iface)) {
-        visited.add(iface);
+      if (visited.add(iface)) {
         if (iface.equals(t2)) {
           return YES;
         } else {
           int v = checkSuperinterfacesContain(hierarchy, iface, t2, visited);
-          if (v == YES) {
-            return YES;
-          } else if (v == MAYBE) {
-            r = MAYBE;
+          switch (v) {
+            case YES:
+              return YES;
+            case MAYBE:
+              r = MAYBE;
+              break;
           }
         }
       }
@@ -91,10 +92,12 @@ public final class ClassHierarchy {
 
       for (c = t1; c != null; c = hierarchy.getSuperClass(c)) {
         int v = checkSuperinterfacesContain(hierarchy, c, t2, visited);
-        if (v == YES) {
-          return YES;
-        } else if (v == MAYBE) {
-          r = MAYBE;
+        switch (v) {
+          case YES:
+            return YES;
+          case MAYBE:
+            r = MAYBE;
+            break;
         }
       }
     }
@@ -116,16 +119,17 @@ public final class ClassHierarchy {
     int r = NO;
     for (String subtype : subtypes) {
       String subt = subtype;
-      if (!visited.contains(subt)) {
-        visited.add(subt);
+      if (visited.add(subt)) {
         if (subt.equals(t2)) {
           return YES;
         } else {
           int v = checkSubtypesContain(hierarchy, subt, t2, visited);
-          if (v == YES) {
-            return YES;
-          } else if (v == MAYBE) {
-            r = MAYBE;
+          switch (v) {
+            case YES:
+              return YES;
+            case MAYBE:
+              r = MAYBE;
+              break;
           }
         }
       }
@@ -194,8 +198,7 @@ public final class ClassHierarchy {
       boolean r = true;
       for (int i = 0; i < ifaces.length; i++) {
         String iface = ifaces[i];
-        if (!supers.contains(iface)) {
-          supers.add(iface);
+        if (supers.add(iface)) {
           if (!insertSuperInterfaces(hierarchy, ifaces[i], supers)) {
             r = false;
           }
@@ -252,8 +255,7 @@ public final class ClassHierarchy {
       boolean r = true;
       for (int i = 0; i < ifaces.length; i++) {
         String iface = ifaces[i];
-        if (!supers.contains(iface)) {
-          supers.add(iface);
+        if (supers.add(iface)) {
           if (!insertSuperInterfaces(hierarchy, ifaces[i], supers)) {
             r = false;
           }
@@ -379,23 +381,26 @@ public final class ClassHierarchy {
         }
       case '[': {
         char ch2 = t2.charAt(0);
-        if (ch2 == '[') {
-          char ch1_1 = t1.charAt(1);
-          if (ch1_1 == '[' || ch1_1 == 'L') {
-            return "[" + findCommonSupertype(hierarchy, t1.substring(1), t2.substring(1));
-          } else {
-            return Constants.TYPE_Object;
-          }
-        } else if (ch2 == 'L') {
-          if (t2.equals(Constants.TYPE_null)) {
-            return t1;
-          } else if (t2.equals("Ljava/io/Serializable;") || t2.equals("Ljava/lang/Cloneable;")) {
-            return t2;
-          } else {
-            return Constants.TYPE_Object;
-          }
-        } else {
-          return null;
+        switch (ch2) {
+          case '[':
+            char ch1_1 = t1.charAt(1);
+            if (ch1_1 == '[' || ch1_1 == 'L') {
+              return '[' + findCommonSupertype(hierarchy, t1.substring(1), t2.substring(1));
+            } else {
+              return Constants.TYPE_Object;
+            }
+          case 'L':
+            switch (t2) {
+              case Constants.TYPE_null:
+                return t1;
+              case "Ljava/io/Serializable;":
+              case "Ljava/lang/Cloneable;":
+                return t2;
+              default:
+                return Constants.TYPE_Object;
+            }
+          default:
+            return null;
         }
       }
       default:

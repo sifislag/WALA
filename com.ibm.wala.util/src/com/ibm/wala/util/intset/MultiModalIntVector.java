@@ -77,7 +77,6 @@ public class MultiModalIntVector implements IntVector {
   /**
    * Will determine a dynamic growth factor that depends on the current size of the array
    * 
-   * @param size
    * @return the new growth factor
    */
 
@@ -207,8 +206,6 @@ public class MultiModalIntVector implements IntVector {
 
   /**
    * make sure we can store to a particular index
-   * 
-   * @param capacity
    */
   private void ensureCapacity(int capacity, int value) {
     int length = getStoreLength();
@@ -220,27 +217,24 @@ public class MultiModalIntVector implements IntVector {
         int[] old = intStore;
         // New array size
         int newSize = 1 + (int) (getGrowthFactor(length) * capacity) - byteStore.length - shortStore.length;
-        int[] newData = new int[newSize];
-        Arrays.fill(newData, defaultValue);
-        System.arraycopy(old, 0, newData, 0, old.length);
+        int[] newData = Arrays.copyOf(old, newSize);
+        Arrays.fill(newData, old.length, newSize, defaultValue);
         intStore = newData;
       }
     } else if (shortStore.length > 0 || NumberUtility.isShort(value)) {
       if (capacity >= length) {
         short[] old = shortStore;
         int newSize = 1 + (int) (getGrowthFactor(length) * capacity) - byteStore.length;
-        short[] newData = new short[newSize];
-        Arrays.fill(newData, (short) defaultValue);
-        System.arraycopy(old, 0, newData, 0, old.length);
+        short[] newData = Arrays.copyOf(old, newSize);
+        Arrays.fill(newData, old.length, newSize, (short) defaultValue);
         shortStore = newData;
       }
     } else {
       if (capacity >= length) {
         byte[] old = byteStore;
         int newSize = 1 + (int) (getGrowthFactor(length) * capacity);
-        byte[] newData = new byte[newSize];
-        Arrays.fill(newData, (byte) defaultValue);
-        System.arraycopy(old, 0, newData, 0, old.length);
+        byte[] newData = Arrays.copyOf(old, newSize);
+        Arrays.fill(newData, old.length, newSize, (byte) defaultValue);
         byteStore = newData;
       }
     }
@@ -252,15 +246,15 @@ public class MultiModalIntVector implements IntVector {
   }
 
   public void print() {
-    String str = "";
+    final StringBuilder str = new StringBuilder();
     for (byte element : byteStore) {
-      str += element + ",";
+      str.append(element).append(',');
     }
     for (short element : shortStore) {
-      str += element + ",";
+      str.append(element).append(',');
     }
     for (int element : intStore) {
-      str += element + ",";
+      str.append(element).append(',');
     }
     System.out.println(str);
   }

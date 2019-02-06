@@ -60,8 +60,6 @@ public class ArrayOutOfBoundsAnalysis {
    * 
    * Make sure, the given IR was created with pi nodes for each variable, that
    * is part of a branch instruction! Otherwise the results will be poor.
-   * 
-   * @param ir
    */
   public ArrayOutOfBoundsAnalysis(IR ir) {
     this.boundsCheckUnnecessary = new InstructionByIIndexMap<>();
@@ -113,13 +111,13 @@ public class ArrayOutOfBoundsAnalysis {
    */
   private void computeUpperBounds() {
     final Map<Integer, Integer> arrayLengths = this.upperBoundGraph.getArrayLength();
-    for (final Integer array : arrayLengths.keySet()) {
-      final HyperNode<Integer> arrayNode = this.upperBoundGraph.getNodes().get(arrayLengths.get(array));
+    for (final Map.Entry<Integer, Integer> entry : arrayLengths.entrySet()) {
+      final HyperNode<Integer> arrayNode = this.upperBoundGraph.getNodes().get(entry.getValue());
 
       ShortestPath.compute(this.upperBoundGraph, arrayNode, new ReverseOrder());
 
       for (final SSAArrayReferenceInstruction instruction : this.boundsCheckUnnecessary.keySet()) {
-        if (instruction.getArrayRef() == array) {
+        if (instruction.getArrayRef() == entry.getKey()) {
           Weight weight = this.upperBoundGraph.getVariableWeight(instruction.getIndex());
 
           if (weight.getType() == Weight.Type.NUMBER && weight.getNumber() <= -1) {

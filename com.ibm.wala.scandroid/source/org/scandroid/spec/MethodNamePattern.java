@@ -97,7 +97,6 @@ public class MethodNamePattern {
 	/**
 	 * Returns a Collection of IMethods which are found in the following 
 	 * ClassLoaders: Application, Primordial, Extension
-	 * @param cha
 	 */
 	public Collection<IMethod> getPossibleTargets(IClassHierarchy cha) {
 		Collection<IMethod> matching = new LinkedList<>();
@@ -126,8 +125,8 @@ public class MethodNamePattern {
 		String returnString = "MethodNamePattern (Class: "+className+
 				" - Method: "+memberName; 
 		if (descriptor == null)
-			return returnString+")";
-		return returnString+" - Descriptor: "+descriptor+")";
+			return returnString+ ')';
+		return returnString+" - Descriptor: "+descriptor+ ')';
 
 	}
 	

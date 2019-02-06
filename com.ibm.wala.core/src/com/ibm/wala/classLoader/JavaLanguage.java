@@ -560,7 +560,6 @@ public class JavaLanguage extends LanguageImpl implements BytecodeLanguage, Cons
 
   /**
    * @return {@link Collection}&lt;{@link TypeReference}&gt;, set of exception types a call to a declared target might throw.
-   * @throws InvalidClassFileException
    * @throws IllegalArgumentException if target is null
    * @throws IllegalArgumentException if cha is null
    */
@@ -737,7 +736,7 @@ public class JavaLanguage extends LanguageImpl implements BytecodeLanguage, Cons
       return ShrikeUtil.makeTypeReference(ClassLoaderReference.Application, ((ClassToken) value).getTypeName());
     } else if (value instanceof ReferenceToken) {
       ReferenceToken tok = (ReferenceToken)value;
-      TypeReference cls = ShrikeUtil.makeTypeReference(ClassLoaderReference.Application, "L" + tok.getClassName());
+      TypeReference cls = ShrikeUtil.makeTypeReference(ClassLoaderReference.Application, 'L' + tok.getClassName());
       return MethodReference.findOrCreate(cls, new Selector(Atom.findOrCreateUnicodeAtom(tok.getElementName()), Descriptor.findOrCreateUTF8(tok.getDescriptor())));
     } else if (value instanceof MethodHandle || value instanceof MethodType) {
       return value;
@@ -757,7 +756,7 @@ public class JavaLanguage extends LanguageImpl implements BytecodeLanguage, Cons
     return TypeReference.JavaLangString;
   }
   
-  {
+  static {
     JavaPrimitiveType.init();
   }
   

@@ -45,6 +45,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
@@ -79,7 +80,7 @@ public class Util {
   }
   
   /**
-   * Return those elements of <code>c</code> that are assignable to <code>klass</code>.
+   * Return those elements of {@code c} that are assignable to {@code klass}.
    */
   @SuppressWarnings("unchecked")
   public static <S, T> Set<T> filterByType(Iterable<S> c, Class<T> klass) {
@@ -197,9 +198,7 @@ public class Util {
       throw new IllegalArgumentException("data == null");
     }
     if (data.length < newSize) {
-      int[] newData = new int[newSize];
-      System.arraycopy(data, 0, newData, 0, data.length);
-      return newData;
+      return Arrays.copyOf(data, newSize);
     } else
       return data;
   }
@@ -225,7 +224,7 @@ public class Util {
     });
 
     Class<?> c = obj.getClass();
-    StringBuffer buf = new StringBuffer(FULLY_QUALIFIED_NAMES ? c.getName() : removePackageName(c.getName()));
+    StringBuilder buf = new StringBuilder(FULLY_QUALIFIED_NAMES ? c.getName() : removePackageName(c.getName()));
     while (c != Object.class) {
       Field[] fields = c.getDeclaredFields();
 
@@ -243,7 +242,7 @@ public class Util {
 
           // name=value : type
           buf = buf.append(name);
-          buf = buf.append("=");
+          buf = buf.append('=');
           buf = buf.append(value == null ? "null" : value.toString());
           buf = buf.append(" : ");
           buf = buf.append(FULLY_QUALIFIED_NAMES ? type.getName() : removePackageName(type.getName()));
@@ -278,7 +277,7 @@ public class Util {
   /**
    * checks if two sets have a non-empty intersection
    * 
-   * @return <code>true</code> if the sets intersect; <code>false</code> otherwise
+   * @return {@code true} if the sets intersect; {@code false} otherwise
    */
   public static <T> boolean intersecting(final Set<T> s1, final Set<T> s2) {
     return forSome(s1, s2::contains);

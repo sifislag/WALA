@@ -30,22 +30,22 @@ public abstract class AbstractStatement<T extends IVariable<T>, O extends Abstra
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("");
+    StringBuilder result = new StringBuilder();
     if (getLHS() == null) {
       result.append("null ");
     } else {
       result.append(getLHS().toString());
-      result.append(" ");
+      result.append(' ');
     }
     result.append(getOperator().toString());
-    result.append(" ");
+    result.append(' ');
     for (int i = 0; i < getRHS().length; i++) {
       if (getRHS()[i] == null) {
         result.append("null");
       } else {
         result.append(getRHS()[i].toString());
       }
-      result.append(" ");
+      result.append(' ');
     }
     return result.toString();
   }

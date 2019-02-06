@@ -105,7 +105,7 @@ public class PDFViewUtil {
   }
 
   private static String getNodeLabel(IR ir, BasicBlock bb) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     int start = bb.getFirstInstructionIndex();
     int end = bb.getLastInstructionIndex();
@@ -121,14 +121,14 @@ public class PDFViewUtil {
     result.append("\\n");
     for (SSAPhiInstruction phi : Iterator2Iterable.make(bb.iteratePhis())) {
       if (phi != null) {
-        result.append("           " + phi.toString(ir.getSymbolTable())).append("\\l");
+        result.append("           ").append(phi.toString(ir.getSymbolTable())).append("\\l");
       }
     }
     if (bb instanceof ExceptionHandlerBasicBlock) {
       ExceptionHandlerBasicBlock ebb = (ExceptionHandlerBasicBlock) bb;
       SSAGetCaughtExceptionInstruction s = ebb.getCatchInstruction();
       if (s != null) {
-        result.append("           " + s.toString(ir.getSymbolTable())).append("\\l");
+        result.append("           ").append(s.toString(ir.getSymbolTable())).append("\\l");
       } else {
         result.append("           " + " No catch instruction. Unreachable?\\l");
       }
@@ -136,7 +136,7 @@ public class PDFViewUtil {
     SSAInstruction[] instructions = ir.getInstructions();
     for (int j = start; j <= end; j++) {
       if (instructions[j] != null) {
-        StringBuffer x = new StringBuffer(j + "   " + instructions[j].toString(ir.getSymbolTable()));
+        StringBuilder x = new StringBuilder(j + "   " + instructions[j].toString(ir.getSymbolTable()));
         StringStuff.padWithSpaces(x, 35);
         result.append(x);
         result.append("\\l");
@@ -144,7 +144,7 @@ public class PDFViewUtil {
     }
     for (SSAPiInstruction pi : Iterator2Iterable.make(bb.iteratePis())) {
       if (pi != null) {
-        result.append("           " + pi.toString(ir.getSymbolTable())).append("\\l");
+        result.append("           ").append(pi.toString(ir.getSymbolTable())).append("\\l");
       }
     }
     return result.toString();

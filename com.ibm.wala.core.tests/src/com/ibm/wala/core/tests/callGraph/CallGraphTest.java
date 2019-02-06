@@ -306,9 +306,6 @@ public class CallGraphTest extends WalaTestCase {
 
   /**
    * TODO: refactor this to avoid excessive code bloat.
-   * 
-   * @throws CancelException
-   * @throws IllegalArgumentException
    */
   public static void doCallGraphs(AnalysisOptions options, IAnalysisCacheView cache, IClassHierarchy cha, AnalysisScope scope,
       boolean testPAToString) throws IllegalArgumentException, CancelException {
@@ -337,7 +334,7 @@ public class CallGraphTest extends WalaTestCase {
     // FIXME: annoying special cases caused by clone2assign mean using
     // the rta graph for proper graph subset checking does not work.
     // (note that all the other such checks do use proper graph subset)
-    Graph<MethodReference> squashZero = checkCallGraph(cg, null, rtaMethods, "0-CFA");
+    Graph<MethodReference> squashZero = checkCallGraph(cg, null, "0-CFA");
 
     // test Pretransitive 0-CFA
     // not currently supported
@@ -354,20 +351,20 @@ public class CallGraphTest extends WalaTestCase {
     // // 0-1-CFA ///
     // ///////////////
     cg = CallGraphTestUtil.buildZeroOneCFA(options, cache, cha, scope, testPAToString);
-    Graph<MethodReference> squashZeroOne = checkCallGraph(cg, squashZero, null, "0-1-CFA");
+    Graph<MethodReference> squashZeroOne = checkCallGraph(cg, squashZero, "0-1-CFA");
 
     // ///////////////////////////////////////////////////
     // // 0-CFA augmented to disambiguate containers ///
     // ///////////////////////////////////////////////////
     cg = CallGraphTestUtil.buildZeroContainerCFA(options, cache, cha, scope);
-    Graph<MethodReference> squashZeroContainer = checkCallGraph(cg, squashZero, null, "0-Container-CFA");
+    Graph<MethodReference> squashZeroContainer = checkCallGraph(cg, squashZero, "0-Container-CFA");
 
     // ///////////////////////////////////////////////////
     // // 0-1-CFA augmented to disambiguate containers ///
     // ///////////////////////////////////////////////////
     cg = CallGraphTestUtil.buildZeroOneContainerCFA(options, cache, cha, scope);
-    checkCallGraph(cg, squashZeroContainer, null, "0-1-Container-CFA");
-    checkCallGraph(cg, squashZeroOne, null, "0-1-Container-CFA");
+    checkCallGraph(cg, squashZeroContainer, "0-1-Container-CFA");
+    checkCallGraph(cg, squashZeroOne, "0-1-Container-CFA");
 
     // test ICFG
     checkICFG(cg);
@@ -382,8 +379,6 @@ public class CallGraphTest extends WalaTestCase {
 
   /**
    * Check properties of the InterproceduralCFG
-   * 
-   * @param cg
    */
   private static void checkICFG(CallGraph cg) {
     InterproceduralCFG icfg = new InterproceduralCFG(cg);
@@ -407,16 +402,11 @@ public class CallGraphTest extends WalaTestCase {
 
   /**
    * Check consistency of a callgraph, and check that this call graph is a subset of a super-graph
-   * 
-   * @param warnings object to track warnings
-   * @param cg
-   * @param superCG
-   * @param superMethods
-   * @param thisAlgorithm
+   *
    * @return a squashed version of cg
    */
   private static Graph<MethodReference> checkCallGraph(CallGraph cg, Graph<MethodReference> superCG,
-      Set<MethodReference> superMethods, String thisAlgorithm) {
+      String thisAlgorithm) {
     try {
       GraphIntegrity.check(cg);
     } catch (UnsoundGraphException e1) {
@@ -449,8 +439,6 @@ public class CallGraphTest extends WalaTestCase {
   }
 
   /**
-   * @param name
-   * @param cg
    * @return a graph whose nodes are MethodReferences, and whose edges represent calls between MethodReferences
    * @throws IllegalArgumentException if cg is null
    */
@@ -466,11 +454,7 @@ public class CallGraphTest extends WalaTestCase {
     return new Graph<MethodReference>() {
       @Override
       public String toString() {
-        StringBuffer result = new StringBuffer();
-        result.append("squashed " + name + " call graph\n");
-        result.append("Original graph:");
-        result.append(cg.toString());
-        return result.toString();
+        return "squashed " + name + " call graph\n" + "Original graph:" + cg;
       }
 
       /*

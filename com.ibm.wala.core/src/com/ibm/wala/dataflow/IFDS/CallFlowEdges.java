@@ -56,7 +56,7 @@ public class CallFlowEdges {
   @SuppressWarnings("unused")
   public void addCallEdge(int c, int d1, int d2) {
     if (TabulationSolver.DEBUG_LEVEL > 0) {
-      System.err.println("addCallEdge " + c + " " + d1 + " " + d2);
+      System.err.println("addCallEdge " + c + ' ' + d1 + ' ' + d2);
     }
     if (d1 == d2) {
       BimodalMutableIntSet s = (BimodalMutableIntSet) identityEdges.get(d1);
@@ -77,8 +77,6 @@ public class CallFlowEdges {
   }
 
   /**
-   * @param c
-   * @param d2
    * @return set of d1 s.t. {@literal <c, d1> -> <s_p, d2>} was recorded as call flow, or null if none found.
    */
   @SuppressWarnings("unused")
@@ -113,14 +111,12 @@ public class CallFlowEdges {
       }
     }
     if (TabulationSolver.DEBUG_LEVEL > 0) {
-      System.err.println("getCallFlowSources " + c + " " + d2 + " " + result);
+      System.err.println("getCallFlowSources " + c + ' ' + d2 + ' ' + result);
     }
     return result;
   }
 
   /**
-   * 
-   * @param d2
    * @return set of c s.t. {@literal <c, d1> -> <s_p, d2>} was recorded as call flow (for some d1), or null if none found.
    */
   @SuppressWarnings("unused")
@@ -141,7 +137,7 @@ public class CallFlowEdges {
       }
     }
     if (TabulationSolver.DEBUG_LEVEL > 0) {
-      System.err.println("getCallFlowSources " + d2 + " " + result);
+      System.err.println("getCallFlowSources " + d2 + ' ' + result);
     }
     return result;
 

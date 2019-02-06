@@ -11,6 +11,8 @@
 package com.ibm.wala.util.intset;
 
 
+import java.util.Arrays;
+
 /**
  * An implementation of Tarjan's union-find, using path compression and balancing, for non-negative integers
  */
@@ -23,7 +25,7 @@ public class IntegerUnionFind {
    * 
    * parent[i+1] =
    * <ul>
-   * &lt;li&gt;j &gt; 0 if i is in the same equiv class as j
+   * <li>j &gt; 0 if i is in the same equiv class as j
    * <li>j &lt;= 0 if i is the representative of a class of size -(j)+1
    * </ul>
    * 
@@ -84,13 +86,10 @@ public class IntegerUnionFind {
   }
 
   private void grow(int size) {
-    int[] old = parent;
-    parent = new int[size + 1];
-    System.arraycopy(old, 0, parent, 0, old.length);
+    parent = Arrays.copyOf(parent, size + 1);
   }
 
   /**
-   * @param x
    * @return representative of x's equivalence class
    */
   public int find(int x) {
@@ -106,7 +105,6 @@ public class IntegerUnionFind {
   }
 
   /**
-   * @param x
    * @return representative of x's equivalence class
    */
   private int findInternal(int x) {

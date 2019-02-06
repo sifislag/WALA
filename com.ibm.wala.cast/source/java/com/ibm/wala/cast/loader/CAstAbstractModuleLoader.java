@@ -129,9 +129,10 @@ public abstract class CAstAbstractModuleLoader extends CAstAbstractLoader {
     }
 
     if (DEBUG) {
-      for (TypeName tn : types.keySet()) {
+      for (Map.Entry<TypeName, IClass> entry : types.entrySet()) {
         try {
-          System.err.println(("found type " + tn + " : " + types.get(tn) + " < " + types.get(tn).getSuperclass()));
+          final IClass value = entry.getValue();
+          System.err.println(("found type " + entry.getKey() + " : " + value + " < " + value.getSuperclass()));
         } catch (Exception e) {
           System.err.println(e);
         }
@@ -143,9 +144,6 @@ public abstract class CAstAbstractModuleLoader extends CAstAbstractLoader {
 
   /**
    * translate moduleEntry to CAst and store result in topLevelEntities
-   * 
-   * @param ast
-   * @param topLevelEntities
    */
   private void translateModuleEntryToCAst(ModuleEntry moduleEntry, CAst ast, Set<Pair<CAstEntity, ModuleEntry>> topLevelEntities) {
     try {
@@ -165,7 +163,7 @@ public abstract class CAstAbstractModuleLoader extends CAstAbstractLoader {
           topLevelEntities.add(Pair.make(fileEntity, moduleEntry));
 
         } catch (TranslatorToCAst.Error e) {
-          addMessage(moduleEntry, e.warning);
+          addMessages(moduleEntry, e.warning);
         }
       }
     } catch (final IOException e) {
@@ -260,7 +258,7 @@ public abstract class CAstAbstractModuleLoader extends CAstAbstractLoader {
 
     @Override
     public String toString() {
-      return "<Code body of " + cls + ">";
+      return "<Code body of " + cls + '>';
     }
 
     @Override
@@ -349,7 +347,7 @@ public abstract class CAstAbstractModuleLoader extends CAstAbstractLoader {
 
       @Override
       public String toString() {
-        return "Core[" + getReference().getName().toString().substring(1) + "]";
+        return "Core[" + getReference().getName().toString().substring(1) + ']';
       }
 
       @Override

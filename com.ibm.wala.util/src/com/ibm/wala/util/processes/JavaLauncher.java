@@ -149,15 +149,9 @@ public class JavaLauncher extends Launcher {
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (programArgs: ");
-    result.append(programArgs);
-    result.append(", mainClass: ");
-    result.append(mainClass);
-    result.append(", xtraClasspath: ");
-    result.append(xtraClasspath);
-    result.append(')');
-    return result.toString();
+    return super.toString() + " (programArgs: " + programArgs
+            + ", mainClass: " + mainClass
+            + ", xtraClasspath: " + xtraClasspath + ')';
   }
 
   /**
@@ -197,9 +191,7 @@ public class JavaLauncher extends Launcher {
       cmd.add("-ea");
     }
     if (vmArgs != null) {
-      for (String s : vmArgs) {
-        cmd.add(s);
-      }
+      cmd.addAll(vmArgs);
     }
     cmd.add(getMainClass());
     if (getProgramArgs() != null) {
@@ -265,15 +257,17 @@ public class JavaLauncher extends Launcher {
    * Compute the classpath for the spawned process
    */
   public String makeClasspath() {
-    String cp = inheritClasspath ? System.getProperty("java.class.path") : "";
+    final StringBuilder cp = inheritClasspath
+            ? new StringBuilder(System.getProperty("java.class.path"))
+            : new StringBuilder();
     if (getXtraClassPath() == null || getXtraClassPath().isEmpty()) {
-      return cp.trim();
+      return cp.toString().trim();
     } else {
       for (String p : Iterator2Iterable.make(getXtraClassPath().iterator())) {
-        cp += File.pathSeparatorChar;
-        cp += p;
+        cp.append(File.pathSeparatorChar);
+        cp.append(p);
       }
-      return cp.trim();
+      return cp.toString().trim();
     }
   }
 

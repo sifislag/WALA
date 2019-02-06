@@ -11,6 +11,7 @@
 package com.ibm.wala.cast.ir.ssa;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -38,7 +39,7 @@ import com.ibm.wala.util.graph.dominators.DominanceFrontiers;
  * several integral portions of the traditional algorithm:
  * <UL>
  * <LI> The notion of uses and defs of a given instruction.
- * <LI> Assignments (<def> := <use>) that are be copy-propagated away
+ * <LI> Assignments (&lt;def&gt; := &lt;use&gt;) that are be copy-propagated away
  * <LI> Which values are constants---i.e. have no definition.
  * <LI> Any value numbers to be skipped during SSA construction
  * <LI> Special initialization and exit block processing.
@@ -413,9 +414,7 @@ public abstract class AbstractSSAConversion {
         int ii = getNextNewValueNumber();
 
         if (valueMap.length <= ii) {
-          int[] nvm = new int[valueMap.length * 2 + ii + 1];
-          System.arraycopy(valueMap, 0, nvm, 0, valueMap.length);
-          valueMap = nvm;
+          valueMap = Arrays.copyOf(valueMap, valueMap.length * 2 + ii + 1);
         }
 
         valueMap[ii] = getDef(inst, j);

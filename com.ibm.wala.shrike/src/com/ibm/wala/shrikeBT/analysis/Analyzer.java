@@ -13,6 +13,7 @@ package com.ibm.wala.shrikeBT.analysis;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
@@ -136,8 +137,7 @@ public class Analyzer {
       }
       oldEdges[left] = to;
     } else {
-      int[] newEdges = new int[oldEdges.length * 2];
-      System.arraycopy(oldEdges, 0, newEdges, 0, oldEdges.length);
+      int[] newEdges = Arrays.copyOf(oldEdges, oldEdges.length * 2);
       newEdges[oldEdges.length] = to;
       for (int i = oldEdges.length + 1; i < newEdges.length; i++) {
         newEdges[i] = -1;
@@ -550,7 +550,7 @@ public class Analyzer {
         String t = findCommonSupertype(st[j], curStack[j]);
         if (t != st[j]) {
           if (t == null) {
-            throw new FailureException(i, "Stack type mismatch at " + j + " (" + st[j] + " vs " + curStack[j] + ")", path);
+            throw new FailureException(i, "Stack type mismatch at " + j + " (" + st[j] + " vs " + curStack[j] + ')', path);
           }
           st[j] = t;
           changed = true;
@@ -681,9 +681,10 @@ public class Analyzer {
           curStack[0] = curStack[1];
           curStack[1] = s;
         } else {
+          @SuppressWarnings("NonConstantStringShouldBeStringBuffer")
           String pushed = instr.getPushedType(curStack);
           if (instr instanceof NewInstruction && ! pushed.startsWith("[")) {
-            pushed = "#" + instToBC[i] + "#" + pushed;
+            pushed = "#" + instToBC[i] + '#' + pushed;
           }
           if (pushed != null) {
             System.arraycopy(curStack, popped, curStack, 1, curStackSize - popped);

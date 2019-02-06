@@ -53,11 +53,11 @@ public class Stopwatch {
   
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer();
-    sb.append("total: " + getElapsedMillis());
+    StringBuilder sb = new StringBuilder();
+    sb.append("total: ").append(getElapsedMillis());
     if (count > 0){
-      sb.append(", inv: " + count);
-      sb.append(", avg: " + getElapsedMillis()/count);
+      sb.append(", inv: ").append(count);
+      sb.append(", avg: ").append(getElapsedMillis() / count);
     }
     return sb.toString();
   }

@@ -125,9 +125,6 @@ public class MethodSummary {
     return false;
   }
 
-  /**
-   * @param reason
-   */
   public void addPoison(String reason) {
     this.poison = reason;
   }
@@ -187,7 +184,7 @@ public class MethodSummary {
 
   @Override
   public String toString() {
-    return "[Summary: " + method + "]";
+    return "[Summary: " + method + ']';
   }
 
   /**
@@ -212,8 +209,6 @@ public class MethodSummary {
   /**
    * Record if this is a "factory" method; meaning it returns some object which we know little about ... usually we'll resolve this
    * based on downstream uses of the object
-   * 
-   * @param b
    */
   public void setFactory(boolean b) {
     this.isFactory = b;

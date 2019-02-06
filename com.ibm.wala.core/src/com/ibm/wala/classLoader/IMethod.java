@@ -111,7 +111,6 @@ public interface IMethod extends IMember, ContextItem {
 
   /**
    * @return an array of the exception types declared by the throws clause for this method, or null if there are none
-   * @throws InvalidClassFileException
    */
   TypeReference[] getDeclaredExceptions() throws InvalidClassFileException, UnsupportedOperationException;
 
@@ -121,7 +120,7 @@ public interface IMethod extends IMember, ContextItem {
   int getLineNumber(int bcIndex);
 /** BEGIN Custom change: precise positions */
   
-  public interface SourcePosition extends Comparable {
+  public interface SourcePosition extends Comparable<SourcePosition> {
     int getFirstLine();
     int getLastLine();
     int getFirstCol();

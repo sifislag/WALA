@@ -106,10 +106,10 @@ public class ControlDependenceGraph<T> extends AbstractNumberedGraph<T> {
           Set<T> s = HashSetFactory.make();
           backwardEdges.put(name, s);
         }
-        for (T p : forwardEdges.keySet()) {
-          for (T t : forwardEdges.get(p)) {
+        for (Map.Entry<T, Set<T>> entry : forwardEdges.entrySet()) {
+          for (T t : entry.getValue()) {
             Object n = t;
-            backwardEdges.get(n).add(p);
+            backwardEdges.get(n).add(entry.getKey());
           }
         }
       }
@@ -136,7 +136,7 @@ public class ControlDependenceGraph<T> extends AbstractNumberedGraph<T> {
       @Override
       public int getPredNodeCount(T N) {
         if (backwardEdges.containsKey(N))
-          return ((Set) backwardEdges.get(N)).size();
+          return backwardEdges.get(N).size();
         else
           return 0;
       }
@@ -163,14 +163,14 @@ public class ControlDependenceGraph<T> extends AbstractNumberedGraph<T> {
       @Override
       public int getSuccNodeCount(T N) {
         if (forwardEdges.containsKey(N))
-          return ((Set) forwardEdges.get(N)).size();
+          return forwardEdges.get(N).size();
         else
           return 0;
       }
 
       @Override
       public boolean hasEdge(T src, T dst) {
-        return forwardEdges.containsKey(src) && ((Set) forwardEdges.get(src)).contains(dst);
+        return forwardEdges.containsKey(src) && forwardEdges.get(src).contains(dst);
       }
 
       @Override
@@ -202,15 +202,15 @@ public class ControlDependenceGraph<T> extends AbstractNumberedGraph<T> {
 
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (T n : this) {
-      sb.append(n.toString()).append("\n");
+      sb.append(n.toString()).append('\n');
       for (T s : Iterator2Iterable.make(getSuccNodes(n))) {
         sb.append("  --> ").append(s);
         if (edgeLabels != null)
           for (Object name : edgeLabels.get(Pair.make(n, s)))
             sb.append("\n   label: ").append(name);
-        sb.append("\n");
+        sb.append('\n');
       }
     }
 
@@ -236,7 +236,7 @@ public class ControlDependenceGraph<T> extends AbstractNumberedGraph<T> {
     this(cfg, false);
   }
 
-  public MinimalCFG getControlFlowGraph() {
+  public MinimalCFG<T> getControlFlowGraph() {
     return cfg;
   }
 

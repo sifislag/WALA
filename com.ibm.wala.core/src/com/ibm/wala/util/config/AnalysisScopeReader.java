@@ -43,10 +43,9 @@ public class AnalysisScopeReader {
   /**
    * read in an analysis scope for a Java application from a text file
    * @param scopeFileName the text file specifying the scope
-   * @param exclusionsFile a file specifying code to be excluded from the scope; can be <code>null</code>
+   * @param exclusionsFile a file specifying code to be excluded from the scope; can be {@code null}
    * @param javaLoader the class loader used to read in files referenced in the scope file, via {@link ClassLoader#getResource(String)}
    * @return the analysis scope
-   * @throws IOException
    */
   public static AnalysisScope readJavaScope(String scopeFileName, File exclusionsFile, ClassLoader javaLoader) throws IOException {
     AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
@@ -185,7 +184,6 @@ public class AnalysisScopeReader {
 
   /**
    * @param exclusionsFile file holding class hierarchy exclusions. may be null
-   * @throws IOException 
    * @throws IllegalStateException if there are problmes reading wala properties
    */
   public static AnalysisScope makePrimordialScope(File exclusionsFile) throws IOException {
@@ -197,7 +195,6 @@ public class AnalysisScopeReader {
   /**
    * @param classPath class path to analyze, delimited by {@link File#pathSeparator}
    * @param exclusionsFile file holding class hierarchy exclusions. may be null
-   * @throws IOException 
    * @throws IllegalStateException if there are problems reading wala properties
    */
   public static AnalysisScope makeJavaBinaryAnalysisScope(String classPath, File exclusionsFile) throws IOException {

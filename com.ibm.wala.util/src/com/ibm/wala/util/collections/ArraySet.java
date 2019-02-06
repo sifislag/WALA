@@ -38,6 +38,7 @@
 package com.ibm.wala.util.collections;
 
 import java.util.AbstractSet;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -45,8 +46,6 @@ import java.util.NoSuchElementException;
 /**
  * A set implementation backed by an array. This implementation is space-efficient for small sets, but several operations like
  * {@link #contains(Object)} are linear time.
- * 
- * @param <T>
  */
 
 public class ArraySet<T> extends AbstractSet<T> {
@@ -117,9 +116,7 @@ public class ArraySet<T> extends AbstractSet<T> {
     }
     if (_curIndex == _elems.length) {
       // lengthen array
-      Object[] tmp = _elems;
-      _elems = (T[]) new Object[tmp.length * 2];
-      System.arraycopy(tmp, 0, _elems, 0, tmp.length);
+      _elems = Arrays.copyOf(_elems, _elems.length * 2);
     }
     _elems[_curIndex] = o;
     _curIndex++;
@@ -194,7 +191,7 @@ public class ArraySet<T> extends AbstractSet<T> {
   }
 
   /**
-   * @return <code>true</code> (SJF: So why return a value?)
+   * @return {@code true} (SJF: So why return a value?)
    */
   public boolean remove(int ind) {
     try {

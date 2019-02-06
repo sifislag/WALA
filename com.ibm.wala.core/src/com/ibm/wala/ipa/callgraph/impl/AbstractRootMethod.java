@@ -97,6 +97,7 @@ public abstract class AbstractRootMethod extends SyntheticMethod {
   /*
    * @see com.ibm.wala.classLoader.IMethod#getStatements(com.ibm.wala.util.warnings.WarningSet)
    */
+  @SuppressWarnings("deprecation")
   @Override
   public SSAInstruction[] getStatements(SSAOptions options) {
     SSAInstruction[] result = new SSAInstruction[statements.size()];
@@ -114,9 +115,8 @@ public abstract class AbstractRootMethod extends SyntheticMethod {
     Map<Integer, ConstantValue> constants = null;
     if (!constant2ValueNumber.isEmpty()) {
       constants = HashMapFactory.make(constant2ValueNumber.size());
-      for (ConstantValue c : constant2ValueNumber.keySet()) {
-        int vn = constant2ValueNumber.get(c);
-        constants.put(vn, c);
+      for (Map.Entry<ConstantValue, Integer> entry : constant2ValueNumber.entrySet()) {
+        constants.put(entry.getValue(), entry.getKey());
       }
     }
     InducedCFG cfg = makeControlFlowGraph(instrs);

@@ -136,7 +136,7 @@ public class FormalTypeParameter extends Signature {
       case ':':
         break;
       default:
-        assert false : "bad type signature list " + s + " " + (result - 1);
+        assert false : "bad type signature list " + s + ' ' + (result - 1);
       }
     } while (s.charAt(result) == ':');
     return result;
@@ -164,9 +164,7 @@ public class FormalTypeParameter extends Signature {
   }
 
   /**
-   * @param klass
    * @return the formal type parameters, or null if none
-   * @throws InvalidClassFileException
    */
   public static FormalTypeParameter[] getTypeParameters(IClass klass) throws InvalidClassFileException {
     if (klass instanceof ShrikeClass) {

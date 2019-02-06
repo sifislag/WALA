@@ -190,18 +190,18 @@ public class StackMapConstants {
 
     @Override
     public String toString() {
-      StringBuffer sb = new StringBuffer();
-      sb.append("frame type: ").append(frameType).append("\n");
-      sb.append("  offset: ").append(offset).append("\n");
+      StringBuilder sb = new StringBuilder();
+      sb.append("frame type: ").append(frameType).append('\n');
+      sb.append("  offset: ").append(offset).append('\n');
       
       sb.append("  locals\n");
       for (StackMapType localType : localTypes) {
-        sb.append("  ").append(localType).append("\n");
+        sb.append("  ").append(localType).append('\n');
       }
 
       sb.append("  stack\n");
       for (StackMapType stackType : stackTypes) {
-        sb.append("  ").append(stackType).append("\n");
+        sb.append("  ").append(stackType).append('\n');
       }
 
       return sb.toString();

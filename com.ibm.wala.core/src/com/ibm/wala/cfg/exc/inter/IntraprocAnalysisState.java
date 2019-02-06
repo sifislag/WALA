@@ -67,15 +67,12 @@ final class IntraprocAnalysisState implements ExceptionPruningAnalysis<SSAInstru
    * attributes.
    * 
    * @param intra
-   *          The <code>node</code>'s intraprocedural analysis
+   *          The {@code node}'s intraprocedural analysis
    * @param node
    *          the node itself
-   * @throws UnsoundGraphException
-   * @throws CancelException
    */
   IntraprocAnalysisState(final ExceptionPruningAnalysis<SSAInstruction, IExplodedBasicBlock> intra, final CGNode node,
-      final ControlFlowGraph<SSAInstruction, IExplodedBasicBlock> cfg, final int deletedEdges)
-      throws UnsoundGraphException, CancelException {
+      final ControlFlowGraph<SSAInstruction, IExplodedBasicBlock> cfg, final int deletedEdges) {
     this.cfg = cfg;
     this.noAnalysisPossible = false;
     this.deletedEdges = deletedEdges;
@@ -177,12 +174,10 @@ final class IntraprocAnalysisState implements ExceptionPruningAnalysis<SSAInstru
     }
 
     final String ls = System.getProperty("line.separator");
-    final StringBuffer output = new StringBuffer();
-    output.append(statesOfSsaVars.toString() + ls);
-    output.append(valuesOfSsaVars.toString() + ls);
-    output.append(numbersOfSsaVarsThatAreParemerters.toString());
 
-    return output.toString();
+    return statesOfSsaVars + ls +
+            valuesOfSsaVars + ls +
+            numbersOfSsaVarsThatAreParemerters;
   }
 
 }

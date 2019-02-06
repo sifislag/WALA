@@ -61,8 +61,6 @@ import com.ibm.wala.ssa.ISSABasicBlock;
  * but potentially convenient. In the latter case, it's necessary.
  *
  * @author atomb
- *
- * @param <E>
  */
 public class FieldFlow<E extends ISSABasicBlock> extends FlowType<E> {
 
@@ -76,12 +74,12 @@ public class FieldFlow<E extends ISSABasicBlock> extends FlowType<E> {
 
     @Override
     public String toString() {
-        return "FieldFlow( field=" + field + " "+ super.toString() + ")";
+        return "FieldFlow( field=" + field + ' ' + super.toString() + ')';
     }
 
     @Override
     public String descString() {
-        return field.getDeclaringClass().toString() + "." + field.getName().toString();
+        return field.getDeclaringClass().toString() + '.' + field.getName().toString();
     }
     
     public IField getField() {

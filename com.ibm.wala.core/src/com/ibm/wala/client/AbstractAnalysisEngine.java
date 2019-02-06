@@ -123,7 +123,7 @@ public abstract class AbstractAnalysisEngine<I extends InstanceKey, X extends Ca
   /**
    * Graph view of flow of pointers between heap abstractions
    */
-  private HeapGraph heapGraph;
+  private HeapGraph<?> heapGraph;
 
   private EntrypointBuilder entrypointBuilder = this::makeDefaultEntrypoints;
 
@@ -149,8 +149,6 @@ public abstract class AbstractAnalysisEngine<I extends InstanceKey, X extends Ca
 
   /**
    * Set up the AnalysisScope object
-   * 
-   * @throws IOException
    */
   public void buildAnalysisScope() throws IOException {
     if (j2seLibs == null) {
@@ -235,10 +233,7 @@ public abstract class AbstractAnalysisEngine<I extends InstanceKey, X extends Ca
     if (libs == null) {
       throw new IllegalArgumentException("libs is null");
     }
-    this.j2seLibs = new Module[libs.length];
-    for (int i = 0; i < libs.length; i++) {
-      j2seLibs[i] = libs[i];
-    }
+    this.j2seLibs = libs.clone();
   }
 
   @Override
@@ -258,7 +253,7 @@ public abstract class AbstractAnalysisEngine<I extends InstanceKey, X extends Ca
     return pointerAnalysis;
   }
 
-  public HeapGraph getHeapGraph() {
+  public HeapGraph<?> getHeapGraph() {
     if (heapGraph == null) {
       heapGraph = new BasicHeapGraph<>(getPointerAnalysis(), cg);
     }
@@ -296,10 +291,6 @@ public abstract class AbstractAnalysisEngine<I extends InstanceKey, X extends Ca
 
   /**
    * Builds the call graph for the analysis scope in effect, using all of the given entry points.
-   * 
-   * @throws CancelException
-   * @throws IllegalArgumentException
-   * @throws IOException
    */
   public CallGraphBuilder<? super I> defaultCallGraphBuilder() throws IllegalArgumentException, CancelException, IOException {
     buildAnalysisScope();

@@ -19,7 +19,6 @@ public class UrlManipulator {
   /**
    * @param urlFound the link as appear
    * @param context the URL in which the link appeared
-   * @throws MalformedURLException
    */
   public static URL relativeToAbsoluteUrl(String urlFound, URL context) throws MalformedURLException {
     urlFound = urlFound.replace("\\", "/").toLowerCase();
@@ -31,7 +30,7 @@ public class UrlManipulator {
         String origHostAndPath = urlFound.substring(2);// removing "//"
         String host;
         String path;
-        int indexOf = origHostAndPath.indexOf("/");
+        int indexOf = origHostAndPath.indexOf('/');
         if (indexOf > 0) {
           host = origHostAndPath.substring(0, indexOf);
           path = origHostAndPath.substring(indexOf);
@@ -59,9 +58,9 @@ public class UrlManipulator {
 
         for (int i = 0; i < split.length - rightTrimFromPath; i++) {
           contextPath.append(split[i]);
-          contextPath.append("/");
+          contextPath.append('/');
         }
-        absoluteUrl = new URL(context.getProtocol(), context.getHost(), contextPath.toString() + urlFound);
+        absoluteUrl = new URL(context.getProtocol(), context.getHost(), contextPath + urlFound);
       }
     } else{
       absoluteUrl = new URL(urlFound);

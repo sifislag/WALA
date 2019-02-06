@@ -10,17 +10,10 @@ sourceSets.test {
 	resources.srcDirs = ['dat']
 }
 
-task testJar(type: Jar) {
-    classifier = 'tests'
-    from sourceSets.test.output.classesDirs
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact testJar
-        }
-    }
+publishing.publications {
+	mavenJava(MavenPublication) {
+		artifact jarTest
+	}
 }
 
 dependencies {
@@ -52,7 +45,7 @@ processTestResources {
 }
 
 test {
-	maxHeapSize = '800M'
+	maxHeapSize = '1500M'
 	systemProperty 'com.ibm.wala.junit.analyzingJar', 'true'
 	systemProperty 'com.ibm.wala.junit.profile', 'short'
 	classpath += files project(':com.ibm.wala.core.testdata').sourceSets.test.java.outputDir

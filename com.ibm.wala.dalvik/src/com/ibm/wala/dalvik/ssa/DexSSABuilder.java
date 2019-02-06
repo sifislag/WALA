@@ -11,6 +11,7 @@
  *******************************************************************************/
 package com.ibm.wala.dalvik.ssa;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.ibm.wala.cfg.IBasicBlock;
@@ -230,7 +231,6 @@ public class DexSSABuilder extends AbstractIntRegisterMachine {
         /**
          * Are all rhs values all the same? Note, we consider TOP (-1) to be same as everything else.
          *
-         * @param rhs
          * @return boolean
          */
         private boolean allTheSame(int[] rhs) {
@@ -365,9 +365,7 @@ public class DexSSABuilder extends AbstractIntRegisterMachine {
             instructions[getCurrentInstructionIndex()] = s;
             for (int i = 0; i < s.getNumberOfDefs(); i++) {
                 if (creators.length < (s.getDef(i) + 1)) {
-                    SSAInstruction[] arr = new SSAInstruction[2 * s.getDef(i)];
-                    System.arraycopy(creators, 0, arr, 0, creators.length);
-                    creators = arr;
+                    creators = Arrays.copyOf(creators, 2 * s.getDef(i));
                 }
 
                 assert s.getDef(i) != -1 : "invalid def " + i + " for " + s;
@@ -1273,10 +1271,6 @@ public class DexSSABuilder extends AbstractIntRegisterMachine {
 
         }
 
-        /**
-         * @param piCause
-         * @param ref
-         */
         private void reuseOrCreatePi(SSAInstruction piCause, int ref) {
             int n = getCurrentInstructionIndex();
             SSACFG.BasicBlock bb = cfg.getBlockForInstruction(n);
@@ -1419,7 +1413,7 @@ public class DexSSABuilder extends AbstractIntRegisterMachine {
 		void startRange(int pc, int localNumber, int valueNumber) {
             int max = ((DexIMethod)dexCFG.getMethod()).getMaxLocals();
             if (localNumber >= max) {
-                assert false : "invalid local " + localNumber + ">" + max;
+                assert false : "invalid local " + localNumber + '>' + max;
             }
 
             localStoreMap[pc] = new IntPair(valueNumber, localNumber);

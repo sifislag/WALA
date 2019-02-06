@@ -478,7 +478,7 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
           }
 
           if (target == null) {
-            System.err.println("Error retreiving the Node with IIndex " + tgt + " (in array at " + tgtNd + ")");
+            System.err.println("Error retreiving the Node with IIndex " + tgt + " (in array at " + tgtNd + ')');
             System.err.println("The associated Instruction " + instructions[tgtNd] + " does not start a basic block");
             assert(false); // It will fail anyway
           }
@@ -620,16 +620,16 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
 
   @Override
   public String toString() {
-    StringBuffer s = new StringBuffer("");
+    StringBuilder s = new StringBuilder();
     for (BasicBlock bb : this) {
-      s.append("BB").append(getNumber(bb)).append("\n");
+      s.append("BB").append(getNumber(bb)).append('\n');
       for (int j = bb.getFirstInstructionIndex(); j <= bb.getLastInstructionIndex(); j++) {
-        s.append("  ").append(j).append("  ").append(getInstructions()[j]).append("\n");
+        s.append("  ").append(j).append("  ").append(getInstructions()[j]).append('\n');
       }
 
       Iterator<BasicBlock> succNodes = getSuccNodes(bb);
       while (succNodes.hasNext()) {
-        s.append("    -> BB").append(getNumber(succNodes.next())).append("\n");
+        s.append("    -> BB").append(getNumber(succNodes.next())).append('\n');
       }
     }
     return s.toString();
@@ -643,7 +643,7 @@ public class InducedCFG extends AbstractCFG<SSAInstruction, InducedCFG.BasicBloc
   @Override
   public int getProgramCounter(int index) {
     if (getInstructions().length <= index) {
-      throw new IllegalArgumentException("invalid index " + index + " " + getInstructions().length);
+      throw new IllegalArgumentException("invalid index " + index + ' ' + getInstructions().length);
     }
     if (getInstructions()[index] instanceof SSAInvokeInstruction) {
       return ((SSAInvokeInstruction) getInstructions()[index]).getCallSite().getProgramCounter();

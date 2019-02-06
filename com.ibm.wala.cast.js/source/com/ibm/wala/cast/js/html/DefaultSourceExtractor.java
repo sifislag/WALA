@@ -56,7 +56,7 @@ public class DefaultSourceExtractor extends DomLessSourceExtractor{
         String v = e.getValue().fst;
         if (v != null && v.startsWith("javascript:")) {
           try {
-            writeEntrypoint("           " + v.substring(11), e.getValue().snd, new URL(tag.getElementPosition().getURL().toString() + "#" + a), true);
+            writeEntrypoint("           " + v.substring(11), e.getValue().snd, new URL(tag.getElementPosition().getURL().toString() + '#' + a), true);
           } catch (MalformedURLException ex) {
             writeEntrypoint(v.substring(11), e.getValue().snd, entrypointUrl, false);
           }
@@ -106,7 +106,7 @@ public class DefaultSourceExtractor extends DomLessSourceExtractor{
       printlnIndented("function make_" + varName + "(parent) {", tag);
       stack.push(varName);
 
-      printlnIndented("this.temp = " + cons + ";", tag);
+      printlnIndented("this.temp = " + cons + ';', tag);
       printlnIndented("this.temp(\"" + tag.getName() + "\");", tag);
       for (Map.Entry<String, Pair<String, Position>> e : attrs.entrySet()){
         String attr = e.getKey();
@@ -126,8 +126,7 @@ public class DefaultSourceExtractor extends DomLessSourceExtractor{
           //input tags do not need to be in a form
           if (!forms.isEmpty()) {
              if (type.equalsIgnoreCase("RADIO")) {
-              if (! sets.contains(Pair.make(forms.peek(), prop))) {
-                sets.add(Pair.make(forms.peek(), prop));
+              if (sets.add(Pair.make(forms.peek(), prop))) {
                 printlnIndented("  " + makeRef("currentForm", prop) + " = new Array();", tag);
                 printlnIndented("  " + makeRef("currentForm", prop + "Counter") + " = 0;", tag);
               }
@@ -141,7 +140,7 @@ public class DefaultSourceExtractor extends DomLessSourceExtractor{
         inputElementCallback();
       }
 
-      assert varName != null && !"".equals(varName);
+      assert varName != null && !varName.isEmpty();
       printlnIndented(varName + " = this;", tag);
       printlnIndented("document." + varName + " = this;", tag);
       printlnIndented("parent.appendChild(this);", tag);
@@ -159,8 +158,8 @@ public class DefaultSourceExtractor extends DomLessSourceExtractor{
     protected void writeEventAttribute(ITag tag, String attr, String value, String varName, String varName2){
       //There should probably be more checking to see what the attributes are since we allow things like: ; to be used as attributes now.
       if(attr.length() >= 2 && attr.substring(0,2).equals("on")) {
-        printlnIndented(varName + "." + attr + " = function " + tag.getName().toLowerCase() + "_" + attr + "(event) {" + value + "};", tag);
-        writeEntrypoint(varName2 + "." + attr + "(null);", tag.getElementPosition(), entrypointUrl, false);
+        printlnIndented(varName + '.' + attr + " = function " + tag.getName().toLowerCase() + '_' + attr + "(event) {" + value + "};", tag);
+        writeEntrypoint(varName2 + '.' + attr + "(null);", tag.getElementPosition(), entrypointUrl, false);
       } else if (value != null) {
         
         Pair<String, Character> x = quotify(value);
@@ -171,18 +170,23 @@ public class DefaultSourceExtractor extends DomLessSourceExtractor{
           attr = attr.toLowerCase();
         }
         
-        printlnIndented(varName + "['" + attr + "'] = " + quote + value + quote + ";", tag);
+        printlnIndented(varName + "['" + attr + "'] = " + quote + value + quote + ';', tag);
       }
     }
 
     protected void writePortletAttribute(ITag tag, String attr, String value, String varName){
       if(attr.equals("portletid")) {
-        if(value.substring(value.length()-4).equals("vice")) {
-          newLine(); newLine();
-          printlnIndented("function cVice() { var contextVice = " + varName + "; }\ncVice();\n", tag);
-        } else if(value.substring(value.length()-4).equals("root")) {
-          newLine(); newLine();
-          printlnIndented("function cRoot() { var contextRoot = " + varName + "; }\ncRoot();\n", tag);
+        switch (value.substring(value.length() - 4)) {
+          case "vice":
+            newLine();
+            newLine();
+            printlnIndented("function cVice() { var contextVice = " + varName + "; }\ncVice();\n", tag);
+            break;
+          case "root":
+            newLine();
+            newLine();
+            printlnIndented("function cRoot() { var contextRoot = " + varName + "; }\ncRoot();\n", tag);
+            break;
         }
       }
     }

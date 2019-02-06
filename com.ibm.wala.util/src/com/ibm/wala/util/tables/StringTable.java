@@ -51,10 +51,7 @@ public class StringTable extends Table<String> implements Cloneable {
   /**
    * read from a direct (native) text file
    * 
-   * @throws IOException
-   * @throws FileNotFoundException
    * @throws IllegalArgumentException if fileName is null
-   * 
    */
   public static StringTable readFromDirectTextFile(String fileName, Character comment) throws FileNotFoundException, IOException {
     if (fileName == null) {
@@ -77,8 +74,6 @@ public class StringTable extends Table<String> implements Cloneable {
 
   /**
    * @param f a file containing a table in text format, whitespace delimited
-   * @throws IOException
-   * @throws FileNotFoundException
    */
   public static StringTable readFromTextFile(File f, Character comment) throws FileNotFoundException, IOException {
     if (f == null) {
@@ -91,7 +86,6 @@ public class StringTable extends Table<String> implements Cloneable {
 
   /**
    * @param s a stream containing a table in text format, whitespace delimited
-   * @throws IOException
    * @throws IllegalArgumentException if s is null
    */
   public static StringTable readFromStream(InputStream s, Character commentToken) throws IOException {
@@ -100,7 +94,6 @@ public class StringTable extends Table<String> implements Cloneable {
 
   /**
    * @param s a stream containing a table in text format, whitespace delimited
-   * @throws IOException
    * @throws IllegalArgumentException if s is null
    */
   public static StringTable readFromStream(InputStream s, Character commentToken, Character delimiter) throws IOException {
@@ -155,7 +148,7 @@ public class StringTable extends Table<String> implements Cloneable {
     StringTokenizer st = delimiter == null ? new StringTokenizer(line) : new StringTokenizer(line, delimiter.toString());
     int nColumns = st.countTokens();
     Assertions.productionAssertion(nColumns == getNumberOfColumns(), "expected " + getNumberOfColumns() + " got " + nColumns
-        + " row " + row + " " + line.length() + " " + line);
+        + " row " + row + ' ' + line.length() + ' ' + line);
     SimpleVector<String> r = new SimpleVector<>();
     rows.add(row, r);
     for (int i = 0; i < nColumns; i++) {

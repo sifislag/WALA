@@ -37,23 +37,30 @@ public class MissingSuperTest extends WalaTestCase {
   /**
    * Test handling of an invalid class where a non-abstract method has no code.
    * We want to throw an exception rather than crash.
-   * 
-   * @throws IOException
-   * @throws ClassHierarchyException
    */
   @Test
   public void testMissingSuper() throws IOException, ClassHierarchyException {
     AnalysisScope scope = AnalysisScopeReader.readJavaScope(TestConstants.WALA_TESTDATA,
         (new FileProvider()).getFile("J2SEClassHierarchyExclusions.txt"),
         MissingSuperTest.class.getClassLoader());
+
     TypeReference ref = TypeReference.findOrCreate(ClassLoaderReference.Application,
         "Lmissingsuper/MissingSuper");
+
     // without phantom classes, won't be able to resolve
     ClassHierarchy cha = ClassHierarchyFactory.make(scope);
     Assert.assertNull("lookup should not work", cha.lookupClass(ref));
+
+    // with makeWithRoot lookup should succeed and
+    // unresolvable super class "Super" should be replaced by hierarchy root
+    cha = ClassHierarchyFactory.makeWithRoot(scope);
+    IClass klass = cha.lookupClass(ref);
+    Assert.assertNotNull("expected class MissingSuper to load", klass);
+    Assert.assertEquals(cha.getRootClass(), klass.getSuperclass());
+
     // with phantom classes, lookup and IR construction should work
     cha = ClassHierarchyFactory.makeWithPhantom(scope);
-    IClass klass = cha.lookupClass(ref);
+    klass = cha.lookupClass(ref);
     Assert.assertNotNull("expected class MissingSuper to load", klass);
     IAnalysisCacheView cache = new AnalysisCacheImpl();
     Collection<? extends IMethod> declaredMethods = klass.getDeclaredMethods();

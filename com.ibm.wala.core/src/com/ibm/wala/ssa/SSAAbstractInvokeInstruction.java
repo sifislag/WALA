@@ -103,12 +103,13 @@ public abstract class SSAAbstractInvokeInstruction extends SSAInstruction {
       assert i == 0;
       return exception;
     } else {
-      if (i == 0) {
-        return getReturnValue(0);
-      } else if (i == 1) {
-        return exception;
-      } else {
-        return getReturnValue(i - 1);
+      switch (i) {
+        case 0:
+          return getReturnValue(0);
+        case 1:
+          return exception;
+        default:
+          return getReturnValue(i - 1);
       }
     }
   }
@@ -191,18 +192,18 @@ public abstract class SSAAbstractInvokeInstruction extends SSAInstruction {
   @Override
   public String toString(SymbolTable symbolTable) {
     String code = site.getInvocationString();
-    StringBuffer s = new StringBuffer();
+    StringBuilder s = new StringBuilder();
     if (hasDef()) {
       s.append(getValueString(symbolTable, getDef())).append(" = ");
     }
     s.append("invoke").append(code);
-    s.append(" ");
+    s.append(' ');
     s.append(site.getDeclaredTarget().toString());
 
     if (getNumberOfPositionalParameters() > 0) {
-      s.append(" ").append(getValueString(symbolTable, getUse(0)));
+      s.append(' ').append(getValueString(symbolTable, getUse(0)));
       for (int i = 1; i < getNumberOfPositionalParameters(); i++) {
-        s.append(",").append(getValueString(symbolTable, getUse(i)));
+        s.append(',').append(getValueString(symbolTable, getUse(i)));
       }
     }
 

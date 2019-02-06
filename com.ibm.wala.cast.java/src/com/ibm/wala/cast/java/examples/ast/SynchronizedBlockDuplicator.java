@@ -51,8 +51,8 @@ public class SynchronizedBlockDuplicator extends
     private CAstNode syncNode;
 
     /**
-     * key associated with the {@link RewriteContext context} of the parent AST
-     * node of the synchronized block
+     * key associated with the {@link com.ibm.wala.cast.tree.rewrite.CAstRewriter.RewriteContext context} of the parent
+     * AST node of the synchronized block
      */
     private UnwindKey rest;
 
@@ -174,7 +174,7 @@ public class SynchronizedBlockDuplicator extends
 
   /**
    * does root represent a synchronized block? if so, return the variable whose
-   * lock is acquired. otherwise, return <code>null</code>
+   * lock is acquired. otherwise, return {@code null}
    */
   private static String isSynchronizedOnVar(CAstNode root) {
     if (root.getKind() == CAstNode.UNWIND) {
@@ -229,15 +229,7 @@ public class SynchronizedBlockDuplicator extends
     } else {
       // invoke copyNodes() on the children with context c, ensuring, e.g., that
       // the body of a synchronized block gets cloned
-      CAstNode[] newChildren = new CAstNode[n.getChildCount()];
-      for (int i = 0; i < newChildren.length; i++)
-        newChildren[i] = copyNodes(n.getChild(i), cfg, c, nodeMap);
-
-      CAstNode newN = Ast.makeNode(n.getKind(), newChildren);
-
-      nodeMap.put(Pair.make(n, c.key()), newN);
-
-      return newN;
+      return copySubtreesIntoNewNode(n, cfg, c, nodeMap);
     }
   }
 }

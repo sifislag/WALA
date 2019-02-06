@@ -11,6 +11,7 @@
 package com.ibm.wala.ide.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -97,7 +98,7 @@ public class JdtUtil {
     ICompilationUnit cu = (ICompilationUnit) type.getParent();
     String packageName = getPackageName(cu);
     String className = type.getElementName();
-    String fullyQName = packageName + "." + className;
+    String fullyQName = packageName + '.' + className;
     return fullyQName;
   }
 
@@ -114,9 +115,8 @@ public class JdtUtil {
    * used as a handle to create JavaElement by 'JavaCore.create(String)'
    * 
    * For example, suppose we have the method 'fooPackage.barPackage.FooClass.fooMethod(int)' which is in the 'FooProject' and source
-   * folder 'src' the handle would be '=FooProject/src<fooPackage.barPackage{FooClass.java[FooClass~fooMethod~I'
+   * folder 'src' the handle would be '=FooProject/src&lt;fooPackage.barPackage{FooClass.java[FooClass~fooMethod~I'
    * 
-   * @param javaElt
    * @throws IllegalArgumentException if javaElt is null
    */
   public static String getJdtHandleString(IJavaElement javaElt) {
@@ -444,7 +444,7 @@ public class JdtUtil {
           do {
             c = d.charAt(i++);
           } while (c != ',' && c != ')');
-          sigs.add("L" + d.substring(off, i - 1) + ";");
+          sigs.add('L' + d.substring(off, i - 1) + ';');
 
           if (c == ')') {
             return toArray(sigs);
@@ -505,7 +505,7 @@ public class JdtUtil {
     if (kludge.size() == 1) {
       return (IMethod) kludge.iterator().next();
     } else {
-      System.err.println("RETURNED " + kludge.size() + " " + kludge);
+      System.err.println("RETURNED " + kludge.size() + ' ' + kludge);
       return null;
     }
   }
@@ -519,9 +519,7 @@ public class JdtUtil {
       Collection<IMethod> result = HashSetFactory.make();
       for (IType type : getClasses((ICompilationUnit) elt)) {
         try {
-          for (IMethod m : type.getMethods()) {
-            result.add(m);
-          }
+          result.addAll(Arrays.asList(type.getMethods()));
         } catch (JavaModelException e) {
           e.printStackTrace();
         }
@@ -578,7 +576,7 @@ public class JdtUtil {
   }
 
   public static ASTNode getAST(IFile javaSourceFile) {
-	  ASTParser parser = ASTParser.newParser(AST.JLS3);
+	  @SuppressWarnings("deprecation") ASTParser parser = ASTParser.newParser(AST.JLS3);
 	  parser.setSource(JavaCore.createCompilationUnitFrom(javaSourceFile));
 	  parser.setProject(JavaCore.create(javaSourceFile.getProject()));
 	  parser.setResolveBindings(true);

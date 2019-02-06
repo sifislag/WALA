@@ -42,7 +42,7 @@ public class ViewIFDSLocalAction<T, P, F> extends Action {
   /**
    * Governing tree viewer
    */
-  private final SWTTreeViewer viewer;
+  private final SWTTreeViewer<P> viewer;
 
   /**
    * Governing supergraph
@@ -71,7 +71,7 @@ public class ViewIFDSLocalAction<T, P, F> extends Action {
 
   private final NodeDecorator<T> labels;
 
-  public ViewIFDSLocalAction(SWTTreeViewer viewer, TabulationResult<T, P, F> result, String pdfFile, String dotFile, String dotExe,
+  public ViewIFDSLocalAction(SWTTreeViewer<P> viewer, TabulationResult<T, P, F> result, String pdfFile, String dotFile, String dotExe,
       String pdfViewExe, NodeDecorator<T> labels) {
     if (result == null) {
       throw new IllegalArgumentException("null result");
@@ -86,7 +86,7 @@ public class ViewIFDSLocalAction<T, P, F> extends Action {
     setText("View Local Supergraph");
   }
 
-  public ViewIFDSLocalAction(SWTTreeViewer viewer, TabulationResult<T, P, F> result, String psFile, String dotFile, String dotExe,
+  public ViewIFDSLocalAction(SWTTreeViewer<P> viewer, TabulationResult<T, P, F> result, String psFile, String dotFile, String dotExe,
       String gvExe) {
     if (result == null) {
       throw new IllegalArgumentException("null result");
@@ -113,17 +113,18 @@ public class ViewIFDSLocalAction<T, P, F> extends Action {
     public String getLabel(Object o) throws WalaException {
       T t = (T) o;
       if (t instanceof BasicBlockInContext) {
-        BasicBlockInContext bb = (BasicBlockInContext) t;
+        BasicBlockInContext<?> bb = (BasicBlockInContext<?>) t;
         if (bb.getDelegate() instanceof IExplodedBasicBlock) {
           IExplodedBasicBlock delegate = (IExplodedBasicBlock) bb.getDelegate();
-          String s = delegate.getNumber() + " " + result.getResult(t) + "\\n" + stringify(delegate.getInstruction());
+          final StringBuilder s = new StringBuilder(delegate.getNumber()).append(' ').append(result.getResult(t))
+                  .append("\\n").append(stringify(delegate.getInstruction()));
           for (SSAPhiInstruction phi : Iterator2Iterable.make(delegate.iteratePhis())) {
-            s += " " + phi;
+            s.append(' ').append(phi);
           }
           if (delegate.isCatchBlock()) {
-            s += " " + delegate.getCatchInstruction();
+            s.append(' ').append(delegate.getCatchInstruction());
           }
-          return s;
+          return s.toString();
         }
       }
       return t + " " + result.getResult(t);
@@ -140,26 +141,26 @@ public class ViewIFDSLocalAction<T, P, F> extends Action {
     if (s instanceof SSAAbstractInvokeInstruction) {
       SSAAbstractInvokeInstruction call = (SSAAbstractInvokeInstruction) s;
       String def = call.hasDef() ? Integer.valueOf(call.getDef()) + "=" : "";
-      String result = def + "call " + call.getDeclaredTarget().getDeclaringClass().getName().getClassName() + "."
-          + call.getDeclaredTarget().getName();
-      result += " exc:" + call.getException();
+      final StringBuilder result = new StringBuilder(def).append("call ")
+              .append(call.getDeclaredTarget().getDeclaringClass().getName().getClassName()).append('.')
+              .append(call.getDeclaredTarget().getName());
+      result.append(" exc:").append(call.getException());
       for (int i = 0; i < s.getNumberOfUses(); i++) {
-        result += " ";
-        result += s.getUse(i);
+        result.append(' ').append(s.getUse(i));
       }
-      return result;
+      return result.toString();
     }
     if (s instanceof SSAGetInstruction) {
       SSAGetInstruction g = (SSAGetInstruction) s;
       String fieldName = g.getDeclaredField().getName().toString();
 
-      StringBuffer result = new StringBuffer();
+      StringBuilder result = new StringBuilder();
       result.append(g.getDef());
       result.append(":=");
       result.append(g.isStatic() ? "getstatic " : "getfield ");
       result.append(fieldName);
       if (!g.isStatic()) {
-        result.append(" ");
+        result.append(' ');
         result.append(g.getUse(0));
       }
       return result.toString();
@@ -203,7 +204,7 @@ public class ViewIFDSLocalAction<T, P, F> extends Action {
     return first;
   }
 
-  protected SWTTreeViewer getViewer() {
+  protected SWTTreeViewer<P> getViewer() {
     return viewer;
   }
 

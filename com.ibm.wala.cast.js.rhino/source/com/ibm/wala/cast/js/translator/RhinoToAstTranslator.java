@@ -450,7 +450,7 @@ public class RhinoToAstTranslator implements TranslatorToCAst {
 
     @Override
     public String toString() {
-      return "<JS function " + getName() + ">";
+      return "<JS function " + getName() + '>';
     }
 
     @Override
@@ -550,7 +550,7 @@ public class RhinoToAstTranslator implements TranslatorToCAst {
   }
 
   private CAstEntity walkEntity(final AstNode n, List<CAstNode> body, String name, WalkContext child) {
-    CAstNode[] stmts = body.toArray(new CAstNode[body.size()]);
+    CAstNode[] stmts = body.toArray(new CAstNode[0]);
 
     // add variable / constant / function declarations, if any
     if (!child.getNameDecls().isEmpty()) {
@@ -560,7 +560,7 @@ public class RhinoToAstTranslator implements TranslatorToCAst {
       if (child.getNameDecls().size() == 1) {
         newStmts[0] = child.getNameDecls().iterator().next();
       } else {
-        newStmts[0] = Ast.makeNode(CAstNode.BLOCK_STMT, child.getNameDecls().toArray(new CAstNode[child.getNameDecls().size()]));
+        newStmts[0] = Ast.makeNode(CAstNode.BLOCK_STMT, child.getNameDecls().toArray(new CAstNode[0]));
       }
       System.arraycopy(stmts, 0, newStmts, 1, stmts.length);
 
@@ -698,12 +698,12 @@ public class RhinoToAstTranslator implements TranslatorToCAst {
 			if (elt instanceof EmptyExpression) {
 				index++;
 			} else {
-				eltNodes.add(Ast.makeConstant("" + (index++)));
+				eltNodes.add(Ast.makeConstant(String.valueOf(index++)));
 				eltNodes.add(visit(elt, arg));
 			}
 		}
 		
-		CAstNode lit = Ast.makeNode(CAstNode.OBJECT_LITERAL, eltNodes.toArray(new CAstNode[eltNodes.size()]));
+		CAstNode lit = Ast.makeNode(CAstNode.OBJECT_LITERAL, eltNodes.toArray(new CAstNode[0]));
 		arg.cfg().map(node, lit);
 		return lit;
 	}
@@ -736,7 +736,7 @@ public class RhinoToAstTranslator implements TranslatorToCAst {
 		if (nodes.isEmpty()) {
 			return Ast.makeNode(CAstNode.EMPTY);
 		} else {
-			return Ast.makeNode(CAstNode.BLOCK_STMT, nodes.toArray(new CAstNode[ nodes.size() ]));
+			return Ast.makeNode(CAstNode.BLOCK_STMT, nodes.toArray(new CAstNode[0]));
 		}
 	}
 
@@ -1120,18 +1120,18 @@ public class RhinoToAstTranslator implements TranslatorToCAst {
 
 	    String name;
 	    Name x = fn.getFunctionName();
-	    if (x == null || x.getIdentifier() == null || "".equals(x.getIdentifier())) {
-	    	name = scriptName + "@" + fn.getAbsolutePosition();
+	    if (x == null || x.getIdentifier() == null || x.getIdentifier().isEmpty()) {
+	    	name = scriptName + '@' + fn.getAbsolutePosition();
 	    	String label = getParentName(fn);
 	    	if (label != null) {
-	    	  name = name + ":" + label;
+	    	  name = name + ':' + label;
 	    	}
 	    } else {
 	    	name = fn.getFunctionName().getIdentifier();
 	    }
 
 	    if(DEBUG)
-	      System.err.println(name + "\n" + body);
+	      System.err.println(name + '\n' + body);
 
 		CAstEntity fne = walkEntity(fn, body, name, child);
 
@@ -1238,7 +1238,7 @@ public class RhinoToAstTranslator implements TranslatorToCAst {
       return Ast.makeConstant(null);
     }
     default:
-      throw new RuntimeException("unexpected keyword literal " + node + " (" + node.getType() +")");
+      throw new RuntimeException("unexpected keyword literal " + node + " (" + node.getType() + ')');
 		}
 	}
 
@@ -1368,7 +1368,7 @@ public class RhinoToAstTranslator implements TranslatorToCAst {
 		} else {
 			return 
 				Ast.makeNode(CAstNode.LOCAL_SCOPE,
-					Ast.makeNode(CAstNode.BLOCK_STMT, nodes.toArray(new CAstNode[ nodes.size() ])));
+					Ast.makeNode(CAstNode.BLOCK_STMT, nodes.toArray(new CAstNode[0])));
 		}
 	}
 
@@ -2488,7 +2488,6 @@ private CAstNode[] walkChildren(final Node n, WalkContext context) {
   /**
    * parse the JavaScript code using Rhino, and then translate the resulting AST
    * to CAst
-   * @throws com.ibm.wala.cast.ir.translator.TranslatorToCAst.Error 
    */
   @Override
   public CAstEntity translateToCAst() throws Error, IOException, com.ibm.wala.cast.ir.translator.TranslatorToCAst.Error {
@@ -2500,7 +2499,7 @@ private CAstNode[] walkChildren(final Node n, WalkContext context) {
         w.add(new Warning(Warning.SEVERE) {
           @Override
           public String getMsg() {
-            return arg0 + ": " + arg1 + "@" + arg2 + ": " + arg3;
+            return arg0 + ": " + arg1 + '@' + arg2 + ": " + arg3;
           }
         });
       }

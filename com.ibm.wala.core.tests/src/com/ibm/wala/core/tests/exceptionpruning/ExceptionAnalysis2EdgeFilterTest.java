@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -159,21 +160,29 @@ public class ExceptionAnalysis2EdgeFilterTest {
     }
 
     assertEquals("Number of normal edges deleted wrong:", 0, deletedNormal);
-    for (String key : deletedExceptional.keySet()) {
-      int value = deletedExceptional.get(key);
+    for (Map.Entry<String, Integer> entry : deletedExceptional.entrySet()) {
+      final String key = entry.getKey();
+      final int value = entry.getValue();
       String text = "Number of exceptional edges deleted wrong for " + key + ":";
-      if (key.equals("testTryCatchMultipleExceptions")) {
-        assertEquals(text, 12, value);
-      } else if (key.equals("testTryCatchOwnException")) {
-        assertEquals(text, 5, value);
-      } else if (key.equals("testTryCatchSuper")) {
-        assertEquals(text, 3, value);
-      } else if (key.equals("testTryCatchImplicitException")) {
-        assertEquals(text, 5, value);
-      } else if (key.equals("main")) {
-        assertEquals(text, 4, value);
-      } else {
-        assertEquals(text, 0, value);
+      switch (key) {
+        case "testTryCatchMultipleExceptions":
+          assertEquals(text, 12, value);
+          break;
+        case "testTryCatchOwnException":
+          assertEquals(text, 5, value);
+          break;
+        case "testTryCatchSuper":
+          assertEquals(text, 3, value);
+          break;
+        case "testTryCatchImplicitException":
+          assertEquals(text, 5, value);
+          break;
+        case "main":
+          assertEquals(text, 4, value);
+          break;
+        default:
+          assertEquals(text, 0, value);
+          break;
       }
     }
   }
@@ -194,9 +203,6 @@ public class ExceptionAnalysis2EdgeFilterTest {
    * deleted. They don't have a connection to the exit node anymore.
    * 
    * So, if there is a throw statement as normal successor, evrything is fine.
-   * 
-   * @param cfg
-   * @param normalSucc
    */
   private static void specialCaseThrowFiltered(ControlFlowGraph<SSAInstruction, ISSABasicBlock> cfg, ISSABasicBlock normalSucc) {
     ISSABasicBlock next = normalSucc;

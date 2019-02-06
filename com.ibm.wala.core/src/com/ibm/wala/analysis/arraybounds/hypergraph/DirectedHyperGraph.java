@@ -12,8 +12,6 @@ import com.ibm.wala.analysis.arraybounds.hypergraph.weight.Weight;
  * more than one head and more than one tail.
  *
  * @author Stephan Gocht {@code <stephan@gobro.de>}
- *
- * @param <T>
  */
 public class DirectedHyperGraph<T> {
 	private final Map<T, HyperNode<T>> nodes;
@@ -44,14 +42,14 @@ public class DirectedHyperGraph<T> {
 
 	@Override
 	public String toString() {
-		final StringBuffer buffer = new StringBuffer();
+		final StringBuilder buffer = new StringBuilder();
 		for (final DirectedHyperEdge<T> edge : this.getEdges()) {
 			buffer.append(edge.getSource());
 			buffer.append(" -- ");
 			buffer.append(edge.getWeight());
 			buffer.append(" --> ");
 			buffer.append(edge.getDestination());
-			buffer.append("\n");
+			buffer.append('\n');
 		}
 		return buffer.toString();
 	}

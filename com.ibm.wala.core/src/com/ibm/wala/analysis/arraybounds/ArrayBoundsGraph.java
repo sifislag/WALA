@@ -2,6 +2,7 @@ package com.ibm.wala.analysis.arraybounds;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.ibm.wala.analysis.arraybounds.hypergraph.DirectedHyperEdge;
@@ -55,6 +56,7 @@ import com.ibm.wala.util.collections.Pair;
  * 
  * @author Stephan Gocht {@code <stephan@gobro.de>}
  */
+@SuppressWarnings({ "JavadocReference", "javadoc" })
 public class ArrayBoundsGraph extends DirectedHyperGraph<Integer> {
 	/**
 	 * We need a ssa variable representing zero. So we just use an integer,
@@ -111,10 +113,11 @@ public class ArrayBoundsGraph extends DirectedHyperGraph<Integer> {
 	}
 
   public void postProcessConstants() {
-    for (Integer constant:constants.keySet()) {
-		  HyperNode<Integer> constantNode = this.getNodes().get(constant);
-		  HyperNode<Integer> helper1 = this.getNodes().get(constants.get(constant).fst);
-		  HyperNode<Integer> helper2 = this.getNodes().get(constants.get(constant).snd);
+    for (Map.Entry<Integer, Pair<Integer, Integer>> entry : constants.entrySet()) {
+		  HyperNode<Integer> constantNode = this.getNodes().get(entry.getKey());
+		  final Pair<Integer, Integer> value = entry.getValue();
+		  HyperNode<Integer> helper1 = this.getNodes().get(value.fst);
+		  HyperNode<Integer> helper2 = this.getNodes().get(value.snd);
 		  
 		  for (DirectedHyperEdge<Integer> edge:constantNode.getOutEdges()) {
 		    if (!edge.getDestination().contains(helper2)) {
@@ -170,9 +173,6 @@ public class ArrayBoundsGraph extends DirectedHyperGraph<Integer> {
 	 * other predecessors, this will cause their in edges to be merged to a
 	 * single hyper edge with weight zero. The helper nodes are inserted to keep
 	 * the proper distance from [zero].
-	 *
-	 * @param variable
-	 * @param value
 	 */
 	public void addConstant(Integer variable, Integer value) {
 		final Integer helper1 = this.generateNewVar();
@@ -219,8 +219,6 @@ public class ArrayBoundsGraph extends DirectedHyperGraph<Integer> {
 	 *
 	 * This is a trap door construct: if [var] is not set to 0 it will get the
 	 * value unlimited, if [var] is set to 0 it will stay 0.
-	 *
-	 * @param var
 	 */
 	public void createSourceVar(Integer var) {
 	  if (this.getNodes().keySet().contains(var)){
@@ -287,9 +285,6 @@ public class ArrayBoundsGraph extends DirectedHyperGraph<Integer> {
 
 	/**
 	 * Mark variable as length for array.
-	 *
-	 * @param array
-	 * @param variable
 	 */
 	public void markAsArrayLength(Integer array, Integer variable) {
 		this.addEdge(this.getArrayNode(array), variable);

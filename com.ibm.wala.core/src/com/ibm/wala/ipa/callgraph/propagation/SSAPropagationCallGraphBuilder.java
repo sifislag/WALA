@@ -169,9 +169,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
   }
 
   /**
-   * @param node
-   * @param x
-   * @param type
    * @return the instance key that represents the exception of type _type_ thrown by a particular PEI.
    * @throws IllegalArgumentException if ikFactory is null
    */
@@ -184,9 +181,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
 
   /**
    * Visit all instructions in a node, and add dataflow constraints induced by each statement in the SSA form.
-   * @throws CancelException 
-   * 
-   * @see com.ibm.wala.ipa.callgraph.propagation.PropagationCallGraphBuilder#addConstraintsFromNode(com.ibm.wala.ipa.callgraph.CGNode, com.ibm.wala.util.MonitorUtil.IProgressMonitor)
    */
   @Override
   protected boolean addConstraintsFromNode(CGNode node, IProgressMonitor monitor) throws CancelException {
@@ -249,7 +243,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
 
   /**
    * Add pointer flow constraints based on instructions in a given node
-   * @throws CancelException 
    */
   protected void addNodeInstructionConstraints(CGNode node, IProgressMonitor monitor) throws CancelException {
     this.monitor = monitor;
@@ -267,7 +260,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
 
   /**
    * Hook for aubclasses to add pointer flow constraints based on values in a given node
-   * @throws CancelException 
    */
   @SuppressWarnings("unused")
   protected void addNodeValueConstraints(CGNode node, IProgressMonitor monitor) throws CancelException {
@@ -276,7 +268,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
   
   /**
    * Add constraints for a particular basic block.
-   * @throws CancelException 
    */
   protected void addBlockInstructionConstraints(CGNode node, IRView ir, BasicBlock b,
       ConstraintVisitor v, IProgressMonitor monitor) throws CancelException {
@@ -306,7 +297,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
         continue;
       }
       int n = 0;
-      for (IBasicBlock back : Iterator2Iterable.make(controlFlowGraph.getPredNodes(sb))) {
+      for (IBasicBlock<?> back : Iterator2Iterable.make(controlFlowGraph.getPredNodes(sb))) {
         if (back == b) {
           break;
         }
@@ -343,9 +334,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
 
   /**
    * Add constraints to represent the flow of exceptions to the exceptional return value for this node
-   * 
-   * @param node
-   * @param ir
    */
   protected void addNodePassthruExceptionConstraints(CGNode node, IRView ir, DefUse du) {
     // add constraints relating to thrown exceptions that reach the exit block.
@@ -853,7 +841,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
         }
       }
       
-      PointerKey result = getFilteredPointerKeyForLocal(instruction.getResult(), new FilteredPointerKey.MultipleClassesFilter(types.toArray(new IClass[ types.size() ])));
+      PointerKey result = getFilteredPointerKeyForLocal(instruction.getResult(), new FilteredPointerKey.MultipleClassesFilter(types.toArray(new IClass[0])));
       PointerKey value = getPointerKeyForLocal(instruction.getVal());
 
       if (hasNoInterestingUses(instruction.getDef())) {
@@ -912,7 +900,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
         InstanceKey[] ik = getInvariantContents(instruction.getResult());
         for (InstanceKey element : ik) {
           if (DEBUG) {
-            System.err.println("invariant contents: " + returnValue + " " + element);
+            System.err.println("invariant contents: " + returnValue + ' ' + element);
           }
           system.newConstraint(returnValue, element);
         }
@@ -1089,7 +1077,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
         system.newConstraint(fKey, assignOperator, rvalKey);
       }
       if (DEBUG) {
-        System.err.println("visitPut class init " + field.getDeclaringClass() + " " + field);
+        System.err.println("visitPut class init " + field.getDeclaringClass() + ' ' + field);
       }
       // side effect of putstatic: may call class initializer
       IClass klass = getClassHierarchy().lookupClass(field.getDeclaringClass());
@@ -1177,7 +1165,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
    
           DispatchOperator dispatchOperator = getBuilder().new DispatchOperator(instruction, node,
               invariantParameters, uniqueCatch, params);
-          system.newSideEffect(dispatchOperator, pks.toArray(new PointerKey[pks.size()]));
+          system.newSideEffect(dispatchOperator, pks.toArray(new PointerKey[0]));
         }
       }
     }
@@ -1197,7 +1185,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
       IClass klass = iKey.getConcreteType();
 
       if (DEBUG) {
-        System.err.println("visitNew: " + instruction + " i:" + iKey + " " + system.findOrCreateIndexForInstanceKey(iKey));
+        System.err.println("visitNew: " + instruction + " i:" + iKey + ' ' + system.findOrCreateIndexForInstanceKey(iKey));
       }
 
       if (klass == null) {
@@ -1492,8 +1480,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
 
     
     private void processFinalizeMethod(final IClass klass) {
-      if (! getBuilder().finalizeVisited.contains(klass)) {
-        getBuilder().finalizeVisited.add(klass);
+      if (getBuilder().finalizeVisited.add(klass)) {
         IMethod finalizer = klass.getMethod(MethodReference.finalizeSelector);
         if (finalizer != null && ! finalizer.getDeclaringClass().getReference().equals(TypeReference.JavaLangObject)) {
           Entrypoint ef = new DefaultEntrypoint(finalizer, getClassHierarchy()) {
@@ -1562,7 +1549,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
    * 
    * Side effect: add edge to the call graph.
    * 
-   * @param instruction
    * @param constParams if non-null, then constParams[i] holds the set of instance keys that are passed as param i, or null if param
    *          i is not invariant
    * @param uniqueCatchKey if non-null, then this is the unique PointerKey that catches all exceptions from this call site.
@@ -1704,8 +1690,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
     final private MutableIntSet[] previousPtrs;
     
     /**
-     * @param call
-     * @param node
      * @param constParams if non-null, then constParams[i] holds the String constant that is passed as param i, or null if param i
      *          is not a String constant
      */
@@ -2136,7 +2120,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
   /**
    * TODO: enhance this logic using type inference
    * 
-   * @param instruction
    * @return true if we need to filter the receiver type to account for virtual dispatch
    */
   @SuppressWarnings("unused")
@@ -2183,7 +2166,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
    * TODO: enhance this logic using type inference TODO!!!: enhance filtering to consider concrete types, not just cones.
    * precondition: needs Filter
    * 
-   * @param target
    * @return an IClass which represents
    */
   public PointerKey getTargetPointerKey(CGNode target, int index) {
@@ -2218,7 +2200,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
   }
 
   /**
-   * @param method
    * @return the receiver class for this method.
    */
   private IClass getReceiverClass(IMethod method) {
@@ -2236,7 +2217,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
   /**
    * A value is "invariant" if we can figure out the instances it can ever point to locally, without resorting to propagation.
    * 
-   * @param valueNumber
    * @return true iff the contents of the local with this value number can be deduced locally, without propagation
    */
   protected boolean contentsAreInvariant(SymbolTable symbolTable, DefUse du, int valueNumber) {
@@ -2266,7 +2246,6 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
   /**
    * precondition:contentsAreInvariant(valueNumber)
    * 
-   * @param valueNumber
    * @return the complete set of instances that the local with vn=valueNumber may point to.
    */
   public InstanceKey[] getInvariantContents(SymbolTable symbolTable, DefUse du, CGNode node, int valueNumber, HeapModel hm) {

@@ -106,7 +106,7 @@ import com.ibm.wala.util.strings.Atom;
  * reference to a global named {@link #GLOBAL_OBJ_VAR_NAME}, which is handled
  * specially in {@link JSConstraintVisitor#visitAstGlobalRead(AstGlobalRead)}.
  */
-@SuppressWarnings("javadoc")
+@SuppressWarnings({"javadoc", "JavadocReference"})
 public class JSSSAPropagationCallGraphBuilder extends AstSSAPropagationCallGraphBuilder {
 
   public static final boolean DEBUG_LEXICAL = false;
@@ -591,7 +591,7 @@ public class JSSSAPropagationCallGraphBuilder extends AstSSAPropagationCallGraph
         }
         @Override
         public void dump(AbstractFieldPointerKey fieldKey, boolean constObj, boolean constProp) {
-          System.err.println("dispatch to " + receiverType + "." + fieldKey + " for " + instruction);
+          System.err.println("dispatch to " + receiverType + '.' + fieldKey + " for " + instruction);
         }
       };
 
@@ -720,7 +720,7 @@ public class JSSSAPropagationCallGraphBuilder extends AstSSAPropagationCallGraph
               final Set<InstanceKey> temp = HashSetFactory.make();
               v.getValue().foreach(keyIndex -> temp.add(system.getInstanceKey(keyIndex)));
 
-              return temp.toArray(new InstanceKey[temp.size()]);
+              return temp.toArray(new InstanceKey[0]);
             }
           }
         }
@@ -731,12 +731,7 @@ public class JSSSAPropagationCallGraphBuilder extends AstSSAPropagationCallGraph
 
         private boolean addKey(InstanceKey k) {
           int n = system.findOrCreateIndexForInstanceKey(k);
-          if (!lv.contains(n)) {
-            lv.add(n);
-            return true;
-          } else {
-            return false;
-          }
+          return lv.add(n);
         }
 
         @Override
@@ -991,7 +986,7 @@ public class JSSSAPropagationCallGraphBuilder extends AstSSAPropagationCallGraph
 
     // pass actual arguments to formals in the normal way
     for (int i = 0; i < Math.min(paramCount, argCount); i++) {
-      InstanceKey[] fn = new InstanceKey[] { builder.getInstanceKeyForConstant(JavaScriptTypes.String, ""+(i-num_pseudoargs)) };
+      InstanceKey[] fn = new InstanceKey[] { builder.getInstanceKeyForConstant(JavaScriptTypes.String, String.valueOf(i - num_pseudoargs)) };
       PointerKey F = builder.getTargetPointerKey(target, i);
 
       if (constParams != null && constParams[i] != null) {
@@ -1017,7 +1012,7 @@ public class JSSSAPropagationCallGraphBuilder extends AstSSAPropagationCallGraph
     if (paramCount < argCount) {
       if (av != -1) {
         for (int i = paramCount; i < argCount; i++) {
-          InstanceKey[] fn = new InstanceKey[] { builder.getInstanceKeyForConstant(JavaScriptTypes.String, ""+(i-num_pseudoargs)) };
+          InstanceKey[] fn = new InstanceKey[] { builder.getInstanceKeyForConstant(JavaScriptTypes.String, String.valueOf(i - num_pseudoargs)) };
           if (constParams != null && constParams[i] != null && i >= num_pseudoargs) {
               targetVisitor.newFieldWrite(target, av, fn, constParams[i]);
           } else if(i >= num_pseudoargs) {

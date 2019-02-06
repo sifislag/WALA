@@ -129,18 +129,11 @@ public class HeapTracer {
 	this.traceStatics = traceStatics;
     }
 
-    /**
-     * @param c
-     * @param traceStatics
-     */
     public HeapTracer(Collection<?> c, boolean traceStatics) {
 	rootInstances = c;
 	this.traceStatics = traceStatics;
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
 	try {
 	    Result r = (new HeapTracer(true)).perform();
@@ -203,7 +196,6 @@ public class HeapTracer {
     }
 
     /**
-     * @param classpath
      * @return set of strings that are names of directories that contain "bin"
      */
     private static Object[] extractBinDirectories(String classpath) {
@@ -248,7 +240,6 @@ public class HeapTracer {
     }
 
     /**
-     * @param o
      * @return the estimated size of the object
      */
     private static int computeSizeOf(Object o) {
@@ -270,7 +261,6 @@ public class HeapTracer {
     }
 
     /**
-     * @param o
      * @return the estimated size of the object
      */
     private int sizeOf(Object o) {
@@ -288,7 +278,6 @@ public class HeapTracer {
     }
 
     /**
-     * @param c
      * @return size of a field of type c, in bytes
      */
     private static int sizeOfSlot(Class<?> c) {
@@ -312,10 +301,6 @@ public class HeapTracer {
 
     /**
      * Traverse the heap starting at a static field
-     * 
-     * @param result
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
      */
     private void traverse(Field root, Result result,
 	    IdentityHashMap<Object, Object> objectsVisited)
@@ -453,16 +438,6 @@ public class HeapTracer {
 	}
     }
 
-    /**
-     * @param root
-     * @param f
-     * @param scalar
-     * @param container
-     * @param objectsVisited
-     * @param result
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     */
     private void traverseFieldOfScalar(Field root, Field f, Object scalar,
 	    Object container, IdentityHashMap<Object, Object> objectsVisited,
 	    Result result) throws IllegalArgumentException,
@@ -669,8 +644,8 @@ public class HeapTracer {
 
 	@Override
 	public String toString() {
-	    StringBuffer result = new StringBuffer();
-	    result.append("Totals: " + totalInstances + " " + totalSize + "\n");
+	    StringBuilder result = new StringBuilder();
+	    result.append("Totals: ").append(totalInstances).append(' ').append(totalSize).append('\n');
 	    TreeSet<Object> sorted = new TreeSet<>(new SizeComparator());
 	    sorted.addAll(instanceCount.keySet());
 	    for (Object key : sorted) {
@@ -680,7 +655,7 @@ public class HeapTracer {
 			.append("   ");
 		result.append(bytes.intValue() / I.intValue()).append("   ");
 		result.append(key);
-		result.append("\n");
+		result.append('\n');
 	    }
 	    return result.toString();
 	}
@@ -731,7 +706,6 @@ public class HeapTracer {
 		.make();
 
 	/**
-	 * @param root
 	 * @return the Demographics object tracking objects traced from that
 	 *         root
 	 */
@@ -761,7 +735,7 @@ totalSize += d.getTotalSize();
 
 	@Override
 	public String toString() {
-	    StringBuffer result = new StringBuffer();
+	    StringBuilder result = new StringBuilder();
 	    result.append("Assuming " + BYTES_IN_HEADER
 		    + " header bytes per object\n");
 	    int totalInstances = 0;
@@ -770,8 +744,8 @@ totalSize += d.getTotalSize();
 totalInstances += d.getTotalInstances();
 totalSize += d.getTotalSize();
   }
-	    result.append("Total instances: " + totalInstances + "\n");
-	    result.append("Total size(bytes): " + totalSize + "\n");
+	    result.append("Total instances: ").append(totalInstances).append('\n');
+	    result.append("Total size(bytes): ").append(totalSize).append('\n');
 
 	    TreeSet<Field> sortedDemo = new TreeSet<>(new SizeComparator());
 	    sortedDemo.addAll(roots.keySet());
@@ -779,7 +753,7 @@ totalSize += d.getTotalSize();
 		Object root = field;
 		Demographics d = roots.get(root);
 		if (d.getTotalSize() > 10000) {
-		    result.append(" root: ").append(root).append("\n");
+		    result.append(" root: ").append(root).append('\n');
 		    result.append(d);
 		}
 	    }

@@ -2,11 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: com.ibm.wala.core.tests;singleton:=true
-Bundle-Version: 1.5.1.qualifier
+Bundle-Version: 1.5.2.qualifier
 Bundle-Vendor: %providerName
 Require-Bundle: com.ibm.wala.shrike,
  com.ibm.wala.core,
- com.ibm.wala.ide.jdt;bundle-version="1.5.1.qualifier",
+ com.ibm.wala.ide.jdt;bundle-version="1.5.2.qualifier",
  org.eclipse.core.runtime,
  com.ibm.wala.core.testdata,
  org.junit;bundle-version="4.0.0",
@@ -28,6 +28,7 @@ Export-Package: com.ibm.wala.core.tests.arraybounds,
  com.ibm.wala.core.tests.shrike,
  com.ibm.wala.core.tests.slicer,
  com.ibm.wala.core.tests.typeInference,
+ com.ibm.wala.core.tests.typeargument,
  com.ibm.wala.core.tests.util,
  com.ibm.wala.demandpa.driver,
  com.ibm.wala.examples.analysis,
@@ -39,3 +40,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.ibm.wala.core.tests.plugin.CoreTestsPlugin
 Eclipse-RegisterBuddy: com.ibm.wala.core, com.ibm.wala.core.testdata
+Automatic-Module-Name: com.ibm.wala.core.tests

@@ -357,7 +357,7 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
     }
 
     private void startClass(String cname, Attributes atts) {
-      String clName = governingPackage==null? "L" + cname: "L" + governingPackage + "/" + cname;
+      String clName = governingPackage==null? 'L' + cname: "L" + governingPackage + '/' + cname;
       governingClass = className2Ref(clName);
       String allocString = atts.getValue(A_ALLOCATABLE);
       if (allocString != null) {
@@ -413,8 +413,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * If a method is declared to return a value, be sure the method summary includes a return statement. Throw an assertion if not.
-     * 
-     * @param governingMethod
      */
     private void checkReturnValue(MethodSummary governingMethod) {
       Assertions.productionAssertion(governingMethod != null);
@@ -433,8 +431,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element indicating a call instruction
-     * 
-     * @param atts
      */
     private void processCallSite(Attributes atts) {
       String typeString = atts.getValue(A_TYPE);
@@ -449,19 +445,25 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
       MethodReference ref = MethodReference.findOrCreate(type, nm, D);
       CallSiteReference site = null;
       int nParams = ref.getNumberOfParameters();
-      if (typeString.equals("virtual")) {
-        site = CallSiteReference.make(governingMethod.getNextProgramCounter(), ref, IInvokeInstruction.Dispatch.VIRTUAL);
-        nParams++;
-      } else if (typeString.equals("special")) {
-        site = CallSiteReference.make(governingMethod.getNextProgramCounter(), ref, IInvokeInstruction.Dispatch.SPECIAL);
-        nParams++;
-      } else if (typeString.equals("interface")) {
-        site = CallSiteReference.make(governingMethod.getNextProgramCounter(), ref, IInvokeInstruction.Dispatch.INTERFACE);
-        nParams++;
-      } else if (typeString.equals("static")) {
-        site = CallSiteReference.make(governingMethod.getNextProgramCounter(), ref, IInvokeInstruction.Dispatch.STATIC);
-      } else {
-        Assertions.UNREACHABLE("Invalid call type " + typeString);
+      switch (typeString) {
+        case "virtual":
+          site = CallSiteReference.make(governingMethod.getNextProgramCounter(), ref, IInvokeInstruction.Dispatch.VIRTUAL);
+          nParams++;
+          break;
+        case "special":
+          site = CallSiteReference.make(governingMethod.getNextProgramCounter(), ref, IInvokeInstruction.Dispatch.SPECIAL);
+          nParams++;
+          break;
+        case "interface":
+          site = CallSiteReference.make(governingMethod.getNextProgramCounter(), ref, IInvokeInstruction.Dispatch.INTERFACE);
+          nParams++;
+          break;
+        case "static":
+          site = CallSiteReference.make(governingMethod.getNextProgramCounter(), ref, IInvokeInstruction.Dispatch.STATIC);
+          break;
+        default:
+          Assertions.UNREACHABLE("Invalid call type " + typeString);
+          break;
       }
 
       String paramCount = atts.getValue(A_NUM_ARGS);
@@ -473,10 +475,14 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
       for (int i = 0; i < params.length; i++) {
         String argString = atts.getValue(A_ARG + i);
-        Assertions.productionAssertion(argString != null, "unspecified arg in method " + governingMethod + " " + site);
+        Assertions.productionAssertion(argString != null, "unspecified arg in method " + governingMethod + ' ' + site);
         Integer valueNumber = symbolTable.get(argString);
         if (valueNumber == null) {
-          valueNumber = Integer.parseInt(argString);
+          if (argString.equals(V_NULL)) {
+            valueNumber = getValueNumberForNull();
+          } else {
+            valueNumber = Integer.parseInt(argString);
+          }
         }
         params[i] = valueNumber.intValue();
       }
@@ -504,8 +510,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element indicating a new allocation site.
-     * 
-     * @param atts
      */
     private void processAllocation(Attributes atts) {
       Language lang = scope.getLanguage(governingLoader.getLanguage());
@@ -551,8 +555,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element indicating an Athrow
-     * 
-     * @param atts
      */
     private void processAthrow(Attributes atts) {
       Language lang = scope.getLanguage(governingLoader.getLanguage());
@@ -574,8 +576,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element indicating a putfield.
-     * 
-     * @param atts
      */
     private void processGetField(Attributes atts) {
       Language lang = scope.getLanguage(governingLoader.getLanguage());
@@ -620,8 +620,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element indicating a putfield.
-     * 
-     * @param atts
      */
     private void processPutField(Attributes atts) {
       Language lang = scope.getLanguage(governingLoader.getLanguage());
@@ -662,8 +660,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element indicating a putstatic.
-     * 
-     * @param atts
      */
     private void processPutStatic(Attributes atts) {
       Language lang = scope.getLanguage(governingLoader.getLanguage());
@@ -696,8 +692,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element indicating an Aastore
-     * 
-     * @param atts
      */
     private void processAastore(Attributes atts) {
       Language lang = scope.getLanguage(governingLoader.getLanguage());
@@ -741,8 +735,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element indicating an Aaload
-     * 
-     * @param atts
      */
     private void processAaload(Attributes atts) {
       //<aaload def="foo" ref="arg1" index="the-answer" />
@@ -788,8 +780,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element indicating a return statement.
-     * 
-     * @param atts
      */
     private void processReturn(Attributes atts) {
       Language lang = scope.getLanguage(governingLoader.getLanguage());
@@ -806,11 +796,7 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
             if (!retV.equals(V_NULL)) {
               Assertions.UNREACHABLE("Cannot return value with no def: " + retV);
             } else {
-              valueNumber = symbolTable.get(V_NULL);
-              if (valueNumber == null) {
-                valueNumber = Integer.valueOf(nextLocal++);
-                symbolTable.put(V_NULL, valueNumber);
-              }
+              valueNumber = getValueNumberForNull();
             }
           }
           boolean isPrimitive = governingMethod.getReturnType().isPrimitiveType();
@@ -820,9 +806,16 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
       }
     }
 
-    /**
-     * @param atts
-     */
+    private Integer getValueNumberForNull() {
+      Integer valueNumber;
+      valueNumber = symbolTable.get(V_NULL);
+      if (valueNumber == null) {
+        valueNumber = Integer.valueOf(nextLocal++);
+        symbolTable.put(V_NULL, valueNumber);
+      }
+      return valueNumber;
+    }
+
     private void processConstant(Attributes atts) {
       String var = atts.getValue(A_NAME);
       if (var == null)
@@ -842,28 +835,29 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
 
     /**
      * Process an element which indicates this method is "poison"
-     * 
-     * @param atts
      */
     private void processPoison(Attributes atts) {
       String reason = atts.getValue(A_REASON);
       governingMethod.addPoison(reason);
       String level = atts.getValue(A_LEVEL);
-      if (level.equals("severe")) {
-        governingMethod.setPoisonLevel(Warning.SEVERE);
-      } else if (level.equals("moderate")) {
-        governingMethod.setPoisonLevel(Warning.MODERATE);
-      } else if (level.equals("mild")) {
-        governingMethod.setPoisonLevel(Warning.MILD);
-      } else {
-        Assertions.UNREACHABLE("Unexpected level: " + level);
+      switch (level) {
+        case "severe":
+          governingMethod.setPoisonLevel(Warning.SEVERE);
+          break;
+        case "moderate":
+          governingMethod.setPoisonLevel(Warning.MODERATE);
+          break;
+        case "mild":
+          governingMethod.setPoisonLevel(Warning.MILD);
+          break;
+        default:
+          Assertions.UNREACHABLE("Unexpected level: " + level);
+          break;
       }
     }
 
     /**
      * Begin processing of a method. 1. Set the governing method. 2. Initialize the nextLocal variable
-     * 
-     * @param atts
      */
     private void startMethod(Attributes atts) {
 
@@ -885,25 +879,33 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
       boolean isStatic = false;
       String staticString = atts.getValue(A_STATIC);
       if (staticString != null) {
-        if (staticString.equals("true")) {
-          isStatic = true;
-          governingMethod.setStatic(true);
-        } else if (staticString.equals("false")) {
-          isStatic = false;
-          governingMethod.setStatic(false);
-        } else {
-          Assertions.UNREACHABLE("Invalid attribute value " + A_STATIC + ": " + staticString);
+        switch (staticString) {
+          case "true":
+            isStatic = true;
+            governingMethod.setStatic(true);
+            break;
+          case "false":
+            isStatic = false;
+            governingMethod.setStatic(false);
+            break;
+          default:
+            Assertions.UNREACHABLE("Invalid attribute value " + A_STATIC + ": " + staticString);
+            break;
         }
       }
 
       String factoryString = atts.getValue(A_FACTORY);
       if (factoryString != null) {
-        if (factoryString.equals("true")) {
-          governingMethod.setFactory(true);
-        } else if (factoryString.equals("false")) {
-          governingMethod.setFactory(false);
-        } else {
-          Assertions.UNREACHABLE("Invalid attribute value " + A_FACTORY + ": " + factoryString);
+        switch (factoryString) {
+          case "true":
+            governingMethod.setFactory(true);
+            break;
+          case "false":
+            governingMethod.setFactory(false);
+            break;
+          default:
+            Assertions.UNREACHABLE("Invalid attribute value " + A_FACTORY + ": " + factoryString);
+            break;
         }
       }
 
@@ -952,7 +954,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
     /**
      * Method classLoaderName2Ref.
      * 
-     * @param clName
      * @return ClassLoaderReference
      */
     private ClassLoaderReference classLoaderName2Ref(String clName) {
@@ -962,7 +963,6 @@ public class XMLMethodSummaryReader implements BytecodeConstants {
     /**
      * Method classLoaderName2Ref.
      * 
-     * @param clName
      * @return ClassLoaderReference
      */
     private TypeReference className2Ref(String clName) {

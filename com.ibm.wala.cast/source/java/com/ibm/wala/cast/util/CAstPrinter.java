@@ -20,9 +20,9 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 
 public class CAstPrinter {
   private static final class StringWriter extends Writer {
-    private final StringBuffer sb;
+    private final StringBuilder sb;
 
-    private StringWriter(StringBuffer sb) {
+    private StringWriter(StringBuilder sb) {
       this.sb = sb;
     }
 
@@ -128,7 +128,7 @@ public class CAstPrinter {
     case CAstNode.ERROR: return "ERROR";
     case CAstNode.ASSERT: return "ASSERT";
     
-    default: return "UNKNOWN(" + kind + ")";
+    default: return "UNKNOWN(" + kind + ')';
     }
   }
 
@@ -144,7 +144,7 @@ public class CAstPrinter {
   }
 
   public String doPrint(CAstNode top, CAstSourcePositionMap pos) {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
     try (final StringWriter writer = new StringWriter(sb)) {
       printTo(top, pos, writer);
     }
@@ -152,7 +152,7 @@ public class CAstPrinter {
   }
 
   public String doPrint(CAstEntity ce) {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
     try (final StringWriter writer = new StringWriter(sb)) {
       printTo(ce, writer);
     }
@@ -234,7 +234,7 @@ public class CAstPrinter {
 	}
 	if (p != null) {
 	  if (uglyBrackets) 
-	    w.write(" lineNumber=\"" + p + "\"");
+	    w.write(" lineNumber=\"" + p + '"');
 	  else
 	    w.write( " at " + p );
 	}
@@ -245,7 +245,7 @@ public class CAstPrinter {
 	w.write( kindAsString( top.getKind() ) );
 	if (p != null)
 	  if (uglyBrackets)
-	    w.write( " position=\"" + p + "\"");
+	    w.write( " position=\"" + p + '"');
 	  else
 	    w.write( " at " + p );
 	if (uglyBrackets) w.write(">");

@@ -32,8 +32,6 @@ import com.ibm.wala.fixpoint.UnaryOperator;
 import com.ibm.wala.fixpoint.UnaryStatement;
 import com.ibm.wala.ipa.callgraph.CallGraph;
 import com.ibm.wala.ipa.callgraph.propagation.PropagationCallGraphBuilder.FilterOperator;
-import com.ibm.wala.ipa.cha.ClassHierarchyException;
-import com.ibm.wala.ipa.cha.ClassHierarchyWarning;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashMapFactory;
 import com.ibm.wala.util.collections.HashSetFactory;
@@ -50,7 +48,6 @@ import com.ibm.wala.util.intset.IntSetUtil;
 import com.ibm.wala.util.intset.MutableIntSet;
 import com.ibm.wala.util.intset.MutableMapping;
 import com.ibm.wala.util.ref.ReferenceCleanser;
-import com.ibm.wala.util.warnings.Warnings;
 
 /**
  * System of constraints that define propagation for call graph construction
@@ -250,7 +247,6 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
   /**
    * If key is unified, returns the representative
    * 
-   * @param key
    * @return the dataflow variable that tracks the points-to set for key
    */
   public PointsToSetVariable findOrCreatePointsToSet(PointerKey key) {
@@ -301,7 +297,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
       result = instanceKeys.add(key);
     }
     if (DEBUG) {
-      System.err.println("getIndexForInstanceKey " + key + " " + result);
+      System.err.println("getIndexForInstanceKey " + key + ' ' + result);
     }
     return result;
   }
@@ -323,7 +319,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
       throw new IllegalArgumentException("rhs null");
     }
     if (DEBUG) {
-      System.err.println("Add constraint A: " + lhs + " " + op + " " + rhs);
+      System.err.println("Add constraint A: " + lhs + ' ' + op + ' ' + rhs);
     }
     PointsToSetVariable L = findOrCreatePointsToSet(lhs);
     PointsToSetVariable R = findOrCreatePointsToSet(rhs);
@@ -333,7 +329,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
       // solver if the value of L changes.
       pointsToMap.recordTransitiveRoot(L.getPointerKey());
       if (!(L.getPointerKey() instanceof FilteredPointerKey)) {
-        Assertions.UNREACHABLE("expected filtered lhs " + L.getPointerKey() + " " + L.getPointerKey().getClass() + " " + lhs + " "
+        Assertions.UNREACHABLE("expected filtered lhs " + L.getPointerKey() + ' ' + L.getPointerKey().getClass() + ' ' + lhs + ' '
             + lhs.getClass());
       }
     }
@@ -351,7 +347,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
       throw new IllegalArgumentException("rhs null");
     }
     if (DEBUG) {
-      System.err.println("Add constraint A: " + lhs + " " + op + " " + rhs);
+      System.err.println("Add constraint A: " + lhs + ' ' + op + ' ' + rhs);
     }
     assert !pointsToMap.isUnified(lhs);
     assert !pointsToMap.isUnified(rhs);
@@ -374,7 +370,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
       throw new IllegalArgumentException("null rhs2");
     }
     if (DEBUG) {
-      System.err.println("Add constraint A: " + lhs + " " + op + " " + rhs1 + ", " + rhs2);
+      System.err.println("Add constraint A: " + lhs + ' ' + op + ' ' + rhs1 + ", " + rhs2);
     }
     assert !pointsToMap.isUnified(lhs);
     assert !pointsToMap.isUnified(rhs1);
@@ -413,11 +409,10 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
     // This works since the solver is monotonic with TOP = {}
     PointsToSetVariable L = findOrCreatePointsToSet(lhs);
     int index = findOrCreateIndexForInstanceKey(value);
-    if (L.contains(index)) {
+    if (!L.add(index)) {
       // a no-op
       return false;
     } else {
-      L.add(index);
 
       // also register that we have an instanceKey for the klass
       assert value.getConcreteType() != null;
@@ -443,29 +438,25 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
   private void registerInstanceOfClass(IClass klass, int index) {
 
     if (DEBUG) {
-      System.err.println("registerInstanceOfClass " + klass + " " + index);
+      System.err.println("registerInstanceOfClass " + klass + ' ' + index);
     }
 
     assert !klass.getReference().equals(TypeReference.JavaLangObject);
 
-    try {
-      IClass T = klass;
-      registerInstanceWithAllSuperclasses(index, T);
-      registerInstanceWithAllInterfaces(klass, index);
+    IClass T = klass;
+    registerInstanceWithAllSuperclasses(index, T);
+    registerInstanceWithAllInterfaces(klass, index);
 
-      if (klass.isArrayClass()) {
-        ArrayClass aClass = (ArrayClass) klass;
-        int dim = aClass.getDimensionality();
-        registerMultiDimArraysForArrayOfObjectTypes(dim, index, aClass);
+    if (klass.isArrayClass()) {
+      ArrayClass aClass = (ArrayClass) klass;
+      int dim = aClass.getDimensionality();
+      registerMultiDimArraysForArrayOfObjectTypes(dim, index, aClass);
 
-        IClass elementClass = aClass.getInnermostElementClass();
-        if (elementClass != null) {
-          registerArrayInstanceWithAllSuperclassesOfElement(index, elementClass, dim);
-          registerArrayInstanceWithAllInterfacesOfElement(index, elementClass, dim);
-        }
+      IClass elementClass = aClass.getInnermostElementClass();
+      if (elementClass != null) {
+        registerArrayInstanceWithAllSuperclassesOfElement(index, elementClass, dim);
+        registerArrayInstanceWithAllInterfacesOfElement(index, elementClass, dim);
       }
-    } catch (ClassHierarchyException e) {
-      Warnings.add(ClassHierarchyWarning.create(e.getMessage()));
     }
   }
 
@@ -491,7 +482,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
       MutableIntSet set = findOrCreateSparseSetForClass(iArrayClass);
       set.add(index);
       if (DEBUG) {
-        System.err.println("dense filter for interface " + iArrayClass + " " + set);
+        System.err.println("dense filter for interface " + iArrayClass + ' ' + set);
       }
     }
   }
@@ -515,39 +506,29 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
       MutableIntSet set = findOrCreateSparseSetForClass(tArrayClass);
       set.add(index);
       if (DEBUG) {
-        System.err.println("dense filter for class " + tArrayClass + " " + set);
+        System.err.println("dense filter for class " + tArrayClass + ' ' + set);
       }
       T = T.getSuperclass();
     }
   }
 
-  /**
-   * @param klass
-   * @param index
-   * @throws ClassHierarchyException
-   */
-  private void registerInstanceWithAllInterfaces(IClass klass, int index) throws ClassHierarchyException {
+  private void registerInstanceWithAllInterfaces(IClass klass, int index) {
     Collection<IClass> ifaces = klass.getAllImplementedInterfaces();
     for (IClass I : ifaces) {
       MutableIntSet set = findOrCreateSparseSetForClass(I);
       set.add(index);
       if (DEBUG) {
-        System.err.println("dense filter for interface " + I + " " + set);
+        System.err.println("dense filter for interface " + I + ' ' + set);
       }
     }
   }
 
-  /**
-   * @param index
-   * @param T
-   * @throws ClassHierarchyException
-   */
-  private void registerInstanceWithAllSuperclasses(int index, IClass T) throws ClassHierarchyException {
+  private void registerInstanceWithAllSuperclasses(int index, IClass T) {
     while (T != null && !T.getReference().equals(TypeReference.JavaLangObject)) {
       MutableIntSet set = findOrCreateSparseSetForClass(T);
       set.add(index);
       if (DEBUG) {
-        System.err.println("dense filter for class " + T + " " + set);
+        System.err.println("dense filter for class " + T + ' ' + set);
       }
       T = T.getSuperclass();
     }
@@ -558,7 +539,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
       throw new IllegalArgumentException("null arg0");
     }
     if (DEBUG) {
-      System.err.println("add constraint D: " + op + " " + arg0);
+      System.err.println("add constraint D: " + op + ' ' + arg0);
     }
     assert !pointsToMap.isUnified(arg0);
     PointsToSetVariable v1 = findOrCreatePointsToSet(arg0);
@@ -570,7 +551,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
       throw new IllegalArgumentException("null arg0");
     }
     if (DEBUG) {
-      System.err.println("add constraint D: " + op + " " + Arrays.toString(arg0));
+      System.err.println("add constraint D: " + op + ' ' + Arrays.toString(arg0));
     }
     PointsToSetVariable[] vs = new PointsToSetVariable[ arg0.length ];
     for(int i = 0; i < arg0.length; i++) {
@@ -582,7 +563,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
 
   public void newSideEffect(AbstractOperator<PointsToSetVariable> op, PointerKey arg0, PointerKey arg1) {
     if (DEBUG) {
-      System.err.println("add constraint D: " + op + " " + arg0);
+      System.err.println("add constraint D: " + op + ' ' + arg0);
     }
     assert !pointsToMap.isUnified(arg0);
     assert !pointsToMap.isUnified(arg1);
@@ -636,22 +617,20 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
 
   private String printRHSInstances(AbstractStatement s) {
     if (s instanceof UnaryStatement) {
-      UnaryStatement u = (UnaryStatement) s;
+      UnaryStatement<?> u = (UnaryStatement<?>) s;
       PointsToSetVariable rhs = (PointsToSetVariable) u.getRightHandSide();
       IntSet value = rhs.getValue();
       final int[] topFive = new int[5];
       value.foreach(x -> {
-        for (int i = 0; i < 4; i++) {
-          topFive[i] = topFive[i + 1];
-        }
+        System.arraycopy(topFive, 1, topFive, 0, 4);
         topFive[4] = x;
       });
-      StringBuffer result = new StringBuffer();
+      StringBuilder result = new StringBuilder();
       for (int i = 0; i < 5; i++) {
         int p = topFive[i];
         if (p != 0) {
           InstanceKey ik = getInstanceKey(p);
-          result.append(p).append("  ").append(ik).append("\n");
+          result.append(p).append("  ").append(ik).append('\n');
         }
       }
       return result.toString();
@@ -690,7 +669,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
     return flowGraph.getStatementsThatUse(v);
   }
 
-  public Iterator<AbstractStatement> getStatementsThatDef(PointsToSetVariable v) {
+  public Iterator<AbstractStatement<PointsToSetVariable, ?>> getStatementsThatDef(PointsToSetVariable v) {
     return flowGraph.getStatementsThatDef(v);
   }
 
@@ -748,9 +727,6 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
     return periodicMaintainInterval;
   }
 
-  /**
-   * @param periodicMaintainInteval
-   */
   public void setPeriodicMaintainInterval(int periodicMaintainInteval) {
     this.periodicMaintainInterval = periodicMaintainInteval;
   }

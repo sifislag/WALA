@@ -339,7 +339,7 @@ public abstract class IRTests {
   }
   
   protected String[] simpleTestEntryPoint() {
-    return new String[] { "L" + getTestName().substring(4) };
+    return new String[] { 'L' + getTestName().substring(4) };
   }
 
   protected String[] simplePkgTestEntryPoint(String pkgName) {
@@ -415,10 +415,8 @@ public abstract class IRTests {
   }
 
   /**
-   * 
    * @param srcMethodDescriptor a full method descriptor of the form ldr#type#methName#methSig example:
    *          Source#Simple1#main#([Ljava/lang/String;)V
-   * @param cha
    */
   public static MethodReference descriptorToMethodRef(String srcMethodDescriptor, IClassHierarchy cha) {
     String[] ldrTypeMeth = srcMethodDescriptor.split("\\#");
@@ -436,7 +434,7 @@ public abstract class IRTests {
 
   static TypeReference findOrCreateTypeReference(String loaderName, String typeStr, IClassHierarchy cha) {
     ClassLoaderReference clr = findLoader(loaderName, cha);
-    TypeName typeName = TypeName.string2TypeName("L" + typeStr);
+    TypeName typeName = TypeName.string2TypeName('L' + typeStr);
     TypeReference typeRef = TypeReference.findOrCreate(clr, typeName);
     return typeRef;
   }

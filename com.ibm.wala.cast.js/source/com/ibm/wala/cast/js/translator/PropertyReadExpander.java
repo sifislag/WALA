@@ -139,12 +139,6 @@ public class PropertyReadExpander extends CAstRewriter<PropertyReadExpander.Rewr
    * create a CAstNode l representing a loop that traverses the prototype chain
    * from receiver searching for the constant property element. update nodeMap
    * to map root to an expression that reads the property from the right node.
-   * 
-   * @param root
-   * @param receiver
-   * @param element
-   * @param context
-   * @param nodeMap
    */
   private CAstNode makeConstRead(CAstNode root, CAstNode receiver, CAstNode element, RewriteContext context,
       Map<Pair<CAstNode, ExpanderKey>, CAstNode> nodeMap) {
@@ -306,15 +300,7 @@ public class PropertyReadExpander extends CAstRewriter<PropertyReadExpander.Rewr
       return root;
 
     } else {
-      CAstNode children[] = new CAstNode[root.getChildCount()];
-      for (int i = 0; i < children.length; i++) {
-        children[i] = copyNodes(root.getChild(i), cfg, READ, nodeMap);
-      }
-      for(Object label: cfg.getTargetLabels(root)) {
-        if (label instanceof CAstNode) {
-          copyNodes((CAstNode)label, cfg, READ, nodeMap);
-        }
-      }
+      CAstNode[] children = copyChildrenArrayAndTargets(root, cfg, READ, nodeMap);
       CAstNode copy = Ast.makeNode(kind, children);
       nodeMap.put(Pair.make(root, context.key()), copy);
       return copy;

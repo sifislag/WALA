@@ -54,7 +54,6 @@ public class GraphDataflowTest extends WalaTestCase {
 
   /**
    * A simple test of the GraphBitVectorDataflow system
-   * @throws CancelException 
    */
   @Test public void testSolverNodeEdge() throws CancelException {
     Graph<String> G = buildGraph();
@@ -78,29 +77,25 @@ public class GraphDataflowTest extends WalaTestCase {
    * @return the expected dataflow result as a String
    */
   public static String expectedStringNodeOnly() {
-    StringBuffer result = new StringBuffer("------\n");
-    result.append("Node A(0) = { 0 }\n");
-    result.append("Node B(1) = { 0 1 }\n");
-    result.append("Node C(2) = { 0 1 2 }\n");
-    result.append("Node D(3) = { 0 1 3 }\n");
-    result.append("Node E(4) = { 0 1 2 3 4 }\n");
-    result.append("Node F(5) = { 0 1 2 3 4 5 }\n");
-    result.append("Node G(6) = { 6 }\n");
-    result.append("Node H(7) = { 7 }\n");
-    return result.toString();
+    return "------\n" + "Node A(0) = { 0 }\n" +
+            "Node B(1) = { 0 1 }\n" +
+            "Node C(2) = { 0 1 2 }\n" +
+            "Node D(3) = { 0 1 3 }\n" +
+            "Node E(4) = { 0 1 2 3 4 }\n" +
+            "Node F(5) = { 0 1 2 3 4 5 }\n" +
+            "Node G(6) = { 6 }\n" +
+            "Node H(7) = { 7 }\n";
   }
 
   public static String expectedStringNodeEdge() {
-    StringBuffer result = new StringBuffer("------\n");
-    result.append("Node A(0) = { 0 }\n");
-    result.append("Node B(1) = { 0 1 }\n");
-    result.append("Node C(2) = { 0 2 }\n");
-    result.append("Node D(3) = { 1 3 }\n");
-    result.append("Node E(4) = { 0 1 2 3 4 }\n");
-    result.append("Node F(5) = { 0 1 2 3 4 5 }\n");
-    result.append("Node G(6) = { 6 }\n");
-    result.append("Node H(7) = { 7 }\n");
-    return result.toString();
+    return "------\n" + "Node A(0) = { 0 }\n" +
+            "Node B(1) = { 0 1 }\n" +
+            "Node C(2) = { 0 2 }\n" +
+            "Node D(3) = { 1 3 }\n" +
+            "Node E(4) = { 0 1 2 3 4 }\n" +
+            "Node F(5) = { 0 1 2 3 4 5 }\n" +
+            "Node G(6) = { 6 }\n" +
+            "Node H(7) = { 7 }\n";
   }
 
   /**
@@ -124,7 +119,6 @@ public class GraphDataflowTest extends WalaTestCase {
 
   /**
    * Solve the dataflow system and return the result as a string
-   * @throws CancelException 
    */
   public static String solveNodeOnly(Graph<String> G) throws CancelException {
     final OrdinalSetMapping<String> values = new MutableMapping<>(nodes);
@@ -208,12 +202,12 @@ public class GraphDataflowTest extends WalaTestCase {
   }
 
   public static String result2String(BitVectorSolver<String> solver) {
-    StringBuffer result = new StringBuffer("------\n");
+    StringBuilder result = new StringBuilder("------\n");
     for (int i = 0; i < nodes.length; i++) {
       String n = nodes[i];
       BitVectorVariable varI = solver.getOut(n);
       String s = varI.toString();
-      result.append("Node " + n + "(" + i + ") = " + s + "\n");
+      result.append("Node ").append(n).append('(').append(i).append(") = ").append(s).append('\n');
     }
     return result.toString();
   }

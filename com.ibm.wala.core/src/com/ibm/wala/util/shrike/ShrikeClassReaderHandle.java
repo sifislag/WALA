@@ -60,7 +60,7 @@ public class ShrikeClassReaderHandle {
       hydrateCount++;
       if (DEBUG) {
         if (hydrateCount > 1) {
-          System.err.println(("Hydrate " + entry + " " + hydrateCount));
+          System.err.println(("Hydrate " + entry + ' ' + hydrateCount));
           try {
             throw new Exception();
           } catch (Exception e) {
@@ -85,7 +85,6 @@ public class ShrikeClassReaderHandle {
 
   /**
    * Read is into bytes
-   * @throws IOException
    */
   private static void readBytes(InputStream is, ByteArrayOutputStream bytes) throws IOException {
     int n = 0;

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.ibm.wala.cast.java.test
-Bundle-Version: 1.5.1.qualifier
+Bundle-Version: 1.5.2.qualifier
 Bundle-Activator: com.ibm.wala.cast.java.test.TestPlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: com.ibm.wala.core.tests,
@@ -15,3 +15,4 @@ Require-Bundle: com.ibm.wala.core.tests,
 Bundle-ActivationPolicy: lazy
 Export-Package: com.ibm.wala.cast.java.test
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: com.ibm.wala.cast.java.test

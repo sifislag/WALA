@@ -152,8 +152,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * Return the program counter (bytecode index) for a particular Shrike instruction index.
-   * 
-   * @throws InvalidClassFileException
    */
   public int getBytecodeIndex(int instructionIndex) throws InvalidClassFileException {
     return getBCInfo().pcMap[instructionIndex];
@@ -164,8 +162,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
    * the Shrike instriction index could not be determined. 
    * 
    * This ShrikeBTMethod must not be native.
-   * 
-   * @throws InvalidClassFileException {@link UnsupportedOperationException}
    */
   public int getInstructionIndex(int bcIndex) throws InvalidClassFileException {
     if (isNative()) {
@@ -196,53 +192,37 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * Return the number of Shrike instructions for this method.
-   * 
-   * @throws InvalidClassFileException
    */
   public int getNumShrikeInstructions() throws InvalidClassFileException {
     return getBCInfo().pcMap.length;
   }
 
-  /**
-   * @throws InvalidClassFileException
-   */
   public Collection<CallSiteReference> getCallSites() throws InvalidClassFileException {
-    Collection<CallSiteReference> empty = Collections.emptySet();
-    if (isNative()) {
-      return empty;
-    }
-    return (getBCInfo().callSites == null) ? empty : Collections.unmodifiableCollection(Arrays.asList(getBCInfo().callSites));
+    return isNative() || getBCInfo().callSites == null
+            ? Collections.emptySet()
+            : Collections.unmodifiableCollection(Arrays.asList(getBCInfo().callSites));
   }
 
-  /**
-   * @throws InvalidClassFileException
-   */
   Collection<NewSiteReference> getNewSites() throws InvalidClassFileException {
-    Collection<NewSiteReference> empty = Collections.emptySet();
-    if (isNative()) {
-      return empty;
-    }
-
-    return (getBCInfo().newSites == null) ? empty : Collections.unmodifiableCollection(Arrays.asList(getBCInfo().newSites));
+    return (isNative() || getBCInfo().newSites == null)
+            ? Collections.emptySet()
+            : Collections.unmodifiableCollection(Arrays.asList(getBCInfo().newSites));
   }
 
   /**
    * @return {@link Set}&lt;{@link TypeReference}&gt;, the exceptions that statements in this method may throw,
-   * @throws InvalidClassFileException
    */
   public Collection<TypeReference> getImplicitExceptionTypes() throws InvalidClassFileException {
     if (isNative()) {
       return Collections.emptySet();
     }
-    return (getBCInfo().implicitExceptions == null) ? Arrays.asList(new TypeReference[0]) : Arrays
+    return (getBCInfo().implicitExceptions == null) ? Collections.emptyList() : Arrays
         .asList(getBCInfo().implicitExceptions);
   }
 
   /**
    * Do a cheap pass over the bytecodes to collect some mapping information. Some methods require this as a pre-req to accessing
    * ShrikeCT information.
-   * 
-   * @throws InvalidClassFileException
    */
   private BytecodeInfo computeBCInfo() throws InvalidClassFileException {
     BytecodeInfo result = new BytecodeInfo();
@@ -264,7 +244,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * @return true iff this method has a monitorenter or monitorexit
-   * @throws InvalidClassFileException
    */
   public boolean hasMonitorOp() throws InvalidClassFileException {
     if (isNative()) {
@@ -275,7 +254,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * @return Set of FieldReference
-   * @throws InvalidClassFileException
    */
   public Iterator<FieldReference> getFieldsWritten() throws InvalidClassFileException {
     if (isNative()) {
@@ -291,7 +269,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * @return Iterator of FieldReference
-   * @throws InvalidClassFileException
    */
   public Iterator<FieldReference> getFieldsRead() throws InvalidClassFileException {
     if (isNative()) {
@@ -307,7 +284,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * @return Iterator of TypeReference
-   * @throws InvalidClassFileException
    */
   public Iterator<TypeReference> getArraysRead() throws InvalidClassFileException {
     if (isNative()) {
@@ -318,7 +294,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * @return Iterator of TypeReference
-   * @throws InvalidClassFileException
    */
   public Iterator<TypeReference> getArraysWritten() throws InvalidClassFileException {
     if (isNative()) {
@@ -334,7 +309,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * @return Iterator of TypeReference
-   * @throws InvalidClassFileException
    */
   public Iterator<TypeReference> getCastTypes() throws InvalidClassFileException {
     if (isNative()) {
@@ -462,8 +436,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * Walk through the bytecodes and collect trivial information.
-   * 
-   * @throws InvalidClassFileException
    */
   protected abstract void processDebugInfo(BytecodeInfo bcInfo) throws InvalidClassFileException;
 
@@ -557,17 +529,11 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
     info.hasMonitorOp = simpleVisitor.hasMonitorOp;
   }
 
-  /**
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     return getReference().toString();
   }
 
-  /**
-   * @see java.lang.Object#equals(Object)
-   */
   @Override
   public boolean equals(Object obj) {
     // instanceof is OK because this class is final.
@@ -580,9 +546,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
     }
   }
 
-  /**
-   * @see java.lang.Object#hashCode()
-   */
   @Override
   public int hashCode() {
     return 9661 * getReference().hashCode();
@@ -768,10 +731,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * Clients should not modify the returned array. TODO: clone to avoid the problem?
-   * 
-   * @throws InvalidClassFileException
-   * 
-   * @see com.ibm.wala.classLoader.IMethod#getDeclaredExceptions()
    */
   @Override
   public TypeReference[] getDeclaredExceptions() throws InvalidClassFileException {
@@ -794,7 +753,7 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
       TypeReference[] result = new TypeReference[strings.length];
       for (int i = 0; i < result.length; i++) {
-        result[i] = TypeReference.findOrCreate(loader, TypeName.findOrCreate(ImmutableByteArray.make("L" + strings[i])));
+        result[i] = TypeReference.findOrCreate(loader, TypeName.findOrCreate(ImmutableByteArray.make('L' + strings[i])));
       }
       return result;
     } catch (InvalidClassFileException e) {
@@ -835,7 +794,6 @@ public abstract class ShrikeBTMethod implements IMethod, BytecodeConstants {
 
   /**
    * @return {@link Set}&lt;{@link TypeReference}&gt;
-   * @throws InvalidClassFileException
    */
   public Set<TypeReference> getCaughtExceptionTypes() throws InvalidClassFileException {
 

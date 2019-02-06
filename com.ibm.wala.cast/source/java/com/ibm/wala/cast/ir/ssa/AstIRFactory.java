@@ -62,7 +62,7 @@ public class AstIRFactory<T extends IMethod> implements IRFactory<T> {
     }
 
     @Override
-    public ControlFlowGraph makeCFG(IMethod method, Context context) {
+    public ControlFlowGraph<?, ?> makeCFG(IMethod method, Context context) {
       if (method instanceof AstMethod) {
         return astFactory.makeCFG(method);
       } else {
@@ -147,8 +147,7 @@ public class AstIRFactory<T extends IMethod> implements IRFactory<T> {
   
     AbstractCFG<?, ?> oldCfg = ((AstMethod) method).cfg();
     SSAInstruction[] oldInstrs = (SSAInstruction[]) oldCfg.getInstructions();
-    SSAInstruction[] instrs = new SSAInstruction[ oldInstrs.length ];
-    System.arraycopy(oldInstrs, 0, instrs, 0, instrs.length);
+    SSAInstruction[] instrs = oldInstrs.clone();
     
     IR newIR = new AstIR((AstMethod) method, instrs, ((AstMethod) method).symbolTable().copy(), new SSACFG(method, oldCfg, instrs),
         options);

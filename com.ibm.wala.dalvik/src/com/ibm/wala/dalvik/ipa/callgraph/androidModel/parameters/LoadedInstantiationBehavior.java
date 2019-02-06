@@ -75,7 +75,7 @@ public class LoadedInstantiationBehavior extends IInstantiationBehavior {
 
         @Override
         public String toString() {
-            return "<BehaviorValue " + behaviour + " - " + exactness + " = " + cacheFrom + ">";
+            return "<BehaviorValue " + behaviour + " - " + exactness + " = " + cacheFrom + '>';
         }
 
         /**
@@ -122,7 +122,7 @@ public class LoadedInstantiationBehavior extends IInstantiationBehavior {
 
         @Override
         public String toString() {
-            return "<BehaviorKey of " + base.getClass() + " " + base.toString() + " hash=" + this.hashCode() + "/>";
+            return "<BehaviorKey of " + base.getClass() + ' ' + base.toString() + " hash=" + this.hashCode() + "/>";
         }
     }
 
@@ -139,8 +139,6 @@ public class LoadedInstantiationBehavior extends IInstantiationBehavior {
     }
 
     /**
-     *  {@inheritDoc}
-     *
      *  @param  asParameterTo   not considered
      *  @param  inCall          not considered
      *  @param  withName        not considered
@@ -208,7 +206,7 @@ public class LoadedInstantiationBehavior extends IInstantiationBehavior {
         {
             String prefix = type.toString();
             while (prefix.contains("/")) {
-                prefix = prefix.substring(0, prefix.lastIndexOf("/") - 1);
+                prefix = prefix.substring(0, prefix.lastIndexOf('/') - 1);
                 final BehaviorKey<Atom> prefixKey= BehaviorKey.mk(Atom.findOrCreateAsciiAtom(prefix));
                 if (behaviours.containsKey(prefixKey)) {
                     // cache
@@ -306,10 +304,10 @@ public class LoadedInstantiationBehavior extends IInstantiationBehavior {
             stream.writeObject(this.behaviours);
         } else {
             final Map<BehaviorKey<?>, BehviourValue> strippedBehaviours = new HashMap<>();
-            for (final BehaviorKey<?> key : this.behaviours.keySet()) {
-                final BehviourValue val = this.behaviours.get(key);
+            for (final Map.Entry<BehaviorKey<?>, BehviourValue> entry : this.behaviours.entrySet()) {
+                final BehviourValue val = entry.getValue();
                 if (! val.isCached() ) {
-                    strippedBehaviours.put(key, val);
+                    strippedBehaviours.put(entry.getKey(), val);
                 }
             }
             stream.writeObject(strippedBehaviours);

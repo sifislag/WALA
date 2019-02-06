@@ -58,7 +58,7 @@ import com.ibm.wala.util.strings.ImmutableByteArray;
  * 
  * The analysis scope is partitioned by class loader. There are three pre-defined class loader scopes:
  * <ul>
- * <li>Primordial (for <code>rt.jar</code>, the core classes)
+ * <li>Primordial (for {@code rt.jar}, the core classes)
  * <li>Extension (for extension libraries in $JRE/lib/ext)
  * <li>Application (for the classes of the application)
  * </ul>
@@ -207,7 +207,6 @@ public class AnalysisScope {
 
   /**
    * Add a class file to the scope for a loader
-   * @throws InvalidClassFileException 
    */
   public void addClassFileToScope(ClassLoaderReference loader, File file) throws IllegalArgumentException, InvalidClassFileException {
     List<Module> s = MapUtil.findOrCreateList(moduleMap, loader);
@@ -283,7 +282,7 @@ public class AnalysisScope {
   }
 
   /**
-   * @return the ClassLoaderReference specified by <code>name</code>.
+   * @return the ClassLoaderReference specified by {@code name}.
    * @throws IllegalArgumentException if name is null
    */
   public ClassLoaderReference getLoader(Atom name) throws IllegalArgumentException {
@@ -338,18 +337,18 @@ public class AnalysisScope {
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     for (ClassLoaderReference loader : loadersByName.values()) {
       result.append(loader.getName());
-      result.append("\n");
+      result.append('\n');
       for (Module m : getModules(loader)) {
-        result.append(" ");
+        result.append(' ');
         result.append(m);
-        result.append("\n");
+        result.append('\n');
       }
     }
     result.append(getExclusionString());
-    result.append("\n");
+    result.append('\n');
     return result.toString();
   }
 
@@ -439,7 +438,6 @@ public class AnalysisScope {
    * Creates a "serializable" version of the analysis scope.
    * 
    * @return a "serializable" version of the analysis scope.
-   * @throws NotSerializableException
    */
   public ShallowAnalysisScope toShallowAnalysisScope() throws NotSerializableException {
 

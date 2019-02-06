@@ -236,7 +236,6 @@ public class SemiSparseMutableIntSet implements MutableIntSet {
   }
   
   /**
-   * @param i
    * @return true iff this set contains integer i
    */
   @Override
@@ -375,8 +374,6 @@ public class SemiSparseMutableIntSet implements MutableIntSet {
 
   /**
    * Invoke an action on each element of the Set, excluding elements of Set X
-   * 
-   * @param action
    */
   @Override
   public void foreachExcluding(IntSet X, IntSetAction action) {
@@ -403,7 +400,7 @@ public class SemiSparseMutableIntSet implements MutableIntSet {
   }
 
   /**
-   * @return true iff <code>this</code> has the same value as <code>that</code>.
+   * @return true iff {@code this} has the same value as {@code that}.
    * @throws IllegalArgumentException if that is null
    */
   @Override
@@ -430,7 +427,7 @@ public class SemiSparseMutableIntSet implements MutableIntSet {
   }
 
   /**
-   * @return true iff <code>this</code> is a subset of <code>that</code>.
+   * @return true iff {@code this} is a subset of {@code that}.
    * @throws IllegalArgumentException if that is null
    */
   @Override
@@ -616,8 +613,6 @@ public class SemiSparseMutableIntSet implements MutableIntSet {
 
   /**
    * Interset this with another set.
-   * 
-   * @param set
    */
   @Override
   public void intersectWith(IntSet set) {
@@ -655,11 +650,11 @@ public class SemiSparseMutableIntSet implements MutableIntSet {
 
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer("[");
+    StringBuilder sb = new StringBuilder("[");
     if (densePart != null) {
-      sb.append("densePart: ").append(densePart.toString()).append(" ");
+      sb.append("densePart: ").append(densePart.toString()).append(' ');
     }
-    sb.append("sparsePart: ").append(sparsePart.toString()).append("]");
+    sb.append("sparsePart: ").append(sparsePart.toString()).append(']');
     return sb.toString();
   }
 

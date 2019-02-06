@@ -92,18 +92,11 @@ public class CallGraphStats {
 
     @Override
     public String toString() {
-      StringBuffer result = new StringBuffer();
-      result.append("Call graph stats:");
-      result.append("\n");
-      result.append("  Nodes: " + nNodes);
-      result.append("\n");
-      result.append("  Edges: " + nEdges);
-      result.append("\n");
-      result.append("  Methods: " + nMethods);
-      result.append("\n");
-      result.append("  Bytecode Bytes: " + bytecodeBytes);
-      result.append("\n");
-      return result.toString();
+      return "Call graph stats:\n  Nodes: " + nNodes
+              + "\n  Edges: " + nEdges
+              + "\n  Methods: " + nMethods
+              + "\n  Bytecode Bytes: " + bytecodeBytes
+              + '\n';
 
     }
   }
@@ -130,7 +123,6 @@ public class CallGraphStats {
   }
 
   /**
-   * @param cg
    * @return the number of bytecode bytes
    * @throws IllegalArgumentException if cg is null
    */
@@ -157,7 +149,6 @@ public class CallGraphStats {
   /**
    * Walk the call graph and return the set of MethodReferences that appear in the graph.
    * 
-   * @param cg
    * @return a set of MethodReferences
    * @throws IllegalArgumentException if cg is null
    */

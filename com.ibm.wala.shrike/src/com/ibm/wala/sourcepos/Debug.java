@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,9 +54,7 @@ public final class Debug {
 
   private static Set<LogLevel> allowed = new HashSet<>();
   static {
-    for (int i = 0; i < LogLevel.values().length; i++) {
-      allowed.add(LogLevel.values()[i]);
-    }
+      allowed.addAll(Arrays.asList(LogLevel.values()));
   }
 
   public static void setLogFile(String file) throws FileNotFoundException {
@@ -70,8 +69,6 @@ public final class Debug {
 
   /**
    * Set to log all events with the given or higher priority
-   * 
-   * @param level
    */
   public static void setMinLogLevel(LogLevel level) {
     for (LogLevel l : LogLevel.values()) {
@@ -96,36 +93,36 @@ public final class Debug {
   }
 
   public static void error(String str, Object... obj) {
-    log(LogLevel.ERROR, str + "\n", obj);
+    log(LogLevel.ERROR, str + '\n', obj);
   }
 
   public static void warn(String str, Object... obj) {
-    log(LogLevel.WARN, str + "\n", obj);
+    log(LogLevel.WARN, str + '\n', obj);
   }
 
   public static void info(String str, Object... obj) {
-    log(LogLevel.INFO, str + "\n", obj);
+    log(LogLevel.INFO, str + '\n', obj);
   }
 
   public static void debug(String str, Object... obj) {
-    log(LogLevel.DEBUG, str + "\n", obj);
+    log(LogLevel.DEBUG, str + '\n', obj);
   }
 
   public static void error(String str) {
-    log(LogLevel.ERROR, str + "\n");
+    log(LogLevel.ERROR, str + '\n');
   }
 
   public static void warn(String str) {
-    log(LogLevel.WARN, str + "\n");
+    log(LogLevel.WARN, str + '\n');
   }
 
   public static void logTime() {
     Date date = new Date();
-    log(LogLevel.INFO, "Current time: " + date + "\n");
+    log(LogLevel.INFO, "Current time: " + date + '\n');
   }
 
   public static void info(String str) {
-    log(LogLevel.INFO, str + "\n");
+    log(LogLevel.INFO, str + '\n');
   }
 
   public static void appendInfo(String str) {
@@ -135,7 +132,7 @@ public final class Debug {
   }
 
   public static void debug(String str) {
-    log(LogLevel.DEBUG, str + "\n");
+    log(LogLevel.DEBUG, str + '\n');
   }
 
   public static void error(Throwable t) {
@@ -196,7 +193,7 @@ public final class Debug {
 
     @Override
     public void println(String str) {
-      Debug.log(level, str + "\n");
+      Debug.log(level, str + '\n');
     }
   }
 

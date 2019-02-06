@@ -300,7 +300,7 @@ public abstract class Dominators<T> {
       T node = vertex[i];
 
       if (DEBUG) {
-        System.out.println(" Processing: " + node + "\n");
+        System.out.println(" Processing: " + node + '\n');
       }
 
       // visit each predecessor
@@ -580,12 +580,12 @@ public abstract class Dominators<T> {
 
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (T node : G) {
-      sb.append("Dominators of " + node + ":\n");
+      sb.append("Dominators of ").append(node).append(":\n");
       for (T dom : Iterator2Iterable.make(dominators(node)))
-        sb.append("   " + dom + "\n");
-      sb.append("\n");
+        sb.append("   ").append(dom).append('\n');
+      sb.append('\n');
     }
     return sb.toString();
   }

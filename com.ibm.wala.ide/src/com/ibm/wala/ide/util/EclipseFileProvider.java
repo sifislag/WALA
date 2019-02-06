@@ -34,7 +34,7 @@ import com.ibm.wala.util.io.FileProvider;
 public class EclipseFileProvider extends FileProvider {
 
   /**
-   * the plug-in to use.  If <code>null</code>, {@link CorePlugin#getDefault()} is used.
+   * the plug-in to use.  If {@code null}, {@link CorePlugin#getDefault()} is used.
    */
   private final Plugin plugIn;
   
@@ -101,7 +101,6 @@ public class EclipseFileProvider extends FileProvider {
   }
   
   /**
-   * @param fileName
    * @return the jar file packaged with this plug-in of the given name, or null
    *         if not found.
    */
@@ -118,8 +117,7 @@ public class EclipseFileProvider extends FileProvider {
    * 
    * @param fileName
    *          the file name
-   * @return the URL, or <code>null</code> if the file is not found
-   * @throws IOException
+   * @return the URL, or {@code null} if the file is not found
    */
   private static URL getFileURLFromPlugin(Plugin p, String fileName) throws IOException {
     try {
@@ -156,12 +154,12 @@ public class EclipseFileProvider extends FileProvider {
    * escape spaces in a URL, primarily to work around a bug in
    * {@link File#toURL()}
    * 
-   * @param url
    * @return an escaped version of the URL
    */
+  @SuppressWarnings("javadoc")
   private static URL fixupFileURLSpaces(URL url) {
     String urlString = url.toExternalForm();
-    StringBuffer fixedUpUrl = new StringBuffer();
+    StringBuilder fixedUpUrl = new StringBuilder();
     int lastIndex = 0;
     while (true) {
       int spaceIndex = urlString.indexOf(' ', lastIndex);
@@ -171,7 +169,7 @@ public class EclipseFileProvider extends FileProvider {
         break;
       }
 
-      fixedUpUrl.append(urlString.substring(lastIndex, spaceIndex));
+      fixedUpUrl.append(urlString, lastIndex, spaceIndex);
       fixedUpUrl.append("%20");
       lastIndex = spaceIndex + 1;
     }
@@ -212,7 +210,6 @@ public class EclipseFileProvider extends FileProvider {
   }
   
   /**
-   * @param fileName
    * @return the jar file packaged with this plug-in of the given name, or null
    *         if not found.
    * @throws IllegalArgumentException

@@ -41,7 +41,6 @@ import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.ssa.IR;
 import com.ibm.wala.ssa.IRFactory;
 import com.ibm.wala.ssa.SSAOptions;
-import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.WalaException;
 import com.ibm.wala.util.collections.Pair;
 
@@ -49,11 +48,8 @@ public class PrintIRs {
 
   /**
    * prints the IR of each function in the script
-   * 
-   * @throws IOException
-   * @throws ClassHierarchyException
    */
-  public static void printIRsForJS(String filename) throws IOException, ClassHierarchyException {
+  public static void printIRsForJS(String filename) throws ClassHierarchyException {
     // use Rhino to parse JavaScript
     JSCallGraphUtil.setTranslatorFactory(new CAstRhinoTranslatorFactory());
     // build a class hierarchy, for access to code info
@@ -98,16 +94,7 @@ public class PrintIRs {
     printIRsForCHA(cha, t -> t.startsWith("Lprologue.js") || t.startsWith("Lpreamble.js"));
   }
 
-  /**
-   * 
-   * @param args
-   * @throws IOException
-   * @throws WalaException
-   * @throws CancelException
-   * @throws IllegalArgumentException
-   * @throws Error
-   */
-  public static void main(String[] args) throws IOException, IllegalArgumentException, CancelException, WalaException, Error {
+  public static void main(String[] args) throws IOException, IllegalArgumentException, WalaException, Error {
     String filename = args[0];
     if (filename.endsWith(".js")) {
       printIRsForJS(filename);

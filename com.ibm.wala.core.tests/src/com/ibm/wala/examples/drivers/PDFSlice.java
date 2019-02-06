@@ -90,15 +90,11 @@ public class PDFSlice {
    * <li>"method name" should be the name of a method. This takes a slice from the statement that calls "srcCallee" from "srcCaller"
    * <li>"data dependence options" can be one of "-full", "-no_base_ptrs", "-no_base_no_heap", "-no_heap",
    * "-no_base_no_heap_no_cast", or "-none".
+   * <li>"control dependence options" can be "-full" or "-none"
+   * <li>the -dir argument tells whether to compute a forwards or backwards slice.
    * </ul>
    * 
-   * @throws CancelException
-   * @throws IllegalArgumentException
-   * @throws IOException
-   * 
-   * @see com.ibm.wala.ipa.slicer.Slicer.DataDependenceOptions <li>"control dependence options" can be "-full" or "-none" <li>the
-   *      -dir argument tells whether to compute a forwards or backwards slice. </ul>
-   * 
+   * @see com.ibm.wala.ipa.slicer.Slicer.DataDependenceOptions
    */
   public static void main(String[] args) throws IllegalArgumentException, CancelException, IOException {
     run(args);
@@ -106,10 +102,6 @@ public class PDFSlice {
 
   /**
    * see {@link #main(String[])} for command-line arguments
-   * 
-   * @throws CancelException
-   * @throws IllegalArgumentException
-   * @throws IOException
    */
   public static Process run(String[] args) throws IllegalArgumentException, CancelException, IOException {
     // parse the command-line into a Properties object
@@ -140,8 +132,6 @@ public class PDFSlice {
    * @param dOptions options controlling data dependence
    * @param cOptions options controlling control dependence
    * @return a Process running the PDF viewer to visualize the dot'ted representation of the slice
-   * @throws CancelException
-   * @throws IllegalArgumentException
    */
   public static Process run(String appJar, String mainClass, String srcCaller, String srcCallee, boolean goBackward,
       DataDependenceOptions dOptions, ControlDependenceOptions cOptions) throws IllegalArgumentException, CancelException,
@@ -233,7 +223,7 @@ public class PDFSlice {
       if (st instanceof SSAInvokeInstruction) {
         SSAAbstractInvokeInstruction call = (SSAAbstractInvokeInstruction) st;
         if (call.getCallSite().getDeclaredTarget().getReturnType().equals(TypeReference.Void)) {
-          throw new IllegalArgumentException("this driver computes forward slices from the return value of calls.\n" + ""
+          throw new IllegalArgumentException("this driver computes forward slices from the return value of calls.\n"
               + "Method " + call.getCallSite().getDeclaredTarget().getSignature() + " returns void.");
         }
         return new NormalReturnCaller(s.getNode(), n.getInstructionIndex());

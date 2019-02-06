@@ -51,7 +51,7 @@ public class StopwatchGC extends com.ibm.wala.util.perf.Stopwatch {
   public final String report() {
     String result = "";
     if (getCount() > 0) {
-      result += "Stopwatch: " + name + " " + getElapsedMillis() + " ms" + "\n";
+      result += "Stopwatch: " + name + ' ' + getElapsedMillis() + " ms" + '\n';
 
     }
     if (getCount() == 1) {
@@ -92,13 +92,10 @@ public class StopwatchGC extends com.ibm.wala.util.perf.Stopwatch {
 
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer();
-    sb.append(super.toString());
-//    if (count == 1){
+    //    if (count == 1){
 //      sb.append (", Footprint at entry: " + (float) startMemory / 1000000 + " MB");
 //      sb.append (", Footprint at exit: " + (float) endMemory / 1000000 + " MB");
-      sb.append (", Delta: " + (float) (endMemory - startMemory) / 1000000 + " MB");
-//    }
-    return sb.toString();
+    //    }
+    return super.toString() + ", Delta: " + (float) (endMemory - startMemory) / 1000000 + " MB";
   }
 }

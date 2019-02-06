@@ -63,7 +63,7 @@ public class TrivialMethodEscape implements IMethodEscapeAnalysis, INodeEscapeAn
       throw new IllegalArgumentException("null allocMethod");
     }
     // nodes:= set of call graph nodes representing method m
-    Set nodes = cg.getNodes(m);
+    Set<CGNode> nodes = cg.getNodes(m);
     if (nodes.size() == 0) {
       throw new WalaException("could not find call graph node for method " + m);
     }
@@ -82,14 +82,12 @@ public class TrivialMethodEscape implements IMethodEscapeAnalysis, INodeEscapeAn
   }
 
   /**
-   * @param allocN Set<CGNode> representing the allocation site.
-   * @param allocPC
-   * @param nodes Set<CGNode>, the nodes of interest
+   * @param allocN {@code Set<CGNode>} representing the allocation site.
+   * @param nodes {@code Set<CGNode>}, the nodes of interest
    * @return true iff some instance allocated at a site N \in &lt;allocN, allocPC> might escape from some activation of a node m \in
    *         { nodes }
-   * @throws WalaException
    */
-  private boolean mayEscape(Set<CGNode> allocN, int allocPC, Set nodes) throws WalaException {
+  private boolean mayEscape(Set<CGNode> allocN, int allocPC, Set<CGNode> nodes) throws WalaException {
     Set<InstanceKey> instances = HashSetFactory.make();
     // instances := set of instance key allocated at &lt;allocMethod, allocPC>
     for (CGNode n : allocN) {
@@ -128,7 +126,6 @@ public class TrivialMethodEscape implements IMethodEscapeAnalysis, INodeEscapeAn
    * @param n a call graph node
    * @param allocPC a bytecode index corresponding to an allocation
    * @return the NewSiteReference for the allocation
-   * @throws WalaException
    */
   static NewSiteReference findAlloc(CGNode n, int allocPC) throws WalaException {
     if (n == null) {

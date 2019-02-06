@@ -313,7 +313,7 @@ public class Intent implements ContextItem, Comparable<Intent> {
             // Unknown so not selected as external
             return false;
         }
-        return (! (intent.action.toString().startsWith("L" + pack) || intent.action.toString().startsWith(pack)));
+        return (! (intent.action.toString().startsWith('L' + pack) || intent.action.toString().startsWith(pack)));
     }
 
     /**
@@ -379,13 +379,13 @@ public class Intent implements ContextItem, Comparable<Intent> {
 
     @Override
     public String toString() {
-        StringBuffer ret;
+        StringBuilder ret;
         if ((this.action == null) || (this.action.equals(UNBOUND))) {
             return "Unbound Intent";
         } else if (getType() == IntentType.SYSTEM_SERVICE) {
-            ret = new StringBuffer("SystemService(");
+            ret = new StringBuilder("SystemService(");
         } else {
-            ret = new StringBuffer("Intent(");
+            ret = new StringBuilder("Intent(");
         }
         ret.append(this.action.toString());
         if (uri != null) {

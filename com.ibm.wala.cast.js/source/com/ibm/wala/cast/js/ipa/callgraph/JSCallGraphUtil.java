@@ -134,10 +134,10 @@ public class JSCallGraphUtil extends com.ibm.wala.cast.ipa.callgraph.CAstCallGra
 
   /**
    * Get all the nodes in CG with name funName. If funName is of the form
-   * <code>"ctor:nm"</code>, return nodes corresponding to constructor function
-   * for <code>nm</code>. If funName is of the form <code>"suffix:nm"</code>,
+   * {@code "ctor:nm"}, return nodes corresponding to constructor function
+   * for {@code nm}. If funName is of the form {@code "suffix:nm"},
    * return nodes corresponding to functions whose names end with
-   * <code>nm</code>. Otherwise, return nodes for functions whose name matches
+   * {@code nm}. Otherwise, return nodes for functions whose name matches
    * funName exactly.
    */
   public static Collection<CGNode> getNodes(CallGraph CG, String funName) {
@@ -163,22 +163,18 @@ public class JSCallGraphUtil extends com.ibm.wala.cast.ipa.callgraph.CAstCallGra
     boolean ctor = funName.startsWith("ctor:");
     MethodReference MR;
     if (ctor) {
-      TypeReference TR = TypeReference.findOrCreate(JavaScriptTypes.jsLoader, TypeName.string2TypeName("L" + funName.substring(5)));
+      TypeReference TR = TypeReference.findOrCreate(JavaScriptTypes.jsLoader, TypeName.string2TypeName('L' + funName.substring(5)));
       MR = JavaScriptMethods.makeCtorReference(TR);
     } else {
-      TypeReference TR = TypeReference.findOrCreate(JavaScriptTypes.jsLoader, TypeName.string2TypeName("L" + funName));
+      TypeReference TR = TypeReference.findOrCreate(JavaScriptTypes.jsLoader, TypeName.string2TypeName('L' + funName));
       MR = AstMethodReference.fnReference(TR);
     }
     return MR;
   }
 
   /**
-   * @param cha
-   * @param cl
-   * @param url
    * @return The set of class names that where defined in the CHA as a result
    *         loading process.
-   * @throws IOException
    */
   public static Set<String> loadAdditionalFile(IClassHierarchy cha, JavaScriptLoader cl, URL url)
       throws IOException {
@@ -195,7 +191,7 @@ public class JSCallGraphUtil extends com.ibm.wala.cast.ipa.callgraph.CAstCallGra
         protected void defineFunction(CAstEntity N, WalkContext definingContext, AbstractCFG<SSAInstruction, ? extends IBasicBlock<SSAInstruction>> cfg, SymbolTable symtab,
             boolean hasCatchBlock, Map<IBasicBlock<SSAInstruction>,TypeReference[]> caughtTypes, boolean hasMonitorOp, AstLexicalInformation LI,
             DebuggingInformation debugInfo) {
-          String fnName = "L" + composeEntityName(definingContext, N);
+          String fnName = 'L' + composeEntityName(definingContext, N);
           names.add(fnName);
           super.defineFunction(N, definingContext, cfg, symtab, hasCatchBlock, caughtTypes, hasMonitorOp, LI, debugInfo);
         }

@@ -67,24 +67,12 @@ public class PDFSDG {
    * 
    * The "jar file name" should be something like
    * "c:/temp/testdata/java_cup.jar"
-   * 
-   * @param args
-   * @throws WalaException
-   * @throws CancelException 
-   * @throws IllegalArgumentException 
-   * @throws IOException 
    */
-  public static void main(String[] args) throws WalaException, IllegalArgumentException, CancelException, IOException {
+  public static void main(String[] args) throws IllegalArgumentException, CancelException, IOException {
     run(args);
   }
 
-  /**
-   * @throws WalaException
-   * @throws CancelException 
-   * @throws IllegalArgumentException 
-   * @throws IOException 
-   */
-  public static Process run(String[] args) throws WalaException, IllegalArgumentException, CancelException, IOException {
+  public static Process run(String[] args) throws IllegalArgumentException, CancelException, IOException {
     Properties p = CommandLine.parse(args);
     validateCommandLine(p);
     return run(p.getProperty("appJar"), p.getProperty("mainClass"), getDataDependenceOptions(p), getControlDependenceOptions(p));
@@ -115,9 +103,6 @@ public class PDFSDG {
   /**
    * @param appJar
    *            something like "c:/temp/testdata/java_cup.jar"
-   * @throws CancelException 
-   * @throws IllegalArgumentException 
-   * @throws IOException 
    */
   public static Process run(String appJar, String mainClass, DataDependenceOptions dOptions, ControlDependenceOptions cOptions) throws IllegalArgumentException, CancelException, IOException {
     try {
@@ -210,6 +195,7 @@ public class PDFSDG {
    * <li> args[1] : something like "c:/temp/testdata/java_cup.jar"
    * <li> args[2] : "-mainClass"
    * <li> args[3] : something like "Lslice/TestRecursion"
+   * </ul>
    * 
    * @throws UnsupportedOperationException
    *             if command-line is malformed.

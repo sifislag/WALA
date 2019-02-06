@@ -117,7 +117,6 @@ public class ClassLoaderImpl implements IClassLoader {
    * 
    * @param M the module
    * @return the Set of source files in the module
-   * @throws IOException
    */
   @SuppressWarnings("unused")
   private Set<ModuleEntry> getSourceFiles(Module M) throws IOException {
@@ -146,7 +145,6 @@ public class ClassLoaderImpl implements IClassLoader {
    * 
    * @param M the module
    * @return the Set of class Files in the module
-   * @throws IOException
    */
   @SuppressWarnings("unused")
   private Set<ModuleEntry> getClassFiles(Module M) throws IOException {
@@ -180,17 +178,7 @@ public class ClassLoaderImpl implements IClassLoader {
    * Remove from s any class file module entries which already are in t
    */
   private static void removeClassFiles(Set<ModuleEntry> s, Set<ModuleEntry> t) {
-    Set<String> old = HashSetFactory.make();
-    for (ModuleEntry m : t) {
-      old.add(m.getClassName());
-    }
-    HashSet<ModuleEntry> toRemove = HashSetFactory.make();
-    for (ModuleEntry m : s) {
-      if (old.contains(m.getClassName())) {
-        toRemove.add(m);
-      }
-    }
-    s.removeAll(toRemove);
+    s.removeAll(t);
   }
 
   /**
@@ -244,6 +232,7 @@ public class ClassLoaderImpl implements IClassLoader {
         continue;
       }
 
+      @SuppressWarnings("NonConstantStringShouldBeStringBuffer")
       String className = entry.getClassName().replace('.', '/');
 
       if (DEBUG_LEVEL > 0) {
@@ -259,7 +248,7 @@ public class ClassLoaderImpl implements IClassLoader {
 
       ShrikeClassReaderHandle entryReader = new ShrikeClassReaderHandle(entry);
 
-      className = "L" + className;
+      className = 'L' + className;
       if (DEBUG_LEVEL > 0) {
         System.err.println("Load class " + className);
       }
@@ -285,7 +274,7 @@ public class ClassLoaderImpl implements IClassLoader {
             // so we can null out and re-read class file contents
             loadedClasses.put(T, new ShrikeClass(entryReader, this, cha));
             if (DEBUG_LEVEL > 1) {
-              System.err.println("put " + T + " ");
+              System.err.println("put " + T + ' ');
             }
           } else {
             Warnings.add(InvalidClassFile.create(className));
@@ -324,9 +313,10 @@ public class ClassLoaderImpl implements IClassLoader {
           if (nestedResult == null) {
             return null;
           }
-          for (String entryName : nestedResult.keySet()) {
+          for (Map.Entry<String, Object> nestedEntry : nestedResult.entrySet()) {
+            final String entryName = nestedEntry.getKey();
             if (!result.containsKey(entryName)) {
-              result.put(entryName, nestedResult.get(entryName));
+              result.put(entryName, nestedEntry.getValue());
             }
           }
         } else if (FileSuffixes.isClassFile(name) || FileSuffixes.isSourceFile(name)) {
@@ -409,7 +399,7 @@ public class ClassLoaderImpl implements IClassLoader {
     for (ModuleEntry entry : sourceModules) {
       String className = entry.getClassName().replace('.', '/');
       className = className.replace(File.separatorChar, '/');
-      className = "L" + ((className.startsWith("/")) ? className.substring(1) : className);
+      className = 'L' + ((className.startsWith("/")) ? className.substring(1) : className);
       TypeName T = TypeName.string2TypeName(className);
 
       // Note: entry.getClassName() may not return the correct class name, for example, 
@@ -444,7 +434,7 @@ public class ClassLoaderImpl implements IClassLoader {
         // look at substrings starting after '/' characters, in the hope
         // that we find a known class name
         while (className.indexOf('/') > 0) {
-          className = "L" + className.substring(className.indexOf('/') + 1, className.length());
+          className = 'L' + className.substring(className.indexOf('/') + 1);
           TypeName T2 = TypeName.string2TypeName(className);
           if (loadedClasses.get(T2) != null) {
             if (DEBUG_LEVEL > 0) {
@@ -517,12 +507,8 @@ public class ClassLoaderImpl implements IClassLoader {
       }
       loadAllClasses(classFiles, allClassAndSourceFileContents);
       loadAllSources(sourceFiles);
-      for (ModuleEntry file : classFiles) {
-        classModuleEntries.add(file);
-      }
-      for (ModuleEntry file : sourceFiles) {
-        sourceModuleEntries.add(file);
-      }
+      classModuleEntries.addAll(classFiles);
+      sourceModuleEntries.addAll(sourceFiles);
     }
   }
 
@@ -687,19 +673,14 @@ public class ClassLoaderImpl implements IClassLoader {
   /*
    * @see com.ibm.wala.classLoader.IClassLoader#removeAll(java.util.Collection)
    */
-  @SuppressWarnings("unused")
   @Override
   public void removeAll(Collection<IClass> toRemove) {
     if (toRemove == null) {
       throw new IllegalArgumentException("toRemove is null");
     }
-    for (IClass klass : toRemove) {
-      if (DEBUG_LEVEL > 0) {
-        System.err.println("removing " + klass.getName());
-      }
-      loadedClasses.remove(klass.getName());
-      sourceMap.remove(klass.getName());
-    }
+    toRemove.stream().map(IClass::getName)
+            .peek(loadedClasses::remove)
+            .forEach(sourceMap::remove);
   }
 
   @Override

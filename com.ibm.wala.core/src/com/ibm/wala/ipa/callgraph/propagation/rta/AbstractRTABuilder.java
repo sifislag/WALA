@@ -164,7 +164,7 @@ public abstract class AbstractRTABuilder extends PropagationCallGraphBuilder {
   }
 
   /**
-   * Is s is a getstatic or putstatic, then potentially add the relevant <clinit>to the newMethod set.
+   * Is s is a getstatic or putstatic, then potentially add the relevant &lt;clinit&gt; to the newMethod set.
    */
   private void processFieldAccess(FieldReference f) {
     if (DEBUG) {
@@ -180,10 +180,9 @@ public abstract class AbstractRTABuilder extends PropagationCallGraphBuilder {
 
   protected void processClassInitializer(IClass klass) {
 
-    if (clinitProcessed.contains(klass)) {
+    if (!clinitProcessed.add(klass)) {
       return;
     }
-    clinitProcessed.add(klass);
 
     if (klass.getClassInitializer() != null) {
       if (DEBUG) {
@@ -314,16 +313,15 @@ public abstract class AbstractRTABuilder extends PropagationCallGraphBuilder {
     IClass klass = iKey.getConcreteType();
 
     if (DEBUG) {
-      System.err.println(("iKey: " + iKey + " " + system.findOrCreateIndexForInstanceKey(iKey)));
+      System.err.println(("iKey: " + iKey + ' ' + system.findOrCreateIndexForInstanceKey(iKey)));
     }
 
     if (klass == null) {
       return;
     }
-    if (allocatedClasses.contains(klass)) {
+    if (!allocatedClasses.add(klass)) {
       return;
     }
-    allocatedClasses.add(klass);
     updateSetsForNewClass(klass, iKey, node, newSite);
 
     // side effect of new: may call class initializer
@@ -332,8 +330,6 @@ public abstract class AbstractRTABuilder extends PropagationCallGraphBuilder {
 
   /**
    * Perform needed bookkeeping when a new class is discovered.
-   * 
-   * @param klass
    */
   protected abstract void updateSetsForNewClass(IClass klass, InstanceKey iKey, CGNode node, NewSiteReference ns);
 

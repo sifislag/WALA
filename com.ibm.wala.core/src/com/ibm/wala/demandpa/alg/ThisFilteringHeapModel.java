@@ -29,10 +29,10 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.debug.Assertions;
 
 /**
- * a {@link HeapModel} that delegates to another except for pointer keys representing <code>this</code> parameters of methods, for
+ * a {@link HeapModel} that delegates to another except for pointer keys representing {@code this} parameters of methods, for
  * which it returns a {@link FilteredPointerKey} for the type of the parameter
  * 
- * @see {@link DemandRefinementPointsTo}
+ * @see DemandRefinementPointsTo
  * @author manu
  * 
  */
@@ -115,7 +115,6 @@ class ThisFilteringHeapModel implements HeapModel {
   }
 
   /**
-   * @param method
    * @return the receiver class for this method.
    */
   private IClass getReceiverClass(IMethod method) {

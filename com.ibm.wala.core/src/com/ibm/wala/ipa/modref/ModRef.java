@@ -98,8 +98,6 @@ public class ModRef<T extends InstanceKey> {
   /**
    * For each call graph node, what heap locations (as determined by a heap model) may it write, <b> NOT </b> including its
    * callees transitively
-   * 
-   * @param heapExclude
    */
   private Map<CGNode, Collection<PointerKey>> scanForMod(CallGraph cg, final PointerAnalysis<T> pa, final HeapExclusions heapExclude) {
 
@@ -109,8 +107,6 @@ public class ModRef<T extends InstanceKey> {
   /**
    * For each call graph node, what heap locations (as determined by a heap model) may it read, <b> NOT </b> including its callees
    * transitively
-   * 
-   * @param heapExclude
    */
   private Map<CGNode, Collection<PointerKey>> scanForRef(CallGraph cg, final PointerAnalysis<T> pa, final HeapExclusions heapExclude) {
     return CallGraphTransitiveClosure.collectNodeResults(cg, n -> scanNodeForRef(n, pa, heapExclude));
@@ -128,8 +124,6 @@ public class ModRef<T extends InstanceKey> {
   /**
    * For a call graph node, what heap locations (as determined by a heap model) may it write, <b> NOT </b> including it's callees
    * transitively
-   * 
-   * @param heapExclude
    */
   private Collection<PointerKey> scanNodeForMod(final CGNode n, final PointerAnalysis<T> pa, HeapExclusions heapExclude) {
     Collection<PointerKey> result = HashSetFactory.make();
@@ -331,11 +325,11 @@ public class ModRef<T extends InstanceKey> {
     }
   }
 
-  protected ModVisitor makeModVisitor(CGNode n, Collection<PointerKey> result, PointerAnalysis<T> pa, ExtendedHeapModel h) {
+  protected ModVisitor<T, ?> makeModVisitor(CGNode n, Collection<PointerKey> result, PointerAnalysis<T> pa, ExtendedHeapModel h) {
     return makeModVisitor(n, result, pa, h, false);
   }
 
-  protected ModVisitor<T, ? extends ExtendedHeapModel> makeModVisitor(CGNode n, Collection<PointerKey> result, PointerAnalysis<T> pa, ExtendedHeapModel h,
+  protected ModVisitor<T, ?> makeModVisitor(CGNode n, Collection<PointerKey> result, PointerAnalysis<T> pa, ExtendedHeapModel h,
       boolean ignoreAllocHeapDefs) {
     return n.getMethod().getDeclaringClass().getClassLoader().getLanguage().makeModVisitor(n, result, pa, h, ignoreAllocHeapDefs);
     //return new ModVisitor<>(n, result, h, pa, ignoreAllocHeapDefs);
@@ -357,7 +351,7 @@ public class ModRef<T extends InstanceKey> {
       throw new IllegalArgumentException("s is null");
     }
     Set<PointerKey> result = HashSetFactory.make(2);
-    ModVisitor v = makeModVisitor(n, result, pa, h, ignoreAllocHeapDefs);
+    ModVisitor<T, ?> v = makeModVisitor(n, result, pa, h, ignoreAllocHeapDefs);
     s.visit(v);
     return hexcl == null ? result : hexcl.filter(result);
   }
@@ -374,7 +368,7 @@ public class ModRef<T extends InstanceKey> {
       throw new IllegalArgumentException("s is null");
     }
     Set<PointerKey> result = HashSetFactory.make(2);
-    RefVisitor v = makeRefVisitor(n, result, pa, h);
+    RefVisitor<T, ?> v = makeRefVisitor(n, result, pa, h);
     s.visit(v);
     return hexcl == null ? result : hexcl.filter(result);
   }

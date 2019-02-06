@@ -284,7 +284,7 @@ public class EntryPoints {
                     if (IntentClass.startsWith("."))
                         IntentList.get(IntentList.size()-1)[1] = basePackage + IntentClass;
                     else {
-                        IntentList.get(IntentList.size()-1)[1] = basePackage + "." + IntentClass;
+                        IntentList.get(IntentList.size()-1)[1] = basePackage + '.' + IntentClass;
                         IntentList.add(new String[2]);
                         IntentList.get(IntentList.size()-1)[0] = actionList.item(i).getAttributes().getNamedItem("android:name").getTextContent();
                         IntentList.get(IntentList.size()-1)[1] = IntentClass;
@@ -306,7 +306,7 @@ public class EntryPoints {
             //method = IntentToMethod(intent[0]);
             method = "onCreate(Landroid/os/Bundle;)V";
 
-            im = cha.resolveMethod(StringStuff.makeMethodReference(intent[1]+"."+method));
+            im = cha.resolveMethod(StringStuff.makeMethodReference(intent[1]+ '.' +method));
             if (im!=null)
                 entries.add(new DefaultEntrypoint(im,cha));
 
@@ -316,7 +316,7 @@ public class EntryPoints {
 //          method = IntentToMethod(intent[0]);
             method = "onReceive(Landroid/content/Context;Landroid/content/Intent;)V";
 
-            im = cha.resolveMethod(StringStuff.makeMethodReference(intent[1]+"."+method));
+            im = cha.resolveMethod(StringStuff.makeMethodReference(intent[1]+ '.' +method));
             if (im!=null)
                 entries.add(new DefaultEntrypoint(im,cha));
         }
@@ -344,14 +344,15 @@ public class EntryPoints {
     }
 
     private ArrayList<String[]> chooseIntentList(String name) {
-        if (name.equals("activity"))
-            return ActivityIntentList;
-        else if (name.equals("receiver"))
-            return ReceiverIntentList;
-        else if (name.equals("service"))
-            return ServiceIntentList;
-        else {
-            return ActivityIntentList;
+        switch (name) {
+            case "activity":
+                return ActivityIntentList;
+            case "receiver":
+                return ReceiverIntentList;
+            case "service":
+                return ServiceIntentList;
+            default:
+                return ActivityIntentList;
 //          throw new UnimplementedError("EntryPoints intent category not yet covered: " + name);
         }
     }

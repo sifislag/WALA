@@ -44,13 +44,12 @@ public class SparseLongSet implements LongSet {
    */
   protected int size = 0;
 
-  /*****************************************************************************
-   * * * Constructors & Factories *
-   ****************************************************************************/
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Constructors & Factories
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * @param size
-   */
   protected SparseLongSet(int size) {
     elements = new long[size];
     this.size = size;
@@ -58,8 +57,6 @@ public class SparseLongSet implements LongSet {
 
   /**
    * Subclasses should use this with extreme care. Do not allow the backing array to escape elsewhere.
-   * 
-   * @param backingArray
    */
   protected SparseLongSet(long[] backingArray) {
     if (backingArray == null) {
@@ -81,9 +78,6 @@ public class SparseLongSet implements LongSet {
     cloneState(S);
   }
 
-  /**
-   * @param S
-   */
   private void cloneState(SparseLongSet S) {
     elements = S.elements.clone();
     this.size = S.size;
@@ -123,7 +117,6 @@ public class SparseLongSet implements LongSet {
   }
 
   /**
-   * @param x
    * @return index i s.t. elements[i] == x, or -1 if not found.
    */
   public final int getIndex(long x) {
@@ -177,9 +170,9 @@ public class SparseLongSet implements LongSet {
   }
 
   /**
-   * @return true iff <code>this</code> is a subset of <code>that</code>.
+   * @return true iff {@code this} is a subset of {@code that}.
    * 
-   *         Faster than: <code>this.diff(that) == EMPTY</code>.
+   *         Faster than: {@code this.diff(that) == EMPTY}.
    */
   private boolean isSubsetInternal(SparseLongSet that) {
 
@@ -284,15 +277,15 @@ public class SparseLongSet implements LongSet {
 
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer(6 * size);
+    StringBuilder sb = new StringBuilder(6 * size);
     sb.append("{ ");
     if (elements != null) {
       for (int ii = 0; ii < size; ii++) {
         sb.append(elements[ii]);
-        sb.append(" ");
+        sb.append(' ');
       }
     }
-    sb.append("}");
+    sb.append('}');
     return sb.toString();
   }
 

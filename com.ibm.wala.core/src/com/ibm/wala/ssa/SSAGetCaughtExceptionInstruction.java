@@ -36,15 +36,9 @@ public class SSAGetCaughtExceptionInstruction extends SSAInstruction {
 
   @Override
   public String toString(SymbolTable symbolTable) {
-    StringBuffer s = new StringBuffer();
-    s.append(getValueString(symbolTable, exceptionValueNumber)).append(" = getCaughtException ");
-    return s.toString();
+    return getValueString(symbolTable, exceptionValueNumber) + " = getCaughtException ";
   }
 
-  /**
-   * @see com.ibm.wala.ssa.SSAInstruction#visit(IVisitor)
-   * @throws IllegalArgumentException if v is null
-   */
   @Override
   public void visit(IVisitor v) {
     if (v == null) {

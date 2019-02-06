@@ -14,6 +14,8 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.Map;
+
 import com.ibm.wala.shrikeBT.Constants;
 import com.ibm.wala.shrikeBT.Util;
 import com.ibm.wala.shrikeBT.shrikeCT.ClassInstrumenter;
@@ -53,19 +55,16 @@ public class InterfaceAnalyzer {
       instrumenter.close();
 
       w.write("Type\t# Total\t# Method\t# Public Method\t# Public Method as Foreign\n");
-      for (String k : typeStats.keySet()) {
-        TypeStats t = typeStats.get(k);
-        w.write(k + "\t" + t.totalOccurrences + "\t" + t.methodOccurrences + "\t" + t.publicMethodOccurrences + "\t"
-            + t.foreignPublicMethodOccurrences + "\n");
+      for (Map.Entry<String, TypeStats> entry : typeStats.entrySet()) {
+        TypeStats t = entry.getValue();
+        w.write(entry.getKey() + '\t' + t.totalOccurrences + '\t' + t.methodOccurrences + '\t' + t.publicMethodOccurrences + '\t'
+            + t.foreignPublicMethodOccurrences + '\n');
       }
     }
   }
 
   static int methodUID = 0;
 
-  /**
-   * @param reader
-   */
   private static void doClass(ClassReader reader) throws Exception {
     if ((reader.getAccessFlags() & Constants.ACC_INTERFACE) != 0 && (reader.getAccessFlags() & Constants.ACC_PUBLIC) != 0) {
       String cType = Util.makeType(reader.getName());

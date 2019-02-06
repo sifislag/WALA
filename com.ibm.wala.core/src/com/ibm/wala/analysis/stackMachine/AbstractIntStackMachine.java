@@ -20,7 +20,6 @@ import com.ibm.wala.dataflow.graph.ITransferFunctionProvider;
 import com.ibm.wala.fixpoint.AbstractStatement;
 import com.ibm.wala.fixpoint.AbstractVariable;
 import com.ibm.wala.fixpoint.FixedPointConstants;
-import com.ibm.wala.fixpoint.IVariable;
 import com.ibm.wala.fixpoint.UnaryOperator;
 import com.ibm.wala.shrikeBT.ArrayLengthInstruction;
 import com.ibm.wala.shrikeBT.ConstantInstruction;
@@ -55,6 +54,8 @@ import com.ibm.wala.util.CancelRuntimeException;
 import com.ibm.wala.util.collections.Iterator2Iterable;
 import com.ibm.wala.util.graph.INodeWithNumber;
 import com.ibm.wala.util.shrike.ShrikeUtil;
+
+import java.util.Arrays;
 
 /**
  * Skeleton of functionality to propagate information through the Java bytecode stack machine using ShrikeBT.
@@ -216,7 +217,7 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
          * Add only the entry variable to the work list.
          */
         for (INodeWithNumber s : Iterator2Iterable.make(getFixedPointSystem().getStatementsThatUse(entry))) {
-          addToWorkList((AbstractStatement) s);
+          addToWorkList((AbstractStatement<?, ?>) s);
         }
       }
 
@@ -345,7 +346,7 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
    * @param bb the basic block at whose entry the meet occurs
    * @return true if the lhs value changes. false otherwise.
    */
-  private static boolean meet(IVariable lhs, IVariable[] rhs, BasicBlock bb, Meeter meeter) {
+  private static boolean meet(MachineState lhs, MachineState[] rhs, BasicBlock bb, Meeter meeter) {
 
     boolean changed = meetStacks(lhs, rhs, bb, meeter);
 
@@ -361,7 +362,7 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
    * @param bb the basic block at whose entry the meet occurs
    * @return true if the lhs value changes. false otherwise.
    */
-  private static boolean meetForCatchBlock(IVariable lhs, IVariable[] rhs, BasicBlock bb, Meeter meeter) {
+  private static boolean meetForCatchBlock(MachineState lhs, MachineState[] rhs, BasicBlock bb, Meeter meeter) {
 
     boolean changed = meetStacksAtCatchBlock(lhs, bb, meeter);
     changed |= meetLocals(lhs, rhs, bb, meeter);
@@ -376,29 +377,28 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
    * @param bb the basic block at whose entry the meet occurs
    * @return true if the lhs value changes. false otherwise.
    */
-  private static boolean meetStacksAtCatchBlock(IVariable lhs, BasicBlock bb, Meeter meeter) {
+  private static boolean meetStacksAtCatchBlock(MachineState lhs, BasicBlock bb, Meeter meeter) {
     boolean changed = false;
-    MachineState L = (MachineState) lhs;
 
     // evaluate the meet of the stack of height 1, which holds the exception
     // object.
 
     // allocate lhs.stack if it's
     // not already allocated.
-    if (L.stack == null) {
-      L.allocateStack(1);
-      L.stackHeight = 1;
+    if (lhs.stack == null) {
+      lhs.allocateStack(1);
+      lhs.stackHeight = 1;
     }
 
     int meet = meeter.meetStackAtCatchBlock(bb);
-    if (L.stack[0] == TOP) {
+    if (lhs.stack[0] == TOP) {
       if (meet != TOP) {
         changed = true;
-        L.stack[0] = meet;
+        lhs.stack[0] = meet;
       }
-    } else if (meet != L.stack[0]) {
+    } else if (meet != lhs.stack[0]) {
       changed = true;
-      L.stack[0] = meet;
+      lhs.stack[0] = meet;
     }
     return changed;
   }
@@ -411,9 +411,8 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
    * @param bb the basic block at whose entry the meet occurs
    * @return true if the lhs value changes. false otherwise.
    */
-  private static boolean meetStacks(IVariable lhs, IVariable[] rhs, BasicBlock bb, Meeter meeter) {
+  private static boolean meetStacks(MachineState lhs, MachineState[] rhs, BasicBlock bb, Meeter meeter) {
     boolean changed = false;
-    MachineState L = (MachineState) lhs;
 
     // evaluate the element-wise meet over the stacks
 
@@ -422,9 +421,9 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
 
     // if there's any stack height to meet, allocate lhs.stack if it's
     // not already allocated.
-    if (height > -1 && (L.stack == null || L.stack.length < height)) {
-      L.allocateStack(height);
-      L.stackHeight = height;
+    if (height > -1 && (lhs.stack == null || lhs.stack.length < height)) {
+      lhs.allocateStack(height);
+      lhs.stackHeight = height;
       changed = true;
     }
 
@@ -432,7 +431,7 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
     for (int i = 0; i < height; i++) {
       int[] R = new int[rhs.length];
       for (int j = 0; j < R.length; j++) {
-        MachineState m = (MachineState) rhs[j];
+        MachineState m = rhs[j];
         if (m.stack == null || m.stack.length < i+1) {
           R[j] = TOP;
         } else {
@@ -443,14 +442,14 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         }
       }
       int meet = meeter.meetStack(i, R, bb);
-      if (L.stack[i] == TOP) {
+      if (lhs.stack[i] == TOP) {
         if (meet != TOP) {
           changed = true;
-          L.stack[i] = meet;
+          lhs.stack[i] = meet;
         }
-      } else if (meet != L.stack[i]) {
+      } else if (meet != lhs.stack[i]) {
         changed = true;
-        L.stack[i] = meet;
+        lhs.stack[i] = meet;
       }
     }
     return changed;
@@ -464,31 +463,30 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
    * @param bb the basic block at whose entry the meet occurs
    * @return true if the lhs value changes. false otherwise.
    */
-  private static boolean meetLocals(IVariable lhs, IVariable[] rhs, BasicBlock bb, Meeter meeter) {
+  private static boolean meetLocals(MachineState lhs, MachineState[] rhs, BasicBlock bb, Meeter meeter) {
 
     boolean changed = false;
-    MachineState L = (MachineState) lhs;
     // need we allocate lhs.locals?
     int nLocals = computeMeetNLocals(rhs);
-    if (nLocals > -1 && (L.locals == null || L.locals.length < nLocals)) {
-      L.allocateLocals(nLocals);
+    if (nLocals > -1 && (lhs.locals == null || lhs.locals.length < nLocals)) {
+      lhs.allocateLocals(nLocals);
     }
 
     // evaluate the element-wise meet over the locals.
     for (int i = 0; i < nLocals; i++) {
       int[] R = new int[rhs.length];
       for (int j = 0; j < rhs.length; j++) {
-        R[j] = ((MachineState) rhs[j]).getLocal(i);
+        R[j] = rhs[j].getLocal(i);
       }
       int meet = meeter.meetLocal(i, R, bb);
-      if (L.locals[i] == TOP) {
+      if (lhs.locals[i] == TOP) {
         if (meet != TOP) {
           changed = true;
-          L.locals[i] = meet;
+          lhs.locals[i] = meet;
         }
-      } else if (meet != L.locals[i]) {
+      } else if (meet != lhs.locals[i]) {
         changed = true;
-        L.locals[i] = meet;
+        lhs.locals[i] = meet;
       }
     }
     return changed;
@@ -498,14 +496,14 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
    * @return the number of locals to meet. Return -1 if there is no local meet necessary.
    * @param operands The operands for this operator. operands[0] is the left-hand side.
    */
-  private static int computeMeetNLocals(IVariable[] operands) {
-    MachineState lhs = (MachineState) operands[0];
+  private static int computeMeetNLocals(MachineState[] operands) {
+    MachineState lhs = operands[0];
     int nLocals = -1;
     if (lhs.locals != null) {
       nLocals = lhs.locals.length;
     } else {
       for (int i = 1; i < operands.length; i++) {
-        MachineState rhs = (MachineState) operands[i];
+        MachineState rhs = operands[i];
         if (rhs.locals != null) {
           nLocals = rhs.locals.length;
           break;
@@ -519,14 +517,14 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
    * @return the height of stacks that are being meeted. Return -1 if there is no stack meet necessary.
    * @param operands The operands for this operator. operands[0] is the left-hand side.
    */
-  private static int computeMeetStackHeight(IVariable[] operands) {
-    MachineState lhs = (MachineState) operands[0];
+  private static int computeMeetStackHeight(MachineState[] operands) {
+    MachineState lhs = operands[0];
     int height = -1;
     if (lhs.stack != null) {
       height = lhs.stackHeight;
     } else {
       for (int i = 1; i < operands.length; i++) {
-        MachineState rhs = (MachineState) operands[i];
+        MachineState rhs = operands[i];
         if (rhs.stack != null) {
           height = rhs.stackHeight;
           break;
@@ -605,9 +603,7 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         stack = new int[stackHeight + 1 ];
         this.stackHeight = 0;
       } else {
-        int[] newStack = new int[ Math.max(stack.length, stackHeight) * 2 + 1 ];
-        System.arraycopy(stack, 0, newStack, 0, stack.length);
-        stack = newStack;
+        stack = Arrays.copyOf(stack, Math.max(stack.length, stackHeight) * 2 + 1);
       }
     }
 
@@ -632,9 +628,6 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
 
     /**
      * set the value of local i to symbol j
-     * 
-     * @param i
-     * @param j
      */
     public void setLocal(int i, int j) {
       if (locals == null || locals.length < i+1) {
@@ -648,7 +641,6 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
     }
 
     /**
-     * @param i
      * @return the number of the symbol corresponding to local i
      */
     public int getLocal(int i) {
@@ -694,47 +686,37 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
       if (isTOP()) {
         return "<TOP>@" + System.identityHashCode(this);
       }
-      StringBuffer result = new StringBuffer("<");
-      result.append("S");
+      StringBuilder result = new StringBuilder("<");
+      result.append('S');
       if (stackHeight == 0) {
         result.append("[empty]");
       } else {
         result.append(array2StringBuffer(stack, stackHeight));
       }
-      result.append("L");
+      result.append('L');
       result.append(array2StringBuffer(locals, locals==null?0:locals.length));
-      result.append(">");
+      result.append('>');
       return result.toString();
     }
 
-    private StringBuffer array2StringBuffer(int[] array, int n) {
-      StringBuffer result = new StringBuffer("[");
+    private StringBuilder array2StringBuffer(int[] array, int n) {
+      StringBuilder result = new StringBuilder("[");
       if (array == null) {
         result.append(OPTIMISTIC ? "TOP" : "BOTTOM");
       } else {
         for (int i = 0; i < n - 1; i++) {
-          result.append(array[i]).append(",");
+          result.append(array[i]).append(',');
         }
         result.append(array[n - 1]);
       }
-      result.append("]");
+      result.append(']');
       return result;
     }
 
     @Override
     public void copyState(MachineState other) {
-      if (other.stack == null) {
-        stack = null;
-      } else {
-        stack = new int[other.stack.length];
-        System.arraycopy(other.stack, 0, stack, 0, other.stack.length);
-      }
-      if (other.locals == null) {
-        locals = null;
-      } else {
-        locals = new int[other.locals.length];
-        System.arraycopy(other.locals, 0, locals, 0, other.locals.length);
-      }
+      stack = other.stack == null ? null : other.stack.clone();
+      locals = other.locals == null ? null : other.locals.clone();
       stackHeight = other.stackHeight;
     }
 
@@ -856,14 +838,14 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
       currentSuccessorBlock = null;
       IInstruction[] instructions = getInstructions();
       if (DEBUG) {
-        System.err.println(("Entry to BB" + cfg.getNumber(basicBlock) + " " + workingState));
+        System.err.println(("Entry to BB" + cfg.getNumber(basicBlock) + ' ' + workingState));
       }
       for (int i = basicBlock.getFirstInstructionIndex(); i <= basicBlock.getLastInstructionIndex(); i++) {
         currentInstructionIndex = i;
         instructions[i].visit(visitor);
 
         if (DEBUG) {
-          System.err.println(("After " + instructions[i] + " " + workingState));
+          System.err.println(("After " + instructions[i] + ' ' + workingState));
         }
       }
       return workingState;
@@ -876,13 +858,13 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
       currentSuccessorBlock = to;
       IInstruction[] instructions = getInstructions();
       if (DEBUG) {
-        System.err.println(("Entry to BB" + cfg.getNumber(from) + " " + workingState));
+        System.err.println(("Entry to BB" + cfg.getNumber(from) + ' ' + workingState));
       }
       for (int i = from.getFirstInstructionIndex(); i <= from.getLastInstructionIndex(); i++) {
         currentInstructionIndex = i;
         instructions[i].visit(edgeVisitor);
         if (DEBUG) {
-          System.err.println(("After " + instructions[i] + " " + workingState));
+          System.err.println(("After " + instructions[i] + ' ' + workingState));
         }
       }
       return workingState;
@@ -911,9 +893,6 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
      */
     protected class BasicStackMachineVisitor extends IInstruction.Visitor {
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitArrayLength(ArrayLengthInstruction)
-       */
       @Override
       public void visitArrayLength(ArrayLengthInstruction instruction) {
 
@@ -921,9 +900,6 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         workingState.push(UNANALYZED);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitArrayLoad(IArrayLoadInstruction)
-       */
       @Override
       public void visitArrayLoad(IArrayLoadInstruction instruction) {
         workingState.pop();
@@ -931,9 +907,6 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         workingState.push(UNANALYZED);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitArrayStore(IArrayStoreInstruction)
-       */
       @Override
       public void visitArrayStore(IArrayStoreInstruction instruction) {
         workingState.pop();
@@ -941,17 +914,11 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         workingState.pop();
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitBinaryOp(IBinaryOpInstruction)
-       */
       @Override
       public void visitBinaryOp(IBinaryOpInstruction instruction) {
         workingState.pop();
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitComparison(IComparisonInstruction)
-       */
       @Override
       public void visitComparison(IComparisonInstruction instruction) {
         workingState.pop();
@@ -959,35 +926,23 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         workingState.push(UNANALYZED);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitConditionalBranch(IConditionalBranchInstruction)
-       */
       @Override
       public void visitConditionalBranch(IConditionalBranchInstruction instruction) {
         workingState.pop();
         workingState.pop();
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitConstant(ConstantInstruction)
-       */
       @Override
       public void visitConstant(ConstantInstruction instruction) {
         workingState.push(UNANALYZED);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitConversion(IConversionInstruction)
-       */
       @Override
       public void visitConversion(IConversionInstruction instruction) {
         workingState.pop();
         workingState.push(UNANALYZED);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitDup(DupInstruction)
-       */
       @Override
       public void visitDup(DupInstruction instruction) {
 
@@ -1018,9 +973,6 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
 
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitGet(IGetInstruction)
-       */
       @Override
       public void visitGet(IGetInstruction instruction) {
         popN(instruction);
@@ -1033,18 +985,12 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         }
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitInstanceof(IInstanceofInstruction)
-       */
       @Override
       public void visitInstanceof(IInstanceofInstruction instruction) {
         workingState.pop();
         workingState.push(UNANALYZED);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitInvoke(IInvokeInstruction)
-       */
       @Override
       public void visitInvoke(IInvokeInstruction instruction) {
         popN(instruction);
@@ -1055,44 +1001,29 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         }
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitMonitor(MonitorInstruction)
-       */
       @Override
       public void visitMonitor(MonitorInstruction instruction) {
         workingState.pop();
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitLocalLoad(ILoadInstruction)
-       */
       @Override
       public void visitLocalLoad(ILoadInstruction instruction) {
         int t = workingState.getLocal(instruction.getVarIndex());
         workingState.push(t);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitLocalStore(IStoreInstruction)
-       */
       @Override
       public void visitLocalStore(IStoreInstruction instruction) {
         int index = instruction.getVarIndex();
         workingState.setLocal(index, workingState.pop());
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitNew(NewInstruction)
-       */
       @Override
       public void visitNew(NewInstruction instruction) {
         popN(instruction);
         workingState.push(UNANALYZED);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitPop(PopInstruction)
-       */
       @Override
       public void visitPop(PopInstruction instruction) {
         if (instruction.getPoppedCount() > 0) {
@@ -1100,41 +1031,26 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         }
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitPut(IPutInstruction)
-       */
       @Override
       public void visitPut(IPutInstruction instruction) {
         popN(instruction);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitShift(IShiftInstruction)
-       */
       @Override
       public void visitShift(IShiftInstruction instruction) {
         workingState.pop();
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitSwap(SwapInstruction)
-       */
       @Override
       public void visitSwap(SwapInstruction instruction) {
         workingState.swap();
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitSwitch(SwitchInstruction)
-       */
       @Override
       public void visitSwitch(SwitchInstruction instruction) {
         workingState.pop();
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitThrow(ThrowInstruction)
-       */
       @Override
       public void visitThrow(ThrowInstruction instruction) {
         int exceptionType = workingState.pop();
@@ -1142,9 +1058,6 @@ public abstract class AbstractIntStackMachine implements FixedPointConstants {
         workingState.push(exceptionType);
       }
 
-      /**
-       * @see com.ibm.wala.shrikeBT.IInstruction.Visitor#visitUnaryOp(IUnaryOpInstruction)
-       */
       @Override
       public void visitUnaryOp(IUnaryOpInstruction instruction) {
         // treated as a no-op in basic scheme

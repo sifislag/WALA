@@ -17,7 +17,7 @@ package com.ibm.wala.cast.js.callgraph.fieldbased.flowgraph.vertices;
  * 
  * <p>
  * Numbering of positional parameters is 1-based, with parameter 0 being the
- * <code>this</code> value.
+ * {@code this} value.
  * </p>
  * 
  * <p>
@@ -53,6 +53,6 @@ public class ParamVertex extends Vertex {
 	
 	@Override
 	public String toString() {
-	  return "Param(" + func + ", " + index + ")";
+	  return "Param(" + func + ", " + index + ')';
 	}
 }

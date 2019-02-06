@@ -16,7 +16,7 @@ import com.ibm.wala.fixpoint.UnaryStatement;
 /**
  * Corresponds to: "is a superset of". Used for assignment.
  * 
- * Unary op: <lhs>:= Assign( <rhs>)
+ * Unary op: &lt;lhs&gt;:= Assign(&lt;rhs&gt;)
  * 
  * (Technically, it's a binary op, since it includes lhs as an implicit input; this allows it to compose with other ops that define
  * the same lhs, so long as they're all Assign ops)
@@ -32,8 +32,8 @@ class AssignOperator extends UnaryOperator<PointsToSetVariable> implements IPoin
   public byte evaluate(PointsToSetVariable lhs, PointsToSetVariable rhs) {
 
     if (PropagationCallGraphBuilder.DEBUG_ASSIGN) {
-      String S = "EVAL Assign " + lhs.getPointerKey() + " " + rhs.getPointerKey();
-      S = S + "\nEVAL " + lhs + " " + rhs;
+      String S = "EVAL Assign " + lhs.getPointerKey() + ' ' + rhs.getPointerKey();
+      S = S + "\nEVAL " + lhs + ' ' + rhs;
       System.err.println(S);
     }
     boolean changed = lhs.addAll(rhs);

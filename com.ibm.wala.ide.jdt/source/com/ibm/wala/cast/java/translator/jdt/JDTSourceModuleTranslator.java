@@ -98,13 +98,13 @@ public class JDTSourceModuleTranslator implements SourceModuleTranslator {
         IProblem[] problems = ast.getProblems();
         int length = problems.length;
         if (length > 0) {
-          StringBuffer buffer = new StringBuffer();
+          StringBuilder buffer = new StringBuilder();
           for (int i = 0; i < length; i++) {
             buffer.append(problems[i].getMessage());
             buffer.append('\n');
           }
           if (length != 0)
-            System.err.println("Unexpected problems in " + source.getElementName() + buffer.toString());
+            System.err.println("Unexpected problems in " + source.getElementName() + buffer);
         }
       }
     }
@@ -126,7 +126,7 @@ public class JDTSourceModuleTranslator implements SourceModuleTranslator {
   }
 
   private static void computeClassPath(AnalysisScope scope) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
 
     ClassLoaderReference cl = scope.getApplicationLoader();
 
@@ -172,14 +172,14 @@ public class JDTSourceModuleTranslator implements SourceModuleTranslator {
       projectsFiles.get(proj).put(JavaCore.createCompilationUnitFrom(entry.getIFile()), entry);
     }
 
-    final ASTParser parser = ASTParser.newParser(AST.JLS8);
+    @SuppressWarnings("deprecation") final ASTParser parser = ASTParser.newParser(AST.JLS8);
  
     for (final Map.Entry<IProject,Map<ICompilationUnit,EclipseSourceFileModule>> proj : projectsFiles.entrySet()) {
       parser.setProject(JavaCore.create(proj.getKey()));
       parser.setResolveBindings(true);
  
       Set<ICompilationUnit> units = proj.getValue().keySet();
-      parser.createASTs(units.toArray(new ICompilationUnit[units.size()]), new String[0], new JdtAstToIR(proj), null);
+      parser.createASTs(units.toArray(new ICompilationUnit[0]), new String[0], new JdtAstToIR(proj), null);
 
     }
   }

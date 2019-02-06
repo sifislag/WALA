@@ -35,10 +35,7 @@ public class BasicLauncher extends Launcher {
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (cmd: ");
-    result.append(cmd);
-    return result.toString();
+    return super.toString() + " (cmd: " + cmd;
   }
 
   /**

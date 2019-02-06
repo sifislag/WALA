@@ -45,7 +45,7 @@ public class LocalLiveRangeAnalysis {
     if (du == null) {
       throw new IllegalArgumentException("du is null");
     }
-    if (du.getNumberOfUses(v) == 0) {
+    if (du.isUnused(v)) {
       return false;
     }
     if (instructionIndex < 0) {
@@ -63,7 +63,7 @@ public class LocalLiveRangeAnalysis {
       // for now, conservatively say it's live. fix this later if necessary.
       return true;
     } else {
-      Collection reached = DFS.getReachableNodes(ir.getControlFlowGraph(), Collections.singleton(queryBlock), notDef);
+      Collection<ISSABasicBlock> reached = DFS.getReachableNodes(ir.getControlFlowGraph(), Collections.singleton(queryBlock), notDef);
       uses.retainAll(reached);
       if (uses.isEmpty()) {
         return false;
@@ -90,7 +90,7 @@ public class LocalLiveRangeAnalysis {
   }
 
   /**
-   * @param statements Iterator<SSAInstruction>
+   * @param statements {@code Iterator<SSAInstruction>}
    */
   private static Collection<BasicBlock> findBlocks(IR ir, Iterator<SSAInstruction> statements) {
     Collection<SSAInstruction> s = Iterator2Collection.toSet(statements);

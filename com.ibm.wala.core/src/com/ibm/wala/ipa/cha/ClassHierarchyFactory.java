@@ -23,7 +23,6 @@ public class ClassHierarchyFactory {
 
   /**
    * @return a ClassHierarchy object representing the analysis scope
-   * @throws ClassHierarchyException
    */
   public static ClassHierarchy make(AnalysisScope scope) throws ClassHierarchyException {
     if (scope == null) {
@@ -35,14 +34,23 @@ public class ClassHierarchyFactory {
   /**
    * @return a ClassHierarchy object representing the analysis scope, where phantom classes are
    * created when superclasses are missing
-   *
-   * @throws ClassHierarchyException
    */
   public static ClassHierarchy makeWithPhantom(AnalysisScope scope) throws ClassHierarchyException {
     if (scope == null) {
       throw new IllegalArgumentException("null scope");
     }
     return makeWithPhantom(scope, new ClassLoaderFactoryImpl(scope.getExclusions()));
+  }
+
+  /**
+   * @return a ClassHierarchy object representing the analysis scope, missing superclasses are
+   * replaced by the ClassHierarchy root, i.e. java.lang.Object
+   */
+  public static ClassHierarchy makeWithRoot(AnalysisScope scope) throws ClassHierarchyException {
+    if (scope == null) {
+      throw new IllegalArgumentException("null scope");
+    }
+    return makeWithRoot(scope, new ClassLoaderFactoryImpl(scope.getExclusions()));
   }
 
   /**
@@ -56,11 +64,11 @@ public class ClassHierarchyFactory {
   }
 
   public static ClassHierarchy make(AnalysisScope scope, ClassLoaderFactory factory) throws ClassHierarchyException {
-    return make(scope, factory, false);
+    return make(scope, factory, ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
-  private static ClassHierarchy make(AnalysisScope scope, ClassLoaderFactory factory, boolean
-      createPhantomSuperclasses) throws ClassHierarchyException {
+  private static ClassHierarchy make(AnalysisScope scope, ClassLoaderFactory factory, ClassHierarchy.MissingSuperClassHandling
+      superClassHandling) throws ClassHierarchyException {
     if (scope == null) {
       throw new IllegalArgumentException("null scope");
     }
@@ -68,29 +76,35 @@ public class ClassHierarchyFactory {
       throw new IllegalArgumentException("null factory");
     }
     return new ClassHierarchy(scope, factory, null, new ConcurrentHashMap<>(),
-        createPhantomSuperclasses);
+        superClassHandling);
   }
 
   public static ClassHierarchy makeWithPhantom(AnalysisScope scope, ClassLoaderFactory factory)
       throws ClassHierarchyException {
-    return make(scope, factory, true);
+    return make(scope, factory, ClassHierarchy.MissingSuperClassHandling.PHANTOM);
   }
+
+  public static ClassHierarchy makeWithRoot(AnalysisScope scope, ClassLoaderFactory factory)
+          throws ClassHierarchyException {
+    return make(scope, factory, ClassHierarchy.MissingSuperClassHandling.ROOT);
+  }
+
   /**
    * temporarily marking this internal to avoid infinite sleep with randomly chosen IProgressMonitor.
    */
   public static ClassHierarchy make(AnalysisScope scope, ClassLoaderFactory factory, IProgressMonitor monitor)
       throws ClassHierarchyException {
-    return new ClassHierarchy(scope, factory, monitor, new ConcurrentHashMap<>(), false);
+    return new ClassHierarchy(scope, factory, monitor, new ConcurrentHashMap<>(), ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
   public static ClassHierarchy make(AnalysisScope scope, ClassLoaderFactory factory, Set<Language> languages)
       throws ClassHierarchyException {
-    return new ClassHierarchy(scope, factory, languages, null, new ConcurrentHashMap<>(), false);
+    return new ClassHierarchy(scope, factory, languages, null, new ConcurrentHashMap<>(), ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
   public static ClassHierarchy make(AnalysisScope scope, ClassLoaderFactory factory, Language language)
       throws ClassHierarchyException {
-    return new ClassHierarchy(scope, factory, language, null, new ConcurrentHashMap<>(), false);
+    return new ClassHierarchy(scope, factory, language, null, new ConcurrentHashMap<>(), ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
   /**
@@ -101,7 +115,7 @@ public class ClassHierarchyFactory {
     if (factory == null) {
       throw new IllegalArgumentException("null factory");
     }
-    return new ClassHierarchy(scope, factory, language, monitor, new ConcurrentHashMap<>(), false);
+    return new ClassHierarchy(scope, factory, language, monitor, new ConcurrentHashMap<>(), ClassHierarchy.MissingSuperClassHandling.NONE);
   }
 
 }

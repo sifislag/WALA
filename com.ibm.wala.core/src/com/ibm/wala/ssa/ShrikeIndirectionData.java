@@ -54,7 +54,7 @@ public class ShrikeIndirectionData implements SSAIndirectionData<ShrikeIndirecti
 
     @Override
     public String toString() {
-      return "(local:" + bytecodeLocalNumber + ")";
+      return "(local:" + bytecodeLocalNumber + ')';
     }
   }
 
@@ -120,13 +120,13 @@ public class ShrikeIndirectionData implements SSAIndirectionData<ShrikeIndirecti
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     for (int i = 0; i < defs.length; i++) {
       if (defs[i] != null) {
-        result.append(i + " <- " + defs[i] + "\n");
+        result.append(i).append(" <- ").append(defs[i]).append('\n');
       }
       if (uses[i] != null) {
-        result.append(i + " -> " + uses[i] + "\n");
+        result.append(i).append(" -> ").append(uses[i]).append('\n');
       }
     }
     return result.toString();

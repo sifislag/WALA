@@ -82,13 +82,13 @@ public class GetMethodContextSelector implements ContextSelector {
         String sym = symbolTable.getStringValue(use);
         if (DEBUG) {
           System.out.println(invokeInstructions);
-          System.out.println(", with constant := `" + sym + "`");
+          System.out.println(", with constant := `" + sym + '`');
           for (InstanceKey instanceKey:receiver) {
             System.out.println(" " + instanceKey);
           }
         }
         // ... return an GetMethodContext.
-        ConstantKey ck = makeConstantKey(caller.getClassHierarchy(),sym);
+        ConstantKey<String> ck = makeConstantKey(caller.getClassHierarchy(),sym);
         if (DEBUG) {
           System.out.println(ck);
         }
@@ -116,7 +116,7 @@ public class GetMethodContextSelector implements ContextSelector {
    */
   private static IClass getTypeConstant(InstanceKey instance) {
     if (instance instanceof ConstantKey) {
-      ConstantKey c = (ConstantKey) instance;
+      ConstantKey<?> c = (ConstantKey<?>) instance;
       if (c.getValue() instanceof IClass) {
         return (IClass) c.getValue();
       }

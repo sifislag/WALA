@@ -52,15 +52,16 @@ import com.ibm.wala.util.intset.OrdinalSet;
  * <P>
  * The algorithm is not very bright; it is based on the observation that there are only three ways for an object to pass
  * from one thread to another.
+ * </P>
  * <UL>
  * <LI> The object is stored into a static variable.
  * <LI> The object is stored into an instance field of a Thread
  * <LI> The object is reachable from a field of another escaping object.
  * </UL>
- * </P>
- * 
+ *
  * <P>
  * This observation is implemented in the obvious way:
+ * </P>
  * <OL>
  * <LI> All static fields are collected
  * <LI> All Thread constructor parameters are collected
@@ -70,8 +71,7 @@ import com.ibm.wala.util.intset.OrdinalSet;
  * <LI> The abstract objects in the points-to sets are converted to types
  * <LI> This set of types is returned
  * </OL>
- * </P>
- * 
+ *
  * @author Julian Dolby
  */
 public class SimpleThreadEscapeAnalysis extends AbstractAnalysisEngine<InstanceKey, CallGraphBuilder<InstanceKey>, Void> {
@@ -139,7 +139,7 @@ public class SimpleThreadEscapeAnalysis extends AbstractAnalysisEngine<InstanceK
     // find jars from chosen JRE lib path
     collectJars(new File(javaHomePath), jarFiles);
 
-    return jarFiles.toArray(new JarFile[jarFiles.size()]);
+    return jarFiles.toArray(new JarFile[0]);
   }
 
   /**
@@ -157,8 +157,6 @@ public class SimpleThreadEscapeAnalysis extends AbstractAnalysisEngine<InstanceK
 
   /**
    * The heart of the analysis.
-   * @throws CancelException
-   * @throws IllegalArgumentException
    */
   public Set<IClass> gatherThreadEscapingClasses() throws IOException, IllegalArgumentException,
       CancelException {
@@ -312,8 +310,6 @@ public class SimpleThreadEscapeAnalysis extends AbstractAnalysisEngine<InstanceK
    * dynamic race detector. The idea is that any field might have a race with two exceptions: final fields do not have
    * races since there are no writes to them, and volatile fields have atomic read and write semantics provided by the
    * VM. Hence, this piece of code produces a list of all other fields.
-   * @throws CancelException
-   * @throws IllegalArgumentException
    */
   public static void main(String[] args) throws IOException, IllegalArgumentException, CancelException {
     String mainClassName = args[0];

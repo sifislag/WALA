@@ -38,15 +38,12 @@ public class ParanoidHashSet<T> extends LinkedHashSet<T> {
   private final int BAD_HC = 3;
 
   /**
-   * @param s
    * @throws NullPointerException if s is null
    */
   public ParanoidHashSet(Collection<T> s) throws NullPointerException {
     super(s.size());
     hcFreq = HashMapFactory.make(s.size());
-    for (T t : s) {
-      add(t);
-    }
+    this.addAll(s);
   }
 
   /**
@@ -88,7 +85,7 @@ public class ParanoidHashSet<T> extends LinkedHashSet<T> {
             Object o = t;
             System.err.println(o + " " + o.hashCode());
           }
-          assert false : "bad hc " + arg0.getClass() + " " + arg0;
+          assert false : "bad hc " + arg0.getClass() + ' ' + arg0;
         } else {
           s.add(arg0);
         }

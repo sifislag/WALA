@@ -65,7 +65,7 @@ public class PDFCallGraph {
   }
   
   private static String composeString(Collection<String> s) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     Iterator<String> it = s.iterator();
     for (int i = 0; i < s.size() - 1; i++) {
       result.append(it.next());
@@ -82,9 +82,6 @@ public class PDFCallGraph {
   /**
    * Usage: args = "-appJar [jar file name] {-exclusionFile [exclusionFileName]}" The "jar file name" should be something like
    * "c:/temp/testdata/java_cup.jar"
-   * 
-   * @throws CancelException
-   * @throws IllegalArgumentException
    */
   public static void main(String[] args) throws IllegalArgumentException, CancelException {
     run(args);
@@ -93,9 +90,6 @@ public class PDFCallGraph {
   /**
    * Usage: args = "-appJar [jar file name] {-exclusionFile [exclusionFileName]}" The "jar file name" should be something like
    * "c:/temp/testdata/java_cup.jar"
-   * 
-   * @throws CancelException
-   * @throws IllegalArgumentException
    */
   public static Process run(String[] args) throws IllegalArgumentException, CancelException {
     Properties p = CommandLine.parse(args);
@@ -105,8 +99,6 @@ public class PDFCallGraph {
 
   /**
    * @param appJar something like "c:/temp/testdata/java_cup.jar"
-   * @throws CancelException
-   * @throws IllegalArgumentException
    */
   public static Process run(String appJar, String exclusionFile) throws IllegalArgumentException, CancelException {
     try {
@@ -140,9 +132,6 @@ public class PDFCallGraph {
   /**
    * @param appJar something like "c:/temp/testdata/java_cup.jar"
    * @return a call graph
-   * @throws CancelException
-   * @throws IllegalArgumentException
-   * @throws IOException 
    */
   public static Graph<CGNode> buildPrunedCallGraph(String appJar, File exclusionFile) throws WalaException,
       IllegalArgumentException, CancelException, IOException {
@@ -177,7 +166,8 @@ public class PDFCallGraph {
    * Usage:
    * <ul>
    * <li>args[0] : "-appJar"
-   * <li> args[1] : something like "c:/temp/testdata/java_cup.jar" </ul?
+   * <li> args[1] : something like "c:/temp/testdata/java_cup.jar"
+   * </ul>
    * 
    * @throws UnsupportedOperationException if command-line is malformed.
    */

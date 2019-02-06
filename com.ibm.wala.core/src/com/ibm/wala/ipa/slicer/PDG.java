@@ -383,9 +383,6 @@ public class PDG<T extends InstanceKey> implements NumberedGraph<Statement> {
    * Scalar dependences are taken from SSA def-use information.
    * 
    * Heap dependences are computed by a reaching defs analysis.
-   * 
-   * @param pa
-   * @param mod
    */
   private void createScalarDataDependenceEdges(IR ir, Map<SSAInstruction, Integer> instructionIndices) {
     if (dOptions.equals(DataDependenceOptions.NONE)) {
@@ -679,16 +676,16 @@ public class PDG<T extends InstanceKey> implements NumberedGraph<Statement> {
     Map<Statement, OrdinalSet<Statement>> heapReachingDefs = new HeapReachingDefs<>(modRef, heapModel).computeReachingDefs(node, ir, pa, mod,
         relevantStatements, new HeapExclusions(SetComplement.complement(new SingletonSet(t))), cg);
 
-    for (Statement st : heapReachingDefs.keySet()) {
-      switch (st.getKind()) {
+    for (Map.Entry<Statement, OrdinalSet<Statement>> entry : heapReachingDefs.entrySet()) {
+      switch (entry.getKey().getKind()) {
       case NORMAL:
       case CATCH:
       case PHI:
       case PI: {
-        OrdinalSet<Statement> defs = heapReachingDefs.get(st);
+        OrdinalSet<Statement> defs = entry.getValue();
         if (defs != null) {
           for (Statement def : defs) {
-            delegate.addEdge(def, st);
+            delegate.addEdge(def, entry.getKey());
           }
         }
       }
@@ -703,10 +700,10 @@ public class PDG<T extends InstanceKey> implements NumberedGraph<Statement> {
       case HEAP_RET_CALLEE:
       case HEAP_RET_CALLER:
       case HEAP_PARAM_CALLER: {
-        OrdinalSet<Statement> defs = heapReachingDefs.get(st);
+        OrdinalSet<Statement> defs = entry.getValue();
         if (defs != null) {
           for (Statement def : defs) {
-            delegate.addEdge(def, st);
+            delegate.addEdge(def, entry.getKey());
           }
         }
         break;
@@ -717,7 +714,7 @@ public class PDG<T extends InstanceKey> implements NumberedGraph<Statement> {
         // do nothing .. there are no incoming edges
         break;
       default:
-        Assertions.UNREACHABLE(st.toString());
+        Assertions.UNREACHABLE(entry.getKey().toString());
         break;
       }
     }
@@ -882,10 +879,6 @@ public class PDG<T extends InstanceKey> implements NumberedGraph<Statement> {
 
   /**
    * create nodes representing defs of the return values
-   * 
-   * @param mod the set of heap locations which may be written (transitively) by this node. These are logically parameters in the
-   *          SDG.
-   * @param dOptions
    */
   private void createReturnStatements() {
     ArrayList<Statement> list = new ArrayList<>();
@@ -912,8 +905,6 @@ public class PDG<T extends InstanceKey> implements NumberedGraph<Statement> {
 
   /**
    * create nodes representing defs of formal parameters
-   * 
-   * @param ref the set of heap locations which may be read (transitively) by this node. These are logically parameters in the SDG.
    */
   private void createCalleeParams() {
     if (paramCalleeStatements == null) {
@@ -1037,9 +1028,7 @@ public class PDG<T extends InstanceKey> implements NumberedGraph<Statement> {
   @Override
   public String toString() {
     populate();
-    StringBuffer result = new StringBuffer("PDG for " + node + ":\n");
-    result.append(super.toString());
-    return result.toString();
+    return "PDG for " + node + ":\n" + super.toString();
   }
 
   public Statement[] getParamCalleeStatements() {
@@ -1068,7 +1057,7 @@ public class PDG<T extends InstanceKey> implements NumberedGraph<Statement> {
       return false;
     }
     if (getClass().equals(obj.getClass())) {
-      return node.equals(((PDG) obj).node);
+      return node.equals(((PDG<?>) obj).node);
     } else {
       return false;
     }

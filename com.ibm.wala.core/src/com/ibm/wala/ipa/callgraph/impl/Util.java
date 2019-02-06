@@ -30,6 +30,7 @@ import com.ibm.wala.ipa.callgraph.ContextSelector;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.ipa.callgraph.IAnalysisCacheView;
 import com.ibm.wala.ipa.callgraph.MethodTargetSelector;
+import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
 import com.ibm.wala.ipa.callgraph.propagation.SSAContextInterpreter;
 import com.ibm.wala.ipa.callgraph.propagation.SSAPropagationCallGraphBuilder;
 import com.ibm.wala.ipa.callgraph.propagation.cfa.ZeroXCFABuilder;
@@ -140,8 +141,6 @@ public class Util {
   }
   
   /**
-   * @param scope
-   * @param cha
    * @return set of all eligible Main classes in the class hierarchy
    * @throws IllegalArgumentException if scope is null
    */
@@ -206,10 +205,10 @@ public class Util {
     }
 
     for (String className : classNames) {
-      if (className.indexOf("L") != 0) {
+      if (className.indexOf('L') != 0) {
         throw new IllegalArgumentException("Expected class name to start with L " + className);
       }
-      if (className.indexOf(".") > 0) {
+      if (className.indexOf('.') > 0) {
         Assertions.productionAssertion(false, "Expected class name formatted with /, not . " + className);
       }
     }
@@ -255,8 +254,6 @@ public class Util {
   }
 
   /**
-   * @param supG
-   * @param subG
    * @throws IllegalArgumentException if subG is null
    * @throws IllegalArgumentException if supG is null
    */
@@ -285,7 +282,7 @@ public class Util {
       Set<T> succDiff = setify(subG.getSuccNodes(m));
       succDiff.removeAll(setify(supG.getSuccNodes(m)));
       if (!succDiff.isEmpty()) {
-        Assertions.productionAssertion(succDiff.isEmpty(), "bad superset for successors of " + m + ":" + succDiff);
+        Assertions.productionAssertion(succDiff.isEmpty(), "bad superset for successors of " + m + ':' + succDiff);
       }
 
       Set<T> predDiff = setify(subG.getPredNodes(m));
@@ -299,7 +296,7 @@ public class Util {
         for (T t : predDiff) {
           System.err.println(t.toString());
         }
-        Assertions.UNREACHABLE("bad superset for predecessors of " + m + ":" + predDiff);
+        Assertions.UNREACHABLE("bad superset for predecessors of " + m + ':' + predDiff);
       }
     }
   }
@@ -311,7 +308,8 @@ public class Util {
    * @param cha governing class hierarchy
    * @param scope representation of the analysis scope
    */
-  public static CallGraphBuilder makeRTABuilder(AnalysisOptions options, IAnalysisCacheView cache, IClassHierarchy cha,
+  public static CallGraphBuilder<InstanceKey> makeRTABuilder(
+      AnalysisOptions options, IAnalysisCacheView cache, IClassHierarchy cha,
       AnalysisScope scope) {
 
     addDefaultSelectors(options, cha);
